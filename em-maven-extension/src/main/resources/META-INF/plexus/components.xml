@@ -1,0 +1,31 @@
+<component-set>
+	<components>
+		<component>
+			<role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+			<role-hint>index</role-hint>
+			<implementation>
+				org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping
+			</implementation>
+			<configuration>
+				<phases>
+					<package>biz.aQute.bnd:bnd-indexer-maven-plugin:3.4.0-SNAPSHOT:index</package>
+					<install>org.apache.maven.plugins:maven-install-plugin:install</install>
+				</phases>
+			</configuration>
+		</component>
+		<component>
+			<role>org.apache.maven.artifact.handler.ArtifactHandler</role>
+			<role-hint>index</role-hint>
+			<implementation>org.apache.maven.artifact.handler.DefaultArtifactHandler
+			</implementation>
+			<configuration>
+				<type>index</type>
+				<language>xml</language>
+				<extension>xml.gz</extension>
+				<addedToClasspath>false</addedToClasspath>
+				<includesDependencies>false</includesDependencies>
+				<packaging>xml.gz</packaging>
+			</configuration>
+		</component>
+	</components>
+</component-set>

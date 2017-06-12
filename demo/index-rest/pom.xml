@@ -1,0 +1,67 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.commsen.em.demo</groupId>
+	<artifactId>index-rest</artifactId>
+	<version>0.1.0-SNAPSHOT</version>
+	<packaging>index</packaging>
+
+	<dependencies>
+
+		<!-- Augmenting 3rd party jars with custom metadata so the resolver can find them -->
+		<dependency>
+			<groupId>com.commsen.em.demo</groupId>
+			<artifactId>augment</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- enRoute's libraries used for resolution -->
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>osgi.enroute.pom.distro</artifactId>
+			<version>2.0.0</version>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- JAX-RS publisher -->
+		<dependency>
+			<groupId>com.eclipsesource.jaxrs</groupId>
+			<artifactId>publisher</artifactId>
+			<version>5.3.1</version>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- PAX Logging -->
+		<dependency>
+			<groupId>org.ops4j.pax.logging</groupId>
+			<artifactId>pax-logging-api</artifactId>
+			<version>1.9.1</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.ops4j.pax.logging</groupId>
+			<artifactId>pax-logging-service</artifactId>
+			<version>1.9.1</version>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.ops4j.pax.logging</groupId>
+			<artifactId>pax-logging-log4j2</artifactId>
+			<version>1.9.1</version>
+			<optional>true</optional>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<extensions>
+			<extension>
+				<groupId>com.commsen.em</groupId>
+				<artifactId>em-maven-extension</artifactId>
+				<version>0.1.0-SNAPSHOT</version>
+			</extension>
+		</extensions>
+	</build>
+
+</project>

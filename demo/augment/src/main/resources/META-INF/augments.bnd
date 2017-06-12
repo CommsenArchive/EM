@@ -1,0 +1,10 @@
+-augment.javax.ws.rs-api: \
+	javax.ws.rs-api; \
+		requirement:="compile.only"
+
+-augment.com.eclipsesource.jaxrs.publisher: \
+	com.eclipsesource.jaxrs.publisher; \
+		capability:="osgi.contract;\
+			osgi.contract=JavaJAXRS;\
+			whiteboard=true \
+		"
