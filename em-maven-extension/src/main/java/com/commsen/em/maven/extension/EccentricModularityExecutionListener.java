@@ -62,8 +62,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 			try {
 				bndPlugin.addToBuild(project);
 			} catch (MavenExecutionException e) {
-				logger.error("Failed to add bnd-maven-plugin!", e);
-				event.getSession().getResult().addException(e);
+				throw new RuntimeException("Failed to add bnd-maven-plugin!", e);
 			}
 		}
 
@@ -73,8 +72,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 			try {
 				bndPlugin.addToBuildForAugment(project);
 			} catch (MavenExecutionException e) {
-				logger.error("Failed to add bnd-maven-plugin!", e);
-				event.getSession().getResult().addException(e);
+				throw new RuntimeException("Failed to add bnd-maven-plugin!", e);
 			}
 
 		}
@@ -89,8 +87,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 			try {
 				bndIndexerPlugin.configureForIndexGeneration(project);
 			} catch (MavenExecutionException e) {
-				logger.error("Failed to configure bnd-indexer-maven-plugin!", e);
-				event.getSession().getResult().addException(e);
+				throw new RuntimeException("Failed to configure bnd-indexer-maven-plugin!", e);
 			}
 		}
 
@@ -111,8 +108,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 				bndIndexerPlugin.addToPom(project);
 				bndPlugin.addToBuild(project);
 			} catch (MavenExecutionException e) {
-				logger.error("Failed to add one of the required bnd plugins!", e);
-				event.getSession().getResult().addException(e);
+				throw new RuntimeException("Failed to add one of the required bnd plugins!", e);
 			}
 		}
 
@@ -133,8 +129,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 				bndIndexerPlugin.addToPom(project);
 				bndPlugin.addToBuild(project);
 			} catch (MavenExecutionException e) {
-				logger.error("Failed to add one of the required bnd plugins!", e);
-				event.getSession().getResult().addException(e);
+				throw new RuntimeException("Failed to add one of the required bnd plugins!", e);
 			}
 		}
 
