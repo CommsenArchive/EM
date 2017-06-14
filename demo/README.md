@@ -19,7 +19,8 @@ This uses calc jars above to build up a standalone RESTful math service. It uses
  - `augment` - a resource only artifact that builds a jar containing metadata about other jars. It has no dependencies, only `augments.bnd` file and `<_.eccentric.modularity.augment />` property which instructs EM to mark the jar as augmenting one. The `augments.bnd` file augments two jars:  
    - `javax.ws.rs-api` - with unsatisfiable requirement so it's not picked for runtime
    - `com.eclipsesource.jaxrs.publisher` - with information it provides a whiteboard pattern based implementation of Java's JAX-RS contract
- - `rest` - A Simple RESTful service using Java JAX-RS. It only depends on `calc-api` and `javax.ws.rs-api` (apart from annotations and indexes). It uses custom `@RequireJaxrsWhiteboard` and `@RequirePowerCalculator` annotations to declare it requires a JAX-RS implementation (one that supports whiteboard pattern) and advanced calculator. `<_.eccentric.modularity.executable />` property tells EM to resolve the artifacts from provided indexes and build a standalone executable.
-
+ - `rest` - A Simple RESTful service using Java JAX-RS. It only depends on `calc-api` and `javax.ws.rs-api` (apart from annotations and indexes). It uses custom `@RequireJaxrsWhiteboard` and `@RequirePowerCalculator` annotations to declare it requires a JAX-RS implementation (one that supports whiteboard pattern) and advanced calculator.
+   * normal build uses default profile where `<_.eccentric.modularity.executable />` property tells EM to resolve the artifacts from provided indexes and build a standalone executable.
+   * building with `-P liferay` uses `<_.eccentric.modularity.target.runtime>` property to tell EM to resolve against running Liferay instance and prepare set of artifacts to be deployed. 
 
 See the source code for details.
