@@ -13,9 +13,45 @@
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<_.eccentric.modularity.executable />
-
 	</properties>
+	
+	<profiles>
+		<profile>
+			<!-- 
+				Use `mvn clean install` to build an executable jar to from this service.  
+			 -->
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<!-- 
+					This will build `<artifactId>.jar` executable jar in project's `target` folder!
+				 -->
+				<_.eccentric.modularity.executable />
+			</properties>
+		</profile>
+		<profile>
+			<!-- 
+				Use `mvn clean install -P liferay` to get the artifacts you need to deploy to Liferay to run this service.  
+			 -->
+			<id>liferay</id>
+			<properties>
+				<!-- 
+					The format for the target runtime is <host>:<port>:<name>:<version>.
+					It will generate `.distros/<name>-<version>.jar` containing metadata about the runtime at <host>:<port> 
+					which will be used by the resolver (together with dependent indexes) to determine which artifacts are needed.
+					Those artifacts will be available in `<target>/export/<ArtifactId>` folder! 
+					Maven plugin's can get that path from `${_.eccentric.modularity.resolve.output}` property! 
+					
+					KNOWN ISSUES: 
+					 - the target runtime need to be a OSGi runtime where remote agent (https://mvnrepository.com/artifact/biz.aQute.bnd/biz.aQute.remote.agent) is installed
+					 - <host>:<port> provided here are to demonstrate a future use. Currently they are ignored and the default (localhost:29998) is used!
+				 -->
+				<_.eccentric.modularity.target.runtime>localhost:29998:liferay:7.0.0</_.eccentric.modularity.target.runtime>
+			</properties>
+		</profile>
+	</profiles>
 
 	<dependencies>
 
