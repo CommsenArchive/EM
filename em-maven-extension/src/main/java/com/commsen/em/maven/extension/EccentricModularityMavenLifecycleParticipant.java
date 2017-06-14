@@ -1,5 +1,8 @@
 package com.commsen.em.maven.extension;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.maven.AbstractMavenLifecycleParticipant;
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.execution.ExecutionListener;
@@ -19,6 +22,14 @@ public class EccentricModularityMavenLifecycleParticipant extends AbstractMavenL
 
 	@Override
 	public void afterProjectsRead(MavenSession session) throws MavenExecutionException {
+
+		Set<String> goals = new HashSet<>(session.getGoals());
+
+		if (goals.size() == 1 && goals.contains("clean")) {
+			logger.info("Eccentric modularity not started (clean only session)! ");
+			return;
+		}
+
 		executionListener.setDelegate(session.getRequest().getExecutionListener());
 		session.getRequest().setExecutionListener(executionListener);
 		logger.info("Eccentric modularity extension started!");
