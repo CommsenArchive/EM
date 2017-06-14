@@ -1,6 +1,8 @@
 package com.commsen.em.maven.plugins;
 
-import static com.commsen.em.maven.extension.Constants.*;
+import static com.commsen.em.maven.extension.Constants.PROP_ACTION_RESOLVE;
+import static com.commsen.em.maven.extension.Constants.PROP_RESOLVE_OUTPUT;
+import static com.commsen.em.maven.extension.Constants.PROP_TARGET_RUNTIME_OUTPUT;
 
 import java.io.File;
 import java.io.IOException;
@@ -77,7 +79,8 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 
 	private String getBndrunName(MavenProject project) throws MavenExecutionException {
 		String bndrunName = project.getProperties().getProperty(PROP_ACTION_RESOLVE + ".bndrun", "");
-
+		String distro = project.getProperties().getProperty(PROP_TARGET_RUNTIME_OUTPUT, "");
+		
 		List<URI> indexesFromDependencies = getIndexesFromDependencies(project);
 		List<URI> indexesFromProperties = getIndexesFromProperties(project);
 
@@ -93,7 +96,12 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 				throw new MavenExecutionException("File " + generatedBndrunFile + " already exists!",
 						project.getFile());
 			}
-			generateBndrun(project, generatedBndrunFile, indexes);
+			
+			if (distro.trim().isEmpty()) {
+				generateBndrun(project, generatedBndrunFile, indexes);
+			} else {
+				generateBndrun4Distro(project, distro, generatedBndrunFile, indexes);
+			}
 			filesToCleanup.add(generatedBndrunFile);
 
 		} else {
@@ -130,6 +138,26 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 				+ "			local    =    ${.}/target/index\n" //
 				+ "-runee: JavaSE-1.8\n" //
 				+ "-runfw: org.eclipse.osgi;version='[3.10,4)'\n" //
+				+ "-resolve.effective: resolve, assemble\n" //
+				+ "-runrequires: \\\n" //
+				+ "		osgi.identity;filter:='(osgi.identity=" + project.getArtifactId() + ")'";
+		writeBndrun(bndFile, bndrunContent);
+	}
+	
+	private void generateBndrun4Distro(MavenProject project, String distro, File bndFile, List<URI> indexes) throws MavenExecutionException {
+
+		String bndrunContent = "-standalone:\n" //
+				+ "-distro: " + distro + ";version=file \n" //
+				+ "-plugin.project.external.repos: \\\n" //
+				+ "		aQute.bnd.deployer.repository.FixedIndexedRepo; \\\n" //
+				+ "			name		=   project.external.repos; \\\n" //
+				+ "			locations 	= 	'" + indexes.stream().map(URI::toString).collect(Collectors.joining(","))
+				+ "'\n" //
+				+ "-plugin.project.deps.repo: \\\n" //
+				+ "		aQute.bnd.deployer.repository.LocalIndexedRepo; \\\n" //
+				+ "			name     =    project.deps.repo; \\\n" //
+				+ "			pretty   =    true ; \\\n" //
+				+ "			local    =    ${.}/target/index\n" //
 				+ "-resolve.effective: resolve, assemble\n" //
 				+ "-runrequires: \\\n" //
 				+ "		osgi.identity;filter:='(osgi.identity=" + project.getArtifactId() + ")'";

@@ -13,7 +13,9 @@ public class Constants {
 	public static final String PROP_ACTION_AUGMENT = PROP_PREFIX + "augment";
 	public static final String PROP_ACTION_RESOLVE = PROP_PREFIX + "resolve";
 	public static final String PROP_ACTION_EXECUTABLE_OSGI = PROP_PREFIX + "executable";
+	public static final String PROP_ACTION_TARGET_RUNTIME = PROP_PREFIX + "target.runtime";
 
 	public static final String PROP_RESOLVE_OUTPUT = PROP_ACTION_RESOLVE + ".output";
+	public static final String PROP_TARGET_RUNTIME_OUTPUT = PROP_ACTION_TARGET_RUNTIME + ".output";
 	
 }

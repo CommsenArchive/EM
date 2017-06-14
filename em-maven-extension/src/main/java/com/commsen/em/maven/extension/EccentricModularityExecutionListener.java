@@ -4,6 +4,7 @@ import static com.commsen.em.maven.extension.Constants.PROP_ACTION_AUGMENT;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_EXECUTABLE_OSGI;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_METADATA;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_RESOLVE;
+import static com.commsen.em.maven.extension.Constants.PROP_ACTION_TARGET_RUNTIME;
 import static com.commsen.em.maven.extension.Constants.VAL_INDEX_TYPE;
 
 import java.util.LinkedList;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.commsen.em.maven.plugins.BndExportPlugin;
 import com.commsen.em.maven.plugins.BndIndexerPlugin;
 import com.commsen.em.maven.plugins.BndPlugin;
+import com.commsen.em.maven.plugins.DistroPlugin;
 
 @Component(role = ExecutionListener.class, hint = "em")
 public class EccentricModularityExecutionListener extends AbstractExecutionListener {
@@ -38,10 +40,12 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 	@Requirement
 	private BndExportPlugin bndExportPlugin;
 
+	@Requirement
+	private DistroPlugin distroPlugin;
+
 	@Requirement(role = ArtifactRepositoryLayout.class, hint = "default")
 	private ArtifactRepositoryLayout defaultLayout;
-	
-	
+
 	private ExecutionListener delegate;
 	private Logger logger = LoggerFactory.getLogger(EccentricModularityExecutionListener.class);
 
@@ -126,6 +130,36 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 				 * beginning of the list
 				 */
 				bndExportPlugin.addToPomForExecutable(project);
+				bndIndexerPlugin.addToPom(project);
+				bndPlugin.addToBuild(project);
+			} catch (MavenExecutionException e) {
+				throw new RuntimeException("Failed to add one of the required bnd plugins!", e);
+			}
+		}
+
+		if (project.getProperties().containsKey(PROP_ACTION_TARGET_RUNTIME)) {
+			String runtime = project.getProperties().getProperty(PROP_ACTION_TARGET_RUNTIME, "");
+
+			logger.info(" Adding the following plugins:\n" //
+					+ "  bnd-maven-plugin \n" //
+					+ "  bnd-indexer-maven-plugin \n" //
+					+ "  bnd-export-maven-plugin \n" //
+					+ " configured to resolve artifacts to deploy to " + runtime);
+
+			try {
+
+				try {
+					distroPlugin.createDistroJar(project, runtime);
+				} catch (MavenExecutionException e) {
+					throw new RuntimeException("Failed to extract metadata from the target runtime!", e);
+				}
+
+				/*
+				 * TODO: Need a better way to add multiple plugins! For now add
+				 * plugins in reverse order since they are added to the
+				 * beginning of the list
+				 */
+				bndExportPlugin.addToPomForExport(project);
 				bndIndexerPlugin.addToPom(project);
 				bndPlugin.addToBuild(project);
 			} catch (MavenExecutionException e) {
@@ -231,14 +265,14 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 
 		delegate.forkedProjectFailed(event);
 	}
-	
-	private void addBndSnapshotRepo(MavenProject project)  {
 
-		ArtifactRepository ar = new  MavenArtifactRepository();
+	private void addBndSnapshotRepo(MavenProject project) {
+
+		ArtifactRepository ar = new MavenArtifactRepository();
 		ar.setId("bnd-snapshots");
 		ar.setUrl("https://bndtools.ci.cloudbees.com/job/bnd.master/lastSuccessfulBuild/artifact/dist/bundles/");
 		ar.setLayout(defaultLayout);
-				
+
 		List<ArtifactRepository> pluginRepos = new LinkedList<>();
 		pluginRepos.addAll(project.getPluginArtifactRepositories());
 		pluginRepos.add(ar);
