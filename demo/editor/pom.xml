@@ -13,6 +13,11 @@
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+		<!-- 
+			Prepares the artifacts needed to assemble an executable jar from.
+			Those artifacts are placed in `<target>/export/<ArtifactId>` folder! 
+			The `${_.eccentric.modularity.resolve.output}` property makes that path available to `maven-shade-plugin`!   
+		 -->
 		<_.eccentric.modularity.resolve />
 		
 	</properties>
@@ -40,6 +45,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>3.0.0</version>
+				<!-- 
+					Need this as plugin dependency in order to use custom transformer
+				 -->
 				<dependencies>
 					<dependency>
 						<groupId>com.commsen.em</groupId>
@@ -56,6 +64,9 @@
 						<configuration>
 							<createDependencyReducedPom>false</createDependencyReducedPom>
 							<transformers>
+								<!-- 
+									Custom transformer for `maven-shade-plugin` to append additional artifacts   
+								 -->
 								<transformer
 									implementation="com.commsen.em.maven.plugins.shade.AppendArtifactsTrnasformer">
 									<folder>${_.eccentric.modularity.resolve.output}</folder>
