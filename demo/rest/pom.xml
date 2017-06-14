@@ -44,9 +44,8 @@
 					Those artifacts will be available in `<target>/export/<ArtifactId>` folder! 
 					Maven plugin's can get that path from `${_.eccentric.modularity.resolve.output}` property! 
 					
-					KNOWN ISSUES: 
+					KNOWN ISSUES / LIMITATIONS:
 					 - the target runtime need to be a OSGi runtime where remote agent (https://mvnrepository.com/artifact/biz.aQute.bnd/biz.aQute.remote.agent) is installed
-					 - <host>:<port> provided here are to demonstrate a future use. Currently they are ignored and the default (localhost:29998) is used!
 				 -->
 				<_.eccentric.modularity.target.runtime>localhost:29998:liferay:7.0.0</_.eccentric.modularity.target.runtime>
 			</properties>

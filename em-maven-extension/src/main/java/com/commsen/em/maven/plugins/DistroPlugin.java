@@ -52,6 +52,10 @@ public class DistroPlugin {
 
 			List<String> args = new LinkedList<String>();
 			args.add("remote");
+			args.add("-h");
+			args.add(params[0]);
+			args.add("-p");
+			args.add(params[1]);
 			args.add("distro");
 			args.add("-o");
 			args.add(distroFile.getAbsolutePath());
@@ -59,7 +63,12 @@ public class DistroPlugin {
 			args.add(params[3]);
 
 			logger.info("  - Building a distro jar (matadata only) for provided target runtime " + remote);
+			logger.debug("    Running bnd with the following args : " + args);
 			try {
+				/*
+				 *  TODO Figure out how to provide a connection timeout (hangs forever with wrong host/port) 
+				 *  Perhaps run in separate thread
+				 */
 				bnd.start(args.toArray(new String[args.size()]));
 			} catch (Exception e) {
 				throw new MavenExecutionException("Failed to build distro jar", e);
