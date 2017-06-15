@@ -1,0 +1,40 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.commsen.em</groupId>
+		<artifactId>indexes</artifactId>
+		<version>0.1.0-SNAPSHOT</version>
+	</parent>
+
+	<groupId>com.commsen.em.index</groupId>
+	<artifactId>index-equinox</artifactId>
+	<packaging>index</packaging>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.eclipse.equinox.coordinator</artifactId>
+			<version>1.3.100.v20150410-1453</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.eclipse.equinox.event</artifactId>
+			<version>1.3.100.v20140115-1647</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.eclipse.equinox.metatype</artifactId>
+			<version>1.4.100.v20150408-1437</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.eclipse.osgi</artifactId>
+			<version>3.10.100.v20150529-1857</version>
+			<scope>runtime</scope>
+		</dependency>
+	</dependencies>
+</project>
