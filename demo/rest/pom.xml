@@ -56,16 +56,10 @@
 
 		<dependency>
 			<groupId>com.commsen.em.demo</groupId>
-			<artifactId>index-calc</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-			<type>index</type>
-		</dependency>
-
-		<dependency>
-			<groupId>com.commsen.em.demo</groupId>
 			<artifactId>index-rest</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
 			<type>index</type>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>

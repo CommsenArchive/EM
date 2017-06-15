@@ -9,19 +9,40 @@
 
 	<dependencies>
 
+		<!-- Other indexes to merge -->
+		<dependency>
+			<groupId>com.commsen.em.demo</groupId>
+			<artifactId>index-calc</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+			<type>index</type>
+		</dependency>
+
+		<dependency>
+			<groupId>com.commsen.em.index</groupId>
+			<artifactId>index-osgi</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+			<type>index</type>
+		</dependency>
+
+		<dependency>
+			<groupId>com.commsen.em.index</groupId>
+			<artifactId>index-felix</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+			<type>index</type>
+		</dependency>
+
+		<dependency>
+			<groupId>com.commsen.em.index</groupId>
+			<artifactId>index-equinox</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+			<type>index</type>
+		</dependency>
+
 		<!-- Augmenting 3rd party jars with custom metadata so the resolver can find them -->
 		<dependency>
 			<groupId>com.commsen.em.demo</groupId>
 			<artifactId>augment</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
-			<optional>true</optional>
-		</dependency>
-
-		<!-- enRoute's libraries used for resolution -->
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>osgi.enroute.pom.distro</artifactId>
-			<version>2.0.0</version>
 			<optional>true</optional>
 		</dependency>
 
@@ -34,7 +55,7 @@
 		</dependency>
 
 		<!-- PAX Logging -->
-		<dependency>
+ 		<dependency>
 			<groupId>org.ops4j.pax.logging</groupId>
 			<artifactId>pax-logging-api</artifactId>
 			<version>1.9.1</version>
@@ -52,6 +73,7 @@
 			<version>1.9.1</version>
 			<optional>true</optional>
 		</dependency>
+
 	</dependencies>
 
 	<build>
