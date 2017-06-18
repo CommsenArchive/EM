@@ -7,22 +7,18 @@
 		<artifactId>em</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
 	</parent>
-	
+
 	<artifactId>demo</artifactId>
 	<packaging>pom</packaging>
 
 	<name>Sample projects using Eccentinc Modularity</name>
 
 	<modules>
-		
+
 		<module>calc-api</module>
 		<module>calc-simple</module>
 		<module>index-calc</module>
 		<module>markup</module>
 		<module>editor</module>
-		<module>calc-fancy</module>
-		<module>augment</module>
-		<module>index-rest</module>
-		<module>rest</module>
 	</modules>
 </project>
