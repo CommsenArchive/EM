@@ -6,12 +6,6 @@ import java.util.regex.Pattern;
 
 import com.commsen.em.demo.calc.api.Calculator;
 
-import aQute.bnd.annotation.headers.RequireCapability;
-
-@RequireCapability (
-		ns="eccentric.modularity.demo",
-		filter="(eccentric.modularity.demo=calculator)"
-		)
 public class Markup {
 
 	ServiceLoader<Calculator> serviceLoader = ServiceLoader.load(Calculator.class);

@@ -13,30 +13,16 @@
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<!-- 
-			Prepares the artifacts needed to assemble an executable jar from.
-			Those artifacts are placed in `<target>/export/<ArtifactId>` folder! 
-			The `${_.eccentric.modularity.resolve.output}` property makes that path available to `maven-shade-plugin`!   
-		 -->
-		<_.eccentric.modularity.resolve />
-		
 	</properties>
 
 	<dependencies>
-	
-		<dependency>
-			<groupId>com.commsen.em.demo</groupId>
-			<artifactId>index-calc</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-			<type>index</type>
-		</dependency>
 
 		<dependency>
 			<groupId>com.commsen.em.demo</groupId>
 			<artifactId>markup</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
 		</dependency>
-		
+
 	</dependencies>
 
 	<build>
@@ -45,7 +31,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>3.0.0</version>
-				<!-- 
+				<!--
 					Need this as plugin dependency in order to use custom transformer
 				 -->
 				<dependencies>
@@ -64,13 +50,6 @@
 						<configuration>
 							<createDependencyReducedPom>false</createDependencyReducedPom>
 							<transformers>
-								<!-- 
-									Custom transformer for `maven-shade-plugin` to append additional artifacts   
-								 -->
-								<transformer
-									implementation="com.commsen.em.maven.plugins.shade.AppendArtifactsTrnasformer">
-									<folder>${_.eccentric.modularity.resolve.output}</folder>
-								</transformer>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<mainClass>com.commsen.em.demo.editor.Editor</mainClass>
@@ -86,12 +65,5 @@
 				</executions>
 			</plugin>
 		</plugins>
-		<extensions>
-			<extension>
-				<groupId>com.commsen.em</groupId>
-				<artifactId>em-maven-extension</artifactId>
-				<version>0.1.0-SNAPSHOT</version>
-			</extension>
-		</extensions>
 	</build>
 </project>

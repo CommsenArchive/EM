@@ -5,12 +5,6 @@ import java.util.regex.Pattern;
 
 import com.commsen.em.demo.calc.api.Calculator;
 
-import aQute.bnd.annotation.headers.ProvideCapability;
-
-@ProvideCapability (
-		ns="eccentric.modularity.demo", 
-		name="calculator"
-	)
 public class SimpleCalculator implements Calculator {
 
 	Pattern EXPR = Pattern.compile("\\s*(?<left>\\d+\\.?\\d*)\\s*(?<op>\\+|-)\\s*(?<right>\\d+\\.?\\d*)\\s*");
