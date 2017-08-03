@@ -43,6 +43,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 	public void addToPomForExport(MavenProject project) throws MavenExecutionException {
 
 		String bndrunName = getBndrunName(project);
+		createBndrunIfNotExists(project, bndrunName);
 		addToPom(project, true, bndrunName);
 		project.getProperties().setProperty(PROP_RESOLVE_OUTPUT, "${project.build.directory}/export/" + bndrunName);
 	}
@@ -50,6 +51,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 	public void addToPomForExecutable(MavenProject project) throws MavenExecutionException {
 
 		String bndrunName = getBndrunName(project);
+		createBndrunIfNotExists(project, bndrunName);
 		addToPom(project, false, bndrunName);
 	}
 
@@ -60,7 +62,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 				+ "		<resolve>true</resolve>" //
 				+ "		<bundlesOnly>" + bundlesOnly + "</bundlesOnly>" //
 				+ "		<bndruns>" //
-				+ "			<bndrun>" + bndrun + "</bndrun>" //
+				+ "			<bndrun>" + bndrun + ".bndrun</bndrun>" //
 				+ "		</bndruns>" //
 				+ "		<useMavenDependencies>false</useMavenDependencies>" //
 				+ "</configuration>"; //
@@ -79,8 +81,30 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 
 	private String getBndrunName(MavenProject project) throws MavenExecutionException {
 		String bndrunName = project.getProperties().getProperty(PROP_ACTION_RESOLVE + ".bndrun", "");
-		String distro = project.getProperties().getProperty(PROP_TARGET_RUNTIME_OUTPUT, "");
+		if (bndrunName.trim().isEmpty()) {
+			bndrunName = project.getName();
+		}
 		
+		if (bndrunName.endsWith(".bndrun")) {
+			bndrunName = bndrunName.substring(0, bndrunName.length() - ".bndrun".length());
+		}
+
+		int count = 0;
+		while (new File(project.getBasedir(), bndrunName + ".bndrun").isFile()) {
+			bndrunName = bndrunName + "." + ++count;
+		}
+		
+		return bndrunName;
+	}
+
+	private void createBndrunIfNotExists(MavenProject project, String bndrunName) throws MavenExecutionException {
+
+		if (bndrunName == null || bndrunName.trim().isEmpty()) {
+			throw new MavenExecutionException("Invalid bndrun name: " + bndrunName, project.getFile());
+		}
+
+		File bndrunFile = new File(project.getBasedir(), bndrunName + ".bndrun");
+
 		List<URI> indexesFromDependencies = getIndexesFromDependencies(project);
 		List<URI> indexesFromProperties = getIndexesFromProperties(project);
 
@@ -88,39 +112,31 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		indexes.addAll(indexesFromDependencies);
 		indexes.addAll(indexesFromProperties);
 
-		if (bndrunName.trim().isEmpty()) {
-			bndrunName = project.getName();
-
-			File generatedBndrunFile = new File(project.getBasedir(), bndrunName);
-			if (generatedBndrunFile.exists()) {
-				throw new MavenExecutionException("File " + generatedBndrunFile + " already exists!",
-						project.getFile());
-			}
-			
-			if (distro.trim().isEmpty()) {
-				generateBndrun(project, generatedBndrunFile, indexes);
+		if (bndrunFile.exists()) {
+			if (bndrunFile.isFile()) {
+				if (!indexesFromDependencies.isEmpty()) {
+					logger.warn(
+							"Custom bndrun file is provided! The following indexes found in repositories will be ignored: "
+									+ indexesFromDependencies);
+				}
+				if (!indexesFromProperties.isEmpty()) {
+					logger.warn(
+							"Custom bndrun file is provided! The following indexes found in properties will be ignored: "
+									+ indexesFromProperties);
+				}
 			} else {
-				generateBndrun4Distro(project, distro, generatedBndrunFile, indexes);
+				throw new MavenExecutionException("{} is not a file!", project.getFile());
 			}
-			filesToCleanup.add(generatedBndrunFile);
-
 		} else {
-			if (!indexesFromDependencies.isEmpty()) {
-				logger.warn(
-						"Custom bndrun file is provided! The following indexes found in repositories will be ignored: "
-								+ indexesFromDependencies);
+			
+			String distro = project.getProperties().getProperty(PROP_TARGET_RUNTIME_OUTPUT, "");
+			if (distro.trim().isEmpty()) {
+				generateBndrun(project, bndrunFile, indexes);
+			} else {
+				generateBndrun4Distro(project, distro, bndrunFile, indexes);
 			}
-			if (!indexesFromProperties.isEmpty()) {
-				logger.warn(
-						"Custom bndrun file is provided! The following indexes found in properties will be ignored: "
-								+ indexesFromProperties);
-			}
-			if (bndrunName.endsWith(".bndrun")) {
-				bndrunName = bndrunName.substring(0, bndrunName.length() - ".bndrun".length());
-			}
+			filesToCleanup.add(bndrunFile);
 		}
-
-		return bndrunName;
 	}
 
 	private void generateBndrun(MavenProject project, File bndFile, List<URI> indexes) throws MavenExecutionException {

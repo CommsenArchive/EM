@@ -19,7 +19,7 @@ public class AppendArtifactsTrnasformer implements ResourceTransformer {
 
 	private static final Logger logger	= LoggerFactory.getLogger(AppendArtifactsTrnasformer.class);
 
-	private File folder;
+	private File location;
 
 	private boolean done = false;
 
@@ -41,12 +41,17 @@ public class AppendArtifactsTrnasformer implements ResourceTransformer {
 	@Override
 	public void modifyOutputStream(JarOutputStream jos) throws IOException {
 
-		if (folder == null) {
-			logger.warn("Can not append artifacts! Folder not provided!");
+		if (location == null) {
+			logger.warn("Can not append artifacts! Artifacts location not provided!");
 			return;
 		}
-		
-		for (File file : folder.listFiles()) {
+
+		if (!location.exists() || !location.isDirectory()) {
+			logger.warn("Can not append artifacts! `{}` is not a valid directory!", location);
+			return;
+		}
+
+		for (File file : location.listFiles()) {
 			JarFile jarFile = new JarFile(file);
 			jarFile.stream().forEach(entry -> {
 				if (!entry.getName().startsWith("META-INF/MANIFEST.MF")) {

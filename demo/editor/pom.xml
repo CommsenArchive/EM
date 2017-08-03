@@ -69,7 +69,7 @@
 								 -->
 								<transformer
 									implementation="com.commsen.em.maven.plugins.shade.AppendArtifactsTrnasformer">
-									<folder>${_.eccentric.modularity.resolve.output}</folder>
+									<location>${_.eccentric.modularity.resolve.output}</location>
 								</transformer>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
