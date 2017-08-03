@@ -4,12 +4,12 @@
 
 	<parent>
 		<groupId>com.commsen.em</groupId>
-		<artifactId>indexes</artifactId>
+		<artifactId>em.indexes</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
 	</parent>
 
 	<groupId>com.commsen.em.index</groupId>
-	<artifactId>index-osgi</artifactId>
+	<artifactId>em.index.osgi</artifactId>
 	<packaging>index</packaging>
 
 	<dependencies>

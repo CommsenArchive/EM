@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.commsen.em.demo</groupId>
-	<artifactId>editor</artifactId>
+	<artifactId>em.demo.editor</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
 
 	<properties>
@@ -26,14 +26,14 @@
 	
 		<dependency>
 			<groupId>com.commsen.em.demo</groupId>
-			<artifactId>index-calc</artifactId>
+			<artifactId>em.demo.index-calc</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
 			<type>index</type>
 		</dependency>
 
 		<dependency>
 			<groupId>com.commsen.em.demo</groupId>
-			<artifactId>markup</artifactId>
+			<artifactId>em.demo.markup</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
 		</dependency>
 		
@@ -78,7 +78,7 @@
 							</transformers>
 							<artifactSet>
 								<excludes>
-									<exclude>com.commsen.em.demo:index-calc</exclude>
+									<exclude>com.commsen.em.demo:em.demo.index-calc</exclude>
 								</excludes>
 							</artifactSet>
 						</configuration>

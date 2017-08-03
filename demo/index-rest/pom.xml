@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.commsen.em.demo</groupId>
-	<artifactId>index-rest</artifactId>
+	<artifactId>em.demo.index-rest</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
 	<packaging>index</packaging>
 
@@ -12,28 +12,28 @@
 		<!-- Other indexes to merge -->
 		<dependency>
 			<groupId>com.commsen.em.demo</groupId>
-			<artifactId>index-calc</artifactId>
+			<artifactId>em.demo.index-calc</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
 			<type>index</type>
 		</dependency>
 
 		<dependency>
 			<groupId>com.commsen.em.index</groupId>
-			<artifactId>index-osgi</artifactId>
+			<artifactId>em.index.osgi</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
 			<type>index</type>
 		</dependency>
 
 		<dependency>
 			<groupId>com.commsen.em.index</groupId>
-			<artifactId>index-felix</artifactId>
+			<artifactId>em.index.felix</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
 			<type>index</type>
 		</dependency>
 
 		<dependency>
 			<groupId>com.commsen.em.index</groupId>
-			<artifactId>index-equinox</artifactId>
+			<artifactId>em.index.equinox</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
 			<type>index</type>
 		</dependency>
@@ -41,7 +41,7 @@
 		<!-- Augmenting 3rd party jars with custom metadata so the resolver can find them -->
 		<dependency>
 			<groupId>com.commsen.em.demo</groupId>
-			<artifactId>augment</artifactId>
+			<artifactId>em.demo.augment</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
 			<optional>true</optional>
 		</dependency>

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.commsen.em.demo</groupId>
-	<artifactId>markup</artifactId>
+	<artifactId>em.demo.markup</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
 
 	<properties>
@@ -19,7 +19,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.commsen.em.demo</groupId>
-			<artifactId>calc-api</artifactId>
+			<artifactId>em.demo.calc-api</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
 		</dependency>
 

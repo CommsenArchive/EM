@@ -8,10 +8,10 @@
 		<version>0.1.0-SNAPSHOT</version>
 	</parent>
 	
-	<artifactId>demo</artifactId>
+	<artifactId>em.demo</artifactId>
 	<packaging>pom</packaging>
 
-	<name>Sample projects using Eccentinc Modularity</name>
+	<name>Fantastic Java Contracts demo</name>
 
 	<modules>
 		
