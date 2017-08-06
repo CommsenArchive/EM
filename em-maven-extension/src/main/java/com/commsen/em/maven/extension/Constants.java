@@ -2,6 +2,8 @@ package com.commsen.em.maven.extension;
 
 public class Constants {
 
+	public static final String VAL_BND_VERSION = "3.4.0";
+
 	public static final String VAL_EXTENSION_GROUP = "com.commsen.em";
 	public static final String VAL_EXTENSION_ARTIFACT = "em-maven-extension";
 

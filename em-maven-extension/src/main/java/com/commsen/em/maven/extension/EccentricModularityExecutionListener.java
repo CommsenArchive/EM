@@ -5,6 +5,7 @@ import static com.commsen.em.maven.extension.Constants.PROP_ACTION_EXECUTABLE_OS
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_METADATA;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_RESOLVE;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_TARGET_RUNTIME;
+import static com.commsen.em.maven.extension.Constants.VAL_BND_VERSION;
 import static com.commsen.em.maven.extension.Constants.VAL_INDEX_TYPE;
 
 import java.util.LinkedList;
@@ -59,7 +60,9 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 
 		MavenProject project = event.getProject();
 
-		addBndSnapshotRepo(project);
+		if (VAL_BND_VERSION.toLowerCase().contains("snapshot")) {
+			addBndSnapshotRepo(project);
+		}
 
 		if (project.getProperties().containsKey(PROP_ACTION_METADATA)) {
 			logger.info("Adding bnd-maven-plugin to the project to generate metadata and add it to MANIFEST.MF file!");

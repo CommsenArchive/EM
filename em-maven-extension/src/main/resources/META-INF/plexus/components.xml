@@ -8,7 +8,8 @@
 			</implementation>
 			<configuration>
 				<phases>
-					<package>biz.aQute.bnd:bnd-indexer-maven-plugin:3.4.0-SNAPSHOT:index</package>
+					<!-- TODO: make the version configurable -->
+					<package>biz.aQute.bnd:bnd-indexer-maven-plugin:3.4.0:index</package>
 					<install>org.apache.maven.plugins:maven-install-plugin:install</install>
 				</phases>
 			</configuration>

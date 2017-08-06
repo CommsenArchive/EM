@@ -1,6 +1,7 @@
 package com.commsen.em.maven.plugins;
 
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_AUGMENT;
+import static com.commsen.em.maven.extension.Constants.VAL_BND_VERSION;
 
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.model.Plugin;
@@ -48,7 +49,7 @@ public class BndPlugin extends DynamicMavenPlugin {
 		Plugin plugin = createPlugin( //
 				"biz.aQute.bnd", //
 				"bnd-maven-plugin", //
-				"3.4.0-SNAPSHOT", //
+				VAL_BND_VERSION, //
 				configuration, //
 				"bnd-process", //
 				"bnd-process", null);

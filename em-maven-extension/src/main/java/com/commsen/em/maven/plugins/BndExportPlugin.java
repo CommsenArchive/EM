@@ -3,6 +3,7 @@ package com.commsen.em.maven.plugins;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_RESOLVE;
 import static com.commsen.em.maven.extension.Constants.PROP_RESOLVE_OUTPUT;
 import static com.commsen.em.maven.extension.Constants.PROP_TARGET_RUNTIME_OUTPUT;
+import static com.commsen.em.maven.extension.Constants.VAL_BND_VERSION;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,7 +68,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 				+ "		<useMavenDependencies>false</useMavenDependencies>" //
 				+ "</configuration>"; //
 
-		Plugin plugin = createPlugin("biz.aQute.bnd", "bnd-export-maven-plugin", "3.4.0-SNAPSHOT", configuration,
+		Plugin plugin = createPlugin("biz.aQute.bnd", "bnd-export-maven-plugin", VAL_BND_VERSION, configuration,
 				"export", "export", "package");
 		project.getBuild().getPlugins().add(0, plugin);
 

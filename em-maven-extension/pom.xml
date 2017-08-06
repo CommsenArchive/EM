@@ -21,7 +21,7 @@
 		<dependency>
 			<groupId>biz.aQute.bnd</groupId>
 			<artifactId>biz.aQute.bnd</artifactId>
-			<version>3.4.0-SNAPSHOT</version>
+			<version>3.4.0</version>
 		</dependency>
 
 		<dependency>
@@ -80,16 +80,4 @@
 		</plugins>
 	</build>
 
-	<repositories>
-		<repository>
-			<id>bnd-snapshots</id>
-			<url>https://bndtools.ci.cloudbees.com/job/bnd.master/lastSuccessfulBuild/artifact/dist/bundles/</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>true</enabled>
-				<checksumPolicy>warn</checksumPolicy>
-				<updatePolicy>daily</updatePolicy>
-			</snapshots>
-		</repository>
-	</repositories>
 </project>
