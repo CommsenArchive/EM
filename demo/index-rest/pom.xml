@@ -9,35 +9,6 @@
 
 	<dependencies>
 
-		<!-- Other indexes to merge -->
-		<dependency>
-			<groupId>com.commsen.em.demo</groupId>
-			<artifactId>em.demo.index-calc</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-			<type>index</type>
-		</dependency>
-
-		<dependency>
-			<groupId>com.commsen.em.index</groupId>
-			<artifactId>em.index.osgi</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-			<type>index</type>
-		</dependency>
-
-		<dependency>
-			<groupId>com.commsen.em.index</groupId>
-			<artifactId>em.index.felix</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-			<type>index</type>
-		</dependency>
-
-		<dependency>
-			<groupId>com.commsen.em.index</groupId>
-			<artifactId>em.index.equinox</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-			<type>index</type>
-		</dependency>
-
 		<!-- Augmenting 3rd party jars with custom metadata so the resolver can find them -->
 		<dependency>
 			<groupId>com.commsen.em.demo</groupId>

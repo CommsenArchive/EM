@@ -52,15 +52,78 @@
 		</profile>
 	</profiles>
 
+	<dependencyManagement>
+		<dependencies>
+		
+			<dependency>
+				<!-- BOM containing indexes provided by EM -->
+				<groupId>com.commsen.em</groupId>
+				<artifactId>em.indexes</artifactId>
+				<version>0.1.0-SNAPSHOT</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 
+		<!-- 
+			Indexes used by the resolver to assemble the final application
+		-->
+
 		<dependency>
+			<!-- Index of OSGi libraries -->
+			<groupId>com.commsen.em.index</groupId>
+			<artifactId>em.index.osgi</artifactId>
+			<type>index</type>
+		</dependency>
+		<dependency>
+			<!-- Index of enRoute libraries -->
+			<groupId>com.commsen.em.index</groupId>
+			<artifactId>em.index.enroute</artifactId>
+			<type>index</type>
+		</dependency>
+		<dependency>
+			<!-- Index of Bnd libraries -->
+			<groupId>com.commsen.em.index</groupId>
+			<artifactId>em.index.bnd</artifactId>
+			<type>index</type>
+		</dependency>
+		<dependency>
+			<!-- Index of Felix libraries -->
+			<groupId>com.commsen.em.index</groupId>
+			<artifactId>em.index.felix</artifactId>
+			<type>index</type>
+		</dependency>
+		<dependency>
+			<!-- Index of Equinox libraries -->
+			<groupId>com.commsen.em.index</groupId>
+			<artifactId>em.index.equinox</artifactId>
+			<type>index</type>
+		</dependency>
+
+		<dependency>
+			<!-- Index of calc implementations -->
+			<groupId>com.commsen.em.demo</groupId>
+			<artifactId>em.demo.index-calc</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+			<type>index</type>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<!-- Index of REST related libraries -->
 			<groupId>com.commsen.em.demo</groupId>
 			<artifactId>em.demo.index-rest</artifactId>
 			<version>0.1.0-SNAPSHOT</version>
 			<type>index</type>
 			<scope>runtime</scope>
 		</dependency>
+
+		<!-- 
+			Actual project dependencies 
+		-->
 
 		<dependency>
 			<groupId>com.commsen.em.demo</groupId>
