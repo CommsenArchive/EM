@@ -17,7 +17,8 @@
 		<component>
 			<role>org.apache.maven.artifact.handler.ArtifactHandler</role>
 			<role-hint>index</role-hint>
-			<implementation>org.apache.maven.artifact.handler.DefaultArtifactHandler
+			<implementation>
+				org.apache.maven.artifact.handler.DefaultArtifactHandler
 			</implementation>
 			<configuration>
 				<type>index</type>
