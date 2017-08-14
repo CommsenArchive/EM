@@ -21,5 +21,6 @@
 	<modules>
 		<module>em-maven-extension</module>
 		<module>em.augment</module>
+		<module>em.annotations</module>
 	</modules>
 </project>
