@@ -1,0 +1,51 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.commsen.em</groupId>
+		<artifactId>em</artifactId>
+		<version>0.1.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>em.bom.rest</artifactId>
+	<packaging>pom</packaging>
+
+	<dependencyManagement>
+		<dependencies>
+
+			<dependency>
+				<!-- Servlet API -->
+				<groupId>org.apache.felix</groupId>
+				<artifactId>org.apache.felix.http.servlet-api</artifactId>
+				<version>1.1.2</version>
+				<scope>runtime</scope>
+			</dependency>
+
+			<dependency>
+				<!-- OSGi HTTP API -->
+				<groupId>org.apache.felix</groupId>
+				<artifactId>org.apache.felix.http.api</artifactId>
+				<version>3.0.0</version>
+				<scope>runtime</scope>
+			</dependency>
+
+			<dependency>
+				<!-- OSGi HTTP - Jetty implementation-->
+				<groupId>org.apache.felix</groupId>
+				<artifactId>org.apache.felix.http.jetty</artifactId>
+				<version>3.2.0</version>
+				<scope>runtime</scope>
+			</dependency>
+
+			<dependency>
+				<!-- JAX-RS publisher -->
+				<groupId>com.eclipsesource.jaxrs</groupId>
+				<artifactId>publisher</artifactId>
+				<version>5.3.1</version>
+				<scope>runtime</scope>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+</project>
