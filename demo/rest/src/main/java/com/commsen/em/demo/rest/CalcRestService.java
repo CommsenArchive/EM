@@ -9,12 +9,14 @@ import javax.ws.rs.core.MediaType;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import com.commsen.em.annotations.RequireJaxrsWhiteboardRuntime;
+import com.commsen.em.annotations.RequireServletContainer;
 import com.commsen.em.demo.calc.api.Calculator;
 import com.commsen.em.demo.rest.annotations.RequirePowerCalculator;
-import com.commsen.em.demo.rest.annotations.RequireJaxrsWhiteboard;
 
 @Component (immediate = true, service = Object.class)
-@RequireJaxrsWhiteboard
+@RequireJaxrsWhiteboardRuntime
+@RequireServletContainer
 @RequirePowerCalculator
 @Path("/calc")
 public class CalcRestService {

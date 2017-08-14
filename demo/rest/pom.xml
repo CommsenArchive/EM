@@ -54,11 +54,26 @@
 
 	<dependencyManagement>
 		<dependencies>
-		
 			<dependency>
-				<!-- BOM containing indexes provided by EM -->
+				<!-- Basic framework libraries -->
 				<groupId>com.commsen.em</groupId>
-				<artifactId>em.indexes</artifactId>
+				<artifactId>em.bom.framework</artifactId>
+				<version>0.1.0-SNAPSHOT</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<!-- libraries needed to run REST services -->
+				<groupId>com.commsen.em</groupId>
+				<artifactId>em.bom.rest</artifactId>
+				<version>0.1.0-SNAPSHOT</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<!-- calculator implementations -->
+				<groupId>com.commsen.em.demo</groupId>
+				<artifactId>em.demo.calc-bom</artifactId>
 				<version>0.1.0-SNAPSHOT</version>
 				<type>pom</type>
 				<scope>import</scope>
@@ -67,59 +82,6 @@
 	</dependencyManagement>
 
 	<dependencies>
-
-		<!-- 
-			Indexes used by the resolver to assemble the final application
-		-->
-
-		<dependency>
-			<!-- Index of OSGi libraries -->
-			<groupId>com.commsen.em.index</groupId>
-			<artifactId>em.index.osgi</artifactId>
-			<type>index</type>
-		</dependency>
-		<dependency>
-			<!-- Index of enRoute libraries -->
-			<groupId>com.commsen.em.index</groupId>
-			<artifactId>em.index.enroute</artifactId>
-			<type>index</type>
-		</dependency>
-		<dependency>
-			<!-- Index of Bnd libraries -->
-			<groupId>com.commsen.em.index</groupId>
-			<artifactId>em.index.bnd</artifactId>
-			<type>index</type>
-		</dependency>
-		<dependency>
-			<!-- Index of Felix libraries -->
-			<groupId>com.commsen.em.index</groupId>
-			<artifactId>em.index.felix</artifactId>
-			<type>index</type>
-		</dependency>
-		<dependency>
-			<!-- Index of Equinox libraries -->
-			<groupId>com.commsen.em.index</groupId>
-			<artifactId>em.index.equinox</artifactId>
-			<type>index</type>
-		</dependency>
-
-		<dependency>
-			<!-- Index of calc implementations -->
-			<groupId>com.commsen.em.demo</groupId>
-			<artifactId>em.demo.index-calc</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-			<type>index</type>
-			<scope>runtime</scope>
-		</dependency>
-
-		<dependency>
-			<!-- Index of REST related libraries -->
-			<groupId>com.commsen.em.demo</groupId>
-			<artifactId>em.demo.index-rest</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-			<type>index</type>
-			<scope>runtime</scope>
-		</dependency>
 
 		<!-- 
 			Actual project dependencies 
@@ -132,23 +94,16 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.commsen.em</groupId>
+			<artifactId>em.annotations</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
 			<version>2.0.1</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.service.component.annotations</artifactId>
-			<version>1.3.0</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>biz.aQute.bnd</groupId>
-			<artifactId>annotation</artifactId>
-			<version>2.4.0</version>
 			<scope>provided</scope>
 		</dependency>
 
