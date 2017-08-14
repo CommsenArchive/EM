@@ -12,12 +12,42 @@ public class Constants {
 	public static final String PROP_PREFIX = "_.eccentric.modularity.";
 
 	public static final String PROP_ACTION_METADATA = PROP_PREFIX + "metadata";
+	
 	public static final String PROP_ACTION_AUGMENT = PROP_PREFIX + "augment";
-	public static final String PROP_ACTION_RESOLVE = PROP_PREFIX + "resolve";
-	public static final String PROP_ACTION_EXECUTABLE_OSGI = PROP_PREFIX + "executable";
-	public static final String PROP_ACTION_TARGET_RUNTIME = PROP_PREFIX + "target.runtime";
 
+	/*
+	 *  properties for RESOLVE action
+	 */
+	
+	public static final String PROP_ACTION_RESOLVE = PROP_PREFIX + "resolve";
 	public static final String PROP_RESOLVE_OUTPUT = PROP_ACTION_RESOLVE + ".output";
-	public static final String PROP_TARGET_RUNTIME_OUTPUT = PROP_ACTION_TARGET_RUNTIME + ".output";
+
+	/*
+	 *  properties for EXECUTABLE action
+	 */
+	public static final String PROP_ACTION_EXECUTABLE = PROP_PREFIX + "executable";
+
+	
+	/*
+	 *  properties for DEPLOYABLE action
+	 */
+	public static final String PROP_ACTION_DEPLOY = PROP_PREFIX + "deploy";
+	public static final String PROP_DEPLOY_OUTPUT = PROP_ACTION_DEPLOY + ".output";
+
+	
+	/*
+	 * config 
+	 */
+	
+	public static final String CONFIG_PREFIX = PROP_PREFIX + "cfg.";
+	public static final String PROP_CONFIG_INDEX = CONFIG_PREFIX + "createIndex";
+	public static final String PROP_CONFIG_TMP_BUNDLES = CONFIG_PREFIX + "tempBundlesDirectory";
+
+	/*
+	 * defaults 
+	 */
+
+	public static final String DEFAULT_TMP_BUNDLES = ".bundles";
+
 	
 }

@@ -7,9 +7,13 @@ import org.apache.maven.MavenExecutionException;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component(role = BndPlugin.class)
 public class BndPlugin extends DynamicMavenPlugin {
+
+	private Logger logger = LoggerFactory.getLogger(BndPlugin.class);
 
 	
 	public void addToBuild(MavenProject project) throws MavenExecutionException {
@@ -24,6 +28,9 @@ public class BndPlugin extends DynamicMavenPlugin {
 		project.getBuild().getPlugins().add(0, preparePlugin(configuration));
 
 		configureJarPlugin(project);
+		
+		logger.info("Added `bnd-maven-plugin` to generate metadata");
+
 	}
 
 
@@ -42,6 +49,9 @@ public class BndPlugin extends DynamicMavenPlugin {
 		project.getBuild().getPlugins().add(0, preparePlugin(configuration));
 
 		configureJarPlugin(project);
+		
+		logger.info("Added 'bnd-maven-plugin' to genrate jar that augments (provides metadata for) other jars!");
+
 	}
 
 

@@ -58,6 +58,13 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.ops4j.pax.swissbox</groupId>
+			<artifactId>pax-swissbox-bnd</artifactId>
+			<version>1.8.3</version>
+		</dependency>
+
+
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>

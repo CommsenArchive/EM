@@ -1,10 +1,11 @@
 package com.commsen.em.maven.extension;
 
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_AUGMENT;
-import static com.commsen.em.maven.extension.Constants.PROP_ACTION_EXECUTABLE_OSGI;
+import static com.commsen.em.maven.extension.Constants.PROP_ACTION_DEPLOY;
+import static com.commsen.em.maven.extension.Constants.PROP_ACTION_EXECUTABLE;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_METADATA;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_RESOLVE;
-import static com.commsen.em.maven.extension.Constants.PROP_ACTION_TARGET_RUNTIME;
+import static com.commsen.em.maven.extension.Constants.PROP_PREFIX;
 import static com.commsen.em.maven.extension.Constants.VAL_BND_VERSION;
 import static com.commsen.em.maven.extension.Constants.VAL_INDEX_TYPE;
 
@@ -43,11 +44,12 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 
 	@Requirement
 	private DistroPlugin distroPlugin;
-
+	
 	@Requirement(role = ArtifactRepositoryLayout.class, hint = "default")
 	private ArtifactRepositoryLayout defaultLayout;
 
 	private ExecutionListener delegate;
+	
 	private Logger logger = LoggerFactory.getLogger(EccentricModularityExecutionListener.class);
 
 	public void setDelegate(ExecutionListener executionListener) {
@@ -59,13 +61,22 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 		delegate.projectStarted(event);
 
 		MavenProject project = event.getProject();
-
+		
 		if (VAL_BND_VERSION.toLowerCase().contains("snapshot")) {
 			addBndSnapshotRepo(project);
 		}
 
+		boolean indexBundles = project.getProperties().containsKey(Constants.PROP_CONFIG_INDEX);
+		boolean actionFound = false;
+
+		/*
+		 * TODO: figure out what to do if more than one action is provided! 
+		 * For now all will be executed which may have weird results 
+		 */
+		logger.info("Adding plugins and adapting project configuration based on provided '" + PROP_PREFIX + "*' propeties!");
+
 		if (project.getProperties().containsKey(PROP_ACTION_METADATA)) {
-			logger.info("Adding bnd-maven-plugin to the project to generate metadata and add it to MANIFEST.MF file!");
+			actionFound = true;
 			try {
 				bndPlugin.addToBuild(project);
 			} catch (MavenExecutionException e) {
@@ -74,8 +85,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 		}
 
 		if (project.getProperties().containsKey(PROP_ACTION_AUGMENT)) {
-			logger.info(
-					"Adding bnd-maven-plugin to the project to genrate jar that augments (provides metadata for) other jars!");
+			actionFound = true;
 			try {
 				bndPlugin.addToBuildForAugment(project);
 			} catch (MavenExecutionException e) {
@@ -85,8 +95,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 		}
 
 		if (VAL_INDEX_TYPE.equals(project.getPackaging())) {
-			logger.info("Configuring bnd-indexer-maven-plugin to genrate an index from dependencies!");
-
+			actionFound = true;
 			/*
 			 * BND indexer plug-in is already added in the custom lifecycle for
 			 * "index" type, so we only need to configure it
@@ -99,12 +108,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 		}
 
 		if (project.getProperties().containsKey(PROP_ACTION_RESOLVE)) {
-			logger.info(" Adding the following plugins:\n" //
-					+ "  bnd-maven-plugin \n" //
-					+ "  bnd-indexer-maven-plugin \n" //
-					+ "  bnd-export-maven-plugin \n" //
-					+ " configured to resolve and export dependencies from indexes");
-
+			actionFound = true;			
 			try {
 				/*
 				 * TODO: Need a better way to add multiple plugins! For now add
@@ -112,20 +116,15 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 				 * beginning of the list
 				 */
 				bndExportPlugin.addToPomForExport(project);
-				bndIndexerPlugin.addToPom(project);
+				if (indexBundles) bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
 				bndPlugin.addToBuild(project);
 			} catch (MavenExecutionException e) {
 				throw new RuntimeException("Failed to add one of the required bnd plugins!", e);
 			}
 		}
 
-		if (project.getProperties().containsKey(PROP_ACTION_EXECUTABLE_OSGI)) {
-			logger.info(" Adding the following plugins:\n" //
-					+ "  bnd-maven-plugin \n" //
-					+ "  bnd-indexer-maven-plugin \n" //
-					+ "  bnd-export-maven-plugin \n" //
-					+ " configured to create standalone executable");
-
+		if (project.getProperties().containsKey(PROP_ACTION_EXECUTABLE)) {
+			actionFound = true;
 			try {
 				/*
 				 * TODO: Need a better way to add multiple plugins! For now add
@@ -133,44 +132,40 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 				 * beginning of the list
 				 */
 				bndExportPlugin.addToPomForExecutable(project);
-				bndIndexerPlugin.addToPom(project);
+				if (indexBundles) bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
 				bndPlugin.addToBuild(project);
 			} catch (MavenExecutionException e) {
 				throw new RuntimeException("Failed to add one of the required bnd plugins!", e);
 			}
 		}
 
-		if (project.getProperties().containsKey(PROP_ACTION_TARGET_RUNTIME)) {
-			String runtime = project.getProperties().getProperty(PROP_ACTION_TARGET_RUNTIME, "");
-
-			logger.info(" Adding the following plugins:\n" //
-					+ "  bnd-maven-plugin \n" //
-					+ "  bnd-indexer-maven-plugin \n" //
-					+ "  bnd-export-maven-plugin \n" //
-					+ " configured to resolve artifacts to deploy to " + runtime);
-
+		if (project.getProperties().containsKey(PROP_ACTION_DEPLOY)) {
+			actionFound = true;
+			String runtime = project.getProperties().getProperty(PROP_ACTION_DEPLOY, "");
 			try {
-
-				try {
-					distroPlugin.createDistroJar(project, runtime);
-				} catch (MavenExecutionException e) {
-					throw new RuntimeException("Failed to extract metadata from the target runtime!", e);
-				}
-
+				distroPlugin.createDistroJar(project, runtime);
+			} catch (MavenExecutionException e) {
+				throw new RuntimeException("Failed to extract metadata from the target runtime!", e);
+			}
+			try {
 				/*
 				 * TODO: Need a better way to add multiple plugins! For now add
 				 * plugins in reverse order since they are added to the
 				 * beginning of the list
 				 */
 				bndExportPlugin.addToPomForExport(project);
-				bndIndexerPlugin.addToPom(project);
+				if (indexBundles) bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
 				bndPlugin.addToBuild(project);
 			} catch (MavenExecutionException e) {
 				throw new RuntimeException("Failed to add one of the required bnd plugins!", e);
 			}
 		}
-
+		
+		if (!actionFound) {
+			logger.info("No '" + PROP_PREFIX + "*' action found! Project will be executed AS IS!");
+		}
 	}
+
 
 	@Override
 	public void projectDiscoveryStarted(ExecutionEvent event) {
@@ -287,5 +282,6 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 		project.setRemoteArtifactRepositories(repos);
 
 	}
+	
 
 }

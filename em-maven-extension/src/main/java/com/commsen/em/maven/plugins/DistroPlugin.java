@@ -1,6 +1,6 @@
 package com.commsen.em.maven.plugins;
 
-import static com.commsen.em.maven.extension.Constants.PROP_TARGET_RUNTIME_OUTPUT;
+import static com.commsen.em.maven.extension.Constants.PROP_DEPLOY_OUTPUT;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,7 +75,7 @@ public class DistroPlugin {
 			}
 			logger.info("  - Saved distro jar in " + distroFile);
 
-			project.getProperties().setProperty(PROP_TARGET_RUNTIME_OUTPUT, distroFile.getAbsolutePath());
+			project.getProperties().setProperty(PROP_DEPLOY_OUTPUT, distroFile.getAbsolutePath());
 
 		} finally {
 			try {
