@@ -20,5 +20,6 @@
 
 	<modules>
 		<module>em-maven-extension</module>
+		<module>em.augment</module>
 	</modules>
 </project>

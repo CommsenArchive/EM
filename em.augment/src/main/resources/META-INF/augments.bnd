@@ -6,5 +6,11 @@
 	com.eclipsesource.jaxrs.publisher; \
 		capability:="osgi.contract;\
 			osgi.contract=JavaJAXRS;\
+			version:Version=2;\
 			whiteboard=true \
 		"
+			
+#-augment.org.apache.felix.http.api: \
+#	org.apache.felix.http.api; \
+#		requirement:="compile.only"
+		

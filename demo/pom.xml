@@ -21,7 +21,6 @@
 		<module>markup</module>
 		<module>editor</module>
 		<module>calc-fancy</module>
-		<module>augment</module>
 		<module>index-rest</module>
 		<module>rest</module>
 	</modules>
