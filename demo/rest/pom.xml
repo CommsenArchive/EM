@@ -29,7 +29,12 @@
 					This will build `<artifactId>.jar` executable jar in project's `target` folder!
 				 -->
 				<_.eccentric.modularity.executable />
-			</properties>
+<!--  				<_.eccentric.modularity.cfg.requirements>
+					osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.runtime)',
+					osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.jline)',
+					osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.command)'
+				</_.eccentric.modularity.cfg.requirements>
+ -->			</properties>
 		</profile>
 		<profile>
 			<!-- 
@@ -38,16 +43,21 @@
 			<id>liferay</id>
 			<properties>
 				<!-- 
-					The format for the target runtime is <host>:<port>:<name>:<version>.
+					This will prepare the artifacts to be deployed in `<target>/export/<ArtifactId>` folder!
+					Other Maven plugin's can get that path from `${_.eccentric.modularity.resolve.output}` property! 
+				 -->
+				<_.eccentric.modularity.deploy />
+				<!-- 
+					The format of the target runtime is <host>:<port>:<name>:<version>.
 					It will generate `.distros/<name>-<version>.jar` containing metadata about the runtime at <host>:<port> 
-					which will be used by the resolver (together with dependent indexes) to determine which artifacts are needed.
-					Those artifacts will be available in `<target>/export/<ArtifactId>` folder! 
-					Maven plugin's can get that path from `${_.eccentric.modularity.resolve.output}` property! 
+					which will be used by the resolver to determine which artifacts are needed.
+
 					
 					KNOWN ISSUES / LIMITATIONS:
-					 - the target runtime need to be a OSGi runtime where remote agent (https://mvnrepository.com/artifact/biz.aQute.bnd/biz.aQute.remote.agent) is installed
+					 - the target runtime need to be a OSGi runtime where remote agent 
+					   (https://mvnrepository.com/artifact/biz.aQute.bnd/biz.aQute.remote.agent) is installed
 				 -->
-				<_.eccentric.modularity.target.runtime>localhost:29998:liferay:7.0.0</_.eccentric.modularity.target.runtime>
+				<_.eccentric.modularity.deploy.target>localhost:29998:liferay:7.0.0</_.eccentric.modularity.deploy.target>
 			</properties>
 		</profile>
 	</profiles>
@@ -66,6 +76,22 @@
 				<!-- libraries needed to run REST services -->
 				<groupId>com.commsen.em</groupId>
 				<artifactId>em.bom.rest</artifactId>
+				<version>0.1.0-SNAPSHOT</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<!-- libraries needed to run shell -->
+				<groupId>com.commsen.em</groupId>
+				<artifactId>em.bom.shell</artifactId>
+				<version>0.1.0-SNAPSHOT</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<!-- libraries needed for logging -->
+				<groupId>com.commsen.em</groupId>
+				<artifactId>em.bom.logging</artifactId>
 				<version>0.1.0-SNAPSHOT</version>
 				<type>pom</type>
 				<scope>import</scope>
