@@ -8,6 +8,40 @@
 	<version>0.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
+	<name>Eccentric Modularity</name>
+	<description>
+		Maven based approach for modular, contract based Java applications!
+	</description>
+	<url>https://github.com/azzazzel/EM</url>
+	
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
+
+	<organization>
+		<name>Commsen International</name>
+		<url>http://commsen.com/</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<name>Milen Dyankov</name>
+			<url>http://milendyankov.com</url>
+		</developer>
+	</developers>
+
+	<scm>
+		<url>https://github.com/azzazzel/EM</url>
+		<connection>https://github.com/azzazzel/EM.git</connection>
+	</scm>
+
+	<issueManagement>
+		<system>Github</system>
+		<url>https://github.com/azzazzel/EM/issues</url>
+	</issueManagement>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>

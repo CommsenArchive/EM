@@ -9,7 +9,11 @@
 	</parent>
 
 	<artifactId>em.annotations</artifactId>
-
+	<name>EM - Annotations</name>
+	<description>
+		Annotations for common contracts (restful services, servlet containers, ...)
+	</description>
+	
 	<dependencies>
 		<dependency>
 			<groupId>biz.aQute.bnd</groupId>

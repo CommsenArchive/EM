@@ -10,7 +10,11 @@
 
 	<artifactId>em.bom.shell</artifactId>
 	<packaging>pom</packaging>
-
+	<name>EM - Shell BOM </name>
+	<description>
+		Bill of Material containing interactive shell libraries used in resolve process
+	</description>
+	
 	<properties>
 		<karaf.version>4.0.7</karaf.version>
 	</properties>

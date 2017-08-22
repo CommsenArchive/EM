@@ -10,7 +10,12 @@
 
 	<artifactId>em.bom.rest</artifactId>
 	<packaging>pom</packaging>
-
+	<name>EM - Rest BOM </name>
+	<description>
+		Bill of Material containing libraries for restful services used in resolve process
+	</description>
+	
+	
 	<dependencyManagement>
 		<dependencies>
 

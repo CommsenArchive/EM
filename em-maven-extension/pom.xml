@@ -10,6 +10,10 @@
 	</parent>
 
 	<artifactId>em-maven-extension</artifactId>
+	<name>EM - Maven extension</name>
+	<description>
+		A Maven extension which makes it very easy to add metadata to jar files, resolve contract based dependencies, build standalone executables, ...
+	</description>
 
 	<dependencies>
 

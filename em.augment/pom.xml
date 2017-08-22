@@ -8,7 +8,11 @@
 	</parent>
 	
 	<artifactId>em.augment</artifactId>
-	
+	<name>EM - Augment</name>
+	<description>
+		A set of rules to augment (enhance with metadata) existing Maven projects
+	</description>
+		
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>

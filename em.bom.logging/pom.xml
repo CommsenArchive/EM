@@ -9,7 +9,10 @@
 
 	<artifactId>em.bom.logging</artifactId>
 	<packaging>pom</packaging>
-
+	<name>EM - Logging BOM </name>
+	<description>
+		Bill of Material containing logging libraries used in resolve process
+	</description>
 	<dependencyManagement>
 		<dependencies>
 

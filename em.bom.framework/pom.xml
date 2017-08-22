@@ -10,7 +10,11 @@
 
 	<artifactId>em.bom.framework</artifactId>
 	<packaging>pom</packaging>
-
+	<name>EM - Framework BOM </name>
+	<description>
+		Bill of Material containing essential libraries used in resolve process
+	</description>
+	
 	<dependencyManagement>
 		<dependencies>
 
