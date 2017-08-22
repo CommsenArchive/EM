@@ -16,14 +16,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.net.URI;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.MavenExecutionException;
@@ -99,7 +96,6 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		Plugin plugin = createPlugin("biz.aQute.bnd", "bnd-export-maven-plugin", VAL_BND_VERSION, configuration.toString(),
 				"export", "export", "package");
 		project.getBuild().getPlugins().add(0, plugin);
-
 	}
 
 	public void cleanup() {
@@ -246,36 +242,12 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 			throw new RuntimeException("Failed to analyze dependencies", e);
 		}
 
-
 		/*
 		 * For each resolved artifact :
 		 *  - convert to bundle if it's not
 		 *  - add it to the bundle set 
 		 */
-		resolvedArtifacts.stream()
-			.forEach(a -> {
-				File f;
-				if (dependencyUtil.isOSGiBundle(a)) {
-					f = a.getFile();
-					/*
-					 * If index is to be created copy the bundles to the temporary folder
-					 */
-					if (indexBundles) {
-						try {
-							FileUtils.copyFile(a.getFile(), new File (tmpBundleFolder, f.getName()));
-						} catch (IOException e) {
-							throw new RuntimeException("Failed to copy file to temporary folder", e);
-						}
-					}
-				} else {
-					f = new File(tmpBundleFolder, a.getArtifactId() + "-" + a.getVersion() +"-EM.jar");
-					makeBundle(a, f);
-				}
-				
-				bundleSet.add(f);
-				logger.debug("Made '{}' module available to the resolver", a);
-				
-			});
+		resolvedArtifacts.stream().forEach(a -> addToBundleSet(a, tmpBundleFolder, bundleSet, indexBundles));
 		
 		/*
 		 * get managed artifacts
@@ -287,43 +259,46 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		} catch (MavenExecutionException e) {
 			throw new RuntimeException("Failed to analyze dependencies", e);
 		}
-				
-		
+					
 		/*
 		 * For each managed artifact :
 		 *  - convert to bundle if it's not
 		 *  - add it to the bundle set 
 		 */
-		managedArtifacts.stream()
-			.forEach(a -> {
-				File f; 
-				if (dependencyUtil.isOSGiBundle(a)) {
-					f = a.getFile();
-					/*
-					 * If index is to be created copy the bundles to the temporary folder
-					 */
-					if (indexBundles) {
-						try {
-							FileUtils.copyFile(a.getFile(), new File (tmpBundleFolder, f.getName()));
-						} catch (IOException e) {
-							throw new RuntimeException("Failed to copy file to temporary folder", e);
-						}
-					}
-				} else {
-					f = new File(tmpBundleFolder, a.getArtifactId() + "-" + a.getVersion() +"-EM.jar");
-					makeBundle(a, f);
-				}
-				
-				bundleSet.add(f);
-				logger.debug("Made '{}' module available to the resolver", a);
-			});
-
-		//debug
-//		bundleSet.stream().forEach(a -> System.out.println(" ===== Bundle : " + a));
-//		Arrays.stream(tmpBundleFolder.listFiles()).forEach(f -> System.out.println(" ===== File : " + f));
-		
+		managedArtifacts.stream().forEach(a -> addToBundleSet(a, tmpBundleFolder, bundleSet, indexBundles));
+	
 		return bundleSet;
 
+	}
+
+	/**
+	 * @param artifact
+	 * @param bundlesDirectory
+	 * @param bundlesSet
+	 * @param indexGeneration
+	 */
+	private void addToBundleSet(Artifact artifact, File bundlesDirectory, Set<File> bundlesSet,
+			boolean indexGeneration) {
+		File f;
+		if (dependencyUtil.isOSGiBundle(artifact)) {
+			f = artifact.getFile();
+			/*
+			 * If index is to be created copy the bundles to the temporary folder
+			 */
+			if (indexGeneration) {
+				try {
+					FileUtils.copyFile(artifact.getFile(), new File (bundlesDirectory, f.getName()));
+				} catch (IOException e) {
+					throw new RuntimeException("Failed to copy file to temporary folder", e);
+				}
+			}
+		} else {
+			f = new File(bundlesDirectory, artifact.getArtifactId() + "-" + artifact.getVersion() +"-EM.jar");
+			makeBundle(artifact, f);
+		}
+		
+		bundlesSet.add(f);
+		logger.debug("Made '{}' module available to the resolver", artifact);
 	}
 
 	private boolean makeBundle(Artifact artifact, File targetFile) {
