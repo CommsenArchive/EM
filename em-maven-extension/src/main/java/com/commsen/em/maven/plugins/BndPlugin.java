@@ -1,7 +1,12 @@
 package com.commsen.em.maven.plugins;
 
-import static com.commsen.em.maven.extension.Constants.PROP_ACTION_AUGMENT;
+import static com.commsen.em.maven.extension.Constants.PROP_AUGMENT_FILE;
+import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_IGNORE_PACKAGES;
+import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_IMPORT_PACKAGES;
+import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_INCLUDE_PACKAGES;
 import static com.commsen.em.maven.extension.Constants.VAL_BND_VERSION;
+
+import java.util.Arrays;
 
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.model.Plugin;
@@ -18,14 +23,29 @@ public class BndPlugin extends DynamicMavenPlugin {
 	
 	public void addToBuild(MavenProject project) throws MavenExecutionException {
 
-		String configuration = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" //
-				+ "<configuration>" //
-				+ "  <bnd><![CDATA[ \n" //
-				+ "		-exportcontents: ${packages;ANNOTATED;aQute.bnd.annotation.Export}\n" //
-				+ "  ]]></bnd>" //
-				+ "</configuration>"; //
+		String includePackages = project.getProperties().getProperty(PROP_CONFIG_INCLUDE_PACKAGES, "");
+		String importPackages = project.getProperties().getProperty(PROP_CONFIG_IMPORT_PACKAGES, "");
+		String ignorePackages = project.getProperties().getProperty(PROP_CONFIG_IGNORE_PACKAGES, "");
+		
+		StringBuilder importStatement = new StringBuilder();
+		if (!ignorePackages.isEmpty()) {
+			Arrays.stream(ignorePackages.split(",")).forEach(p -> importStatement.append("!").append(p).append(","));
+		}
+		if (!importPackages.isEmpty()) {
+			importStatement.append(importPackages).append(",");
+		}
+		importStatement.append("*");
+		
+		StringBuilder configuration = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n") //
+				.append("<configuration><bnd><![CDATA[ \n") //
+				.append("	Private-Package:").append(includePackages).append("\n") //
+				.append("	Import-Package: ").append(importStatement).append("\n") //
+				.append("	-exportcontents: ${packages;ANNOTATED;aQute.bnd.annotation.Export}\n") //
+				.append("]]></bnd></configuration>"); //
 
-		project.getBuild().getPlugins().add(0, preparePlugin(configuration));
+		logger.debug("Generated bnd-maven-plugin confgiguration: \n {}", configuration);
+		
+		project.getBuild().getPlugins().add(0, preparePlugin(configuration.toString()));
 
 		configureJarPlugin(project);
 		
@@ -36,17 +56,16 @@ public class BndPlugin extends DynamicMavenPlugin {
 
 	public void addToBuildForAugment(MavenProject project) throws MavenExecutionException {
 
-		String path = project.getProperties().getProperty(PROP_ACTION_AUGMENT+".file", "META-INF/augments.bnd");
+		String path = project.getProperties().getProperty(PROP_AUGMENT_FILE, "META-INF/augments.bnd");
 		
-		String configuration = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" //
-				+ "<configuration>" //
-				+ "  <bnd><![CDATA[ \n" //
-				+ "		Provide-Capability: bnd.augment; path='" + path + "'\n" //
-				+ "  ]]></bnd>" //
-				+ "</configuration>"; //
+		StringBuilder configuration = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n") //
+				.append("<configuration><bnd><![CDATA[ \n") //
+				.append("	Provide-Capability: bnd.augment; path='").append(path).append("'\n") //
+				.append("]]></bnd></configuration>"); //
 
+		logger.debug("Generated bnd-maven-plugin confgiguration: \n {}", configuration);
 
-		project.getBuild().getPlugins().add(0, preparePlugin(configuration));
+		project.getBuild().getPlugins().add(0, preparePlugin(configuration.toString()));
 
 		configureJarPlugin(project);
 		
@@ -71,14 +90,12 @@ public class BndPlugin extends DynamicMavenPlugin {
 		Plugin jarPlugin = getPlugin(project, "org.apache.maven.plugins:maven-jar-plugin");
 
 		if (jarPlugin != null) {
-			String jarConfig = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" //
-					+ "<configuration>\n" //
-					+ "  <archive>\n" //
-					+ "    <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>\n" //
-					+ "   </archive>\n" //
-					+ "</configuration>";
+			StringBuilder jarConfig = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n") //
+					.append("<configuration><archive>\n") //
+					.append("	<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>\n") //
+					.append("</archive></configuration>");
 
-			configurePlugin(jarPlugin, "default-jar", jarConfig);
+			configurePlugin(jarPlugin, "default-jar", jarConfig.toString());
 		}
 	}
 

@@ -14,6 +14,7 @@ public class Constants {
 	public static final String PROP_ACTION_METADATA = PROP_PREFIX + "metadata";
 	
 	public static final String PROP_ACTION_AUGMENT = PROP_PREFIX + "augment";
+	public static final String PROP_AUGMENT_FILE = PROP_ACTION_AUGMENT + ".file";
 
 	/*
 	 *  properties for RESOLVE action
@@ -43,6 +44,10 @@ public class Constants {
 	public static final String PROP_CONFIG_INDEX = CONFIG_PREFIX + "createIndex";
 	public static final String PROP_CONFIG_TMP_BUNDLES = CONFIG_PREFIX + "tempBundlesDirectory";
 	public static final String PROP_CONFIG_REQUIREMENTS = CONFIG_PREFIX + "requirements";
+	public static final String PROP_CONFIG_INCLUDE_PACKAGES = CONFIG_PREFIX + "includePackages";
+	public static final String PROP_CONFIG_IMPORT_PACKAGES = CONFIG_PREFIX + "importPackages";
+	public static final String PROP_CONFIG_IGNORE_PACKAGES = CONFIG_PREFIX + "ignorePackages";
+
 
 	/*
 	 * defaults 
