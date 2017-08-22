@@ -1,25 +1,19 @@
 
 # Eccentric Modularity
 
-This is a PoC for modular, contract based Java applications
+Eccentric Modularity is Maven extension making it easy to build modular, contract based Java applications
 
-| WARNING |
-| --- |
-| **This is a PoC only! It's not a ready-to-use-in-production framework or project!** |
+## What it does?
 
-## What it is?
-
-The purpose of this PoC is to explore and demonstrate a simple way to move from hardcoded dependencies to artifact(jar) discovery based on generic requirements and capabilities. It allows to discover the artifacts providing the functionalities an application needs! It can also create standalone (Spring Boot like) applications!
-
-Eccentric Modularity is available as Maven extension! There are no plans to port it to other build systems for now!
+Eccentric Modularity provides simple way to move from hardcoded dependencies to artifact(jar) discovery based on generic requirements and capabilities. It allows to discover the artifacts providing the functionalities an application needs! It can also create standalone (Spring Boot like) applications!
 
 ### Is it about Java9 / JPMS / JSR376 / Jigsaw modularity?
 
-No! However it may do so in the future if there is any interest. The general concept "generate and add metadata to jar files so build tools can discover related jars" is a valid use case for JPMS. Yet it requires different approach which I may experiment with once Java 9 is released.
+No! However it may evolve to generate JPMS wirings in the future if there is any interest. The general concept "generate and add metadata to jar files so build tools can discover related jars" is a valid use case for JPMS. Yet it requires different approach which I may experiment with once Java 9 is released.
 
 ### Is it about OSGi?
 
-It uses some of the OSGi specs and tools but does not require you to learn or use OSGi at runtime! In the demos, you have an example of an app (editor) which can discover a contract provider(s) and wire it via [Java's SPI (ServiceLoader)](https://docs.oracle.com/javase/tutorial/ext/basics/spi.html#packaging-the-dictionary-service-in-a-jar-file). The other exmple (rest) indeed uses OSGi runtime but you should not need to deal with it (much like you don't deal with Spring Boot's internals).
+It uses some of the OSGi specifications and tools but does not require you to learn or use OSGi at runtime! In the demos, you have an example of an app (editor) which can discover a contract provider(s) and wire it via [Java's SPI (ServiceLoader)](https://docs.oracle.com/javase/tutorial/ext/basics/spi.html#packaging-the-dictionary-service-in-a-jar-file). The other example (rest) indeed uses OSGi runtime but you should not need to deal with it (much like you don't deal with Spring Boot's internals).
 
 ## Installation
 
@@ -46,7 +40,7 @@ It will not do anything unless you instruct it via one of the following properti
  - `<_.eccentric.modularity.augment />` - generates a jar file that only contains metadata about other jar functionalities
  - `<_.eccentric.modularity.resolve />` - saves in one place all jars that are needed to fulfill the requirements of your applications
  - `<_.eccentric.modularity.executable />` - builds a single executable jar (much like Spring Boot)
- - if the project is `<packaging>index</packaging>` - builds and index artifact used by the resolver
+ - `<_.eccentric.modularity.deploy />` - saves in one place all jars that needed to be deployed to given target runtime 
 
 Please see [demo projects](https://github.com/azzazzel/EM/tree/master/demo) for examples!
 
@@ -65,4 +59,5 @@ This work was heavily influenced and borrows ideas and examples from the followi
 
 ## License
 
-There is no license. This is not a project but a PoC. Feel free to use it anyway you wish!
+The project is released under [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+
