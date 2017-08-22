@@ -25,5 +25,6 @@
 		<module>em.bom.rest</module>
 		<module>em.bom.framework</module>
 		<module>em.bom.logging</module>
+		<module>em.bom.shell</module>
 	</modules>
 </project>
