@@ -42,6 +42,7 @@ public class Constants {
 	public static final String CONFIG_PREFIX = PROP_PREFIX + "cfg.";
 	public static final String PROP_CONFIG_INDEX = CONFIG_PREFIX + "createIndex";
 	public static final String PROP_CONFIG_TMP_BUNDLES = CONFIG_PREFIX + "tempBundlesDirectory";
+	public static final String PROP_CONFIG_REQUIREMENTS = CONFIG_PREFIX + "requirements";
 
 	/*
 	 * defaults 
