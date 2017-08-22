@@ -35,7 +35,7 @@
 
 	<scm>
 		<url>https://github.com/azzazzel/EM</url>
-		<connection>https://github.com/azzazzel/EM.git</connection>
+		<connection>scm:git:https://github.com/azzazzel/EM.git</connection>
 	</scm>
 
 	<issueManagement>
