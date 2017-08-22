@@ -1,15 +1,10 @@
 package com.commsen.em.maven.util;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.WeakHashMap;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
@@ -34,7 +29,6 @@ import org.slf4j.LoggerFactory;
 public class DependencyUtil {
 		
 	private Logger logger = LoggerFactory.getLogger(DependencyUtil.class);
-	private WeakHashMap<String, File> indexCache = new WeakHashMap<>();
 
 	@Requirement
 	private ArtifactResolver artifactResolver;
@@ -54,6 +48,7 @@ public class DependencyUtil {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public Set<Artifact> getProjectDependencies(MavenProject project, List<Dependency> initial) throws MavenExecutionException {
 
 		ArtifactResolutionRequest artifactResolutionRequest = new ArtifactResolutionRequest();
@@ -82,41 +77,7 @@ public class DependencyUtil {
 		return artifacts;
 	}
 	
-	public List<URI> getIndexesFromDependencies(MavenProject project) throws MavenExecutionException {
-		List<URI> indexes = new LinkedList<>();
-		for (Iterator<Dependency> iterator = project.getDependencies().iterator(); iterator.hasNext();) {
-			Dependency dependency = iterator.next();
-			if ("index".equals(dependency.getType())) {
-				logger.info("  - Found index dependency " + dependency.getGroupId() + ":" + dependency.getArtifactId()
-						+ ":" + dependency.getVersion());
-				DefaultArtifactCoordinate coordinate = new DefaultArtifactCoordinate();
-				coordinate.setGroupId(dependency.getGroupId());
-				coordinate.setArtifactId(dependency.getArtifactId());
-				coordinate.setVersion(dependency.getVersion());
-				coordinate.setExtension("xml.gz");
-
-				File file = indexCache.get(coordinate.toString());
-
-				if (file == null) {
-					ArtifactResult ar;
-					try {
-						ar = artifactResolver.resolveArtifact(project.getProjectBuildingRequest(), coordinate);
-					} catch (ArtifactResolverException e) {
-						throw new MavenExecutionException("Failed to resolve artifact " + coordinate, e);
-					}
-					file = ar.getArtifact().getFile();
-					indexCache.put(coordinate.toString(), file);
-				}
-
-				logger.info("  - Using index: " + file);
-				indexes.add(file.toURI());
-			}
-
-		}
-
-		return indexes;
-	}
-	
+	@SuppressWarnings("deprecation")
 	public Artifact getArtifact (MavenProject project, Dependency dependency) throws MavenExecutionException {
 		DefaultArtifactCoordinate coordinate = new DefaultArtifactCoordinate();
 		coordinate.setGroupId(dependency.getGroupId());

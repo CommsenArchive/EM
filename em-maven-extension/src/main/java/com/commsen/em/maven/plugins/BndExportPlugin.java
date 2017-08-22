@@ -2,9 +2,10 @@ package com.commsen.em.maven.plugins;
 
 import static com.commsen.em.maven.extension.Constants.DEFAULT_TMP_BUNDLES;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_RESOLVE;
+import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_INDEX;
 import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_REQUIREMENTS;
 import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_TMP_BUNDLES;
-import static com.commsen.em.maven.extension.Constants.PROP_DEPLOY_OUTPUT;
+import static com.commsen.em.maven.extension.Constants.PROP_DEPLOY_TARGET;
 import static com.commsen.em.maven.extension.Constants.PROP_RESOLVE_OUTPUT;
 import static com.commsen.em.maven.extension.Constants.VAL_BND_VERSION;
 
@@ -36,7 +37,6 @@ import org.ops4j.pax.swissbox.bnd.OverwriteMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.commsen.em.maven.extension.Constants;
 import com.commsen.em.maven.util.DependencyUtil;
 import com.commsen.em.maven.util.VersionUtil;
 
@@ -134,42 +134,20 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 
 		File bndrunFile = new File(project.getBasedir(), bndrunName + ".bndrun");
 
-		List<URI> indexesFromDependencies = dependencyUtil.getIndexesFromDependencies(project);
-		List<URI> indexesFromProperties = getIndexesFromProperties(project);
-
-		List<URI> indexes = new LinkedList<>();
-		indexes.addAll(indexesFromDependencies);
-		indexes.addAll(indexesFromProperties);
-
-		if (bndrunFile.exists()) {
-			if (bndrunFile.isFile()) {
-				if (!indexesFromDependencies.isEmpty()) {
-					logger.warn(
-							"Custom bndrun file is provided! The following indexes found in repositories will be ignored: "
-									+ indexesFromDependencies);
-				}
-				if (!indexesFromProperties.isEmpty()) {
-					logger.warn(
-							"Custom bndrun file is provided! The following indexes found in properties will be ignored: "
-									+ indexesFromProperties);
-				}
-			} else {
-				throw new MavenExecutionException("{} is not a file!", project.getFile());
-			}
+		if (bndrunFile.exists() && !bndrunFile.isFile()) {
+			throw new MavenExecutionException("{} is not a file!", project.getFile());
 		} else {
-			
-			String distro = project.getProperties().getProperty(PROP_DEPLOY_OUTPUT, "");
+			String distro = project.getProperties().getProperty(PROP_DEPLOY_TARGET, "");
 			if (distro.trim().isEmpty()) {
-				generateBndrun(project, bndrunFile, indexes);
+				generateBndrun(project, bndrunFile);
 			} else {
-				generateBndrun4Distro(project, distro, bndrunFile, indexes);
+				generateBndrun4Distro(project, distro, bndrunFile);
 			}
 			filesToCleanup.add(bndrunFile);
-			
 		}
 	}
 
-	private void generateBndrun(MavenProject project, File bndFile, List<URI> indexes) throws MavenExecutionException {
+	private void generateBndrun(MavenProject project, File bndFile) throws MavenExecutionException {
 
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("-standalone:\n");
@@ -191,19 +169,16 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		stringBuilder.append(")'");
 		String bndrunContent = stringBuilder.toString();
 
-		
 		logger.debug("Generated bndrun file: \n{}", bndrunContent);
 
-		
 		writeBndrun(bndFile, bndrunContent);
 		
 		if (System.getProperty("keepBndrun") != null) {
 			writeBndrun(new File(project.getBasedir(), "_em.generated.bndrun"), bndrunContent);
 		}
-
 	}
-	
-	private void generateBndrun4Distro(MavenProject project, String distro, File bndFile, List<URI> indexes) throws MavenExecutionException {
+
+	private void generateBndrun4Distro(MavenProject project, String distro, File bndFile) throws MavenExecutionException {
 
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("-standalone:\n");
@@ -221,7 +196,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		if (System.getProperty("keepBndrun") != null) {
 			writeBndrun(new File(project.getBasedir(), "_em.generated.bndrun"), bndrunContent);
 		}
-}
+	}
 
 	private String getAdditionalInitialRequirments(MavenProject project) {
 		String additionalInitialRequirements = project.getProperties().getProperty(PROP_CONFIG_REQUIREMENTS, "");
@@ -244,14 +219,6 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		}
 	}
 
-	private List<URI> getIndexesFromProperties(MavenProject project) throws MavenExecutionException {
-		List<URI> indexes = new LinkedList<>();
-		String indexesURIs = project.getProperties().getProperty(PROP_ACTION_RESOLVE + ".indexes", "");
-		if (!indexesURIs.trim().isEmpty()) {
-			indexes = Arrays.stream(indexesURIs.split(",")).map(s -> URI.create(s)).collect(Collectors.toList());
-		}
-		return indexes;
-	}
 
 	private Set<File> prepareDependencies(MavenProject project) {
 
@@ -267,7 +234,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 
 		Set<File> bundleSet = new HashSet<File>();
 
-		boolean indexBundles = project.getProperties().containsKey(Constants.PROP_CONFIG_INDEX);
+		boolean indexBundles = project.getProperties().containsKey(PROP_CONFIG_INDEX);
 		
 		/*
 		 *  get resolved artifacts

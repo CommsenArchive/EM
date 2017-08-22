@@ -33,7 +33,7 @@ public class Constants {
 	 *  properties for DEPLOYABLE action
 	 */
 	public static final String PROP_ACTION_DEPLOY = PROP_PREFIX + "deploy";
-	public static final String PROP_DEPLOY_OUTPUT = PROP_ACTION_DEPLOY + ".output";
+	public static final String PROP_DEPLOY_TARGET = PROP_ACTION_DEPLOY + ".target";
 
 	
 	/*
