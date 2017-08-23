@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.commsen.em</groupId>
 		<artifactId>em</artifactId>
-		<version>0.1.0</version>
+		<version>0.1.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>em.bom.framework</artifactId>
@@ -22,7 +22,7 @@
 				<!-- Augmenting libraries in EM BOMs -->
 				<groupId>com.commsen.em</groupId>
 				<artifactId>em.augment</artifactId>
-				<version>0.1.0</version>
+				<version>0.1.1-SNAPSHOT</version>
 				<scope>runtime</scope>
 			</dependency>
 
