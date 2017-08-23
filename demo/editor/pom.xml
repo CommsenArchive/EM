@@ -4,7 +4,7 @@
 
 	<groupId>com.commsen.em.demo</groupId>
 	<artifactId>em.demo.editor</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.1.0</version>
 
 	<properties>
 
@@ -28,7 +28,7 @@
 				<!-- calculator implementations -->
 				<groupId>com.commsen.em.demo</groupId>
 				<artifactId>em.demo.calc-bom</artifactId>
-				<version>0.1.0-SNAPSHOT</version>
+				<version>0.1.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -41,7 +41,7 @@
 		<dependency>
 			<groupId>com.commsen.em.demo</groupId>
 			<artifactId>em.demo.markup</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
+			<version>0.1.0</version>
 		</dependency>
 		
 	</dependencies>
@@ -59,7 +59,7 @@
 					<dependency>
 						<groupId>com.commsen.em</groupId>
 						<artifactId>em-maven-extension</artifactId>
-						<version>0.1.0-SNAPSHOT</version>
+						<version>0.1.0</version>
 					</dependency>
 				</dependencies>
 				<executions>
@@ -97,7 +97,7 @@
 			<extension>
 				<groupId>com.commsen.em</groupId>
 				<artifactId>em-maven-extension</artifactId>
-				<version>0.1.0-SNAPSHOT</version>
+				<version>0.1.0</version>
 			</extension>
 		</extensions>
 	</build>

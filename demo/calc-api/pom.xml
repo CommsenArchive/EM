@@ -4,7 +4,7 @@
 
 	<groupId>com.commsen.em.demo</groupId>
 	<artifactId>em.demo.calc-api</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.1.0</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>com.commsen.em</groupId>
 			<artifactId>em.annotations</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
+			<version>0.1.0</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -39,11 +39,9 @@
 			<extension>
 				<groupId>com.commsen.em</groupId>
 				<artifactId>em-maven-extension</artifactId>
-				<version>0.1.0-SNAPSHOT</version>
+				<version>0.1.0</version>
 			</extension>
 		</extensions>
 	</build>
-
-
 
 </project>

@@ -4,7 +4,7 @@
 
 	<groupId>com.commsen.em.demo</groupId>
 	<artifactId>em.demo.rest</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.1.0</version>
 
 	<properties>
 
@@ -68,7 +68,7 @@
 				<!-- Basic framework libraries -->
 				<groupId>com.commsen.em</groupId>
 				<artifactId>em.bom.framework</artifactId>
-				<version>0.1.0-SNAPSHOT</version>
+				<version>0.1.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -76,7 +76,7 @@
 				<!-- libraries needed to run REST services -->
 				<groupId>com.commsen.em</groupId>
 				<artifactId>em.bom.rest</artifactId>
-				<version>0.1.0-SNAPSHOT</version>
+				<version>0.1.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -84,7 +84,7 @@
 				<!-- libraries needed to run shell -->
 				<groupId>com.commsen.em</groupId>
 				<artifactId>em.bom.shell</artifactId>
-				<version>0.1.0-SNAPSHOT</version>
+				<version>0.1.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -92,7 +92,7 @@
 				<!-- libraries needed for logging -->
 				<groupId>com.commsen.em</groupId>
 				<artifactId>em.bom.logging</artifactId>
-				<version>0.1.0-SNAPSHOT</version>
+				<version>0.1.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -100,7 +100,7 @@
 				<!-- calculator implementations -->
 				<groupId>com.commsen.em.demo</groupId>
 				<artifactId>em.demo.calc-bom</artifactId>
-				<version>0.1.0-SNAPSHOT</version>
+				<version>0.1.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -116,13 +116,13 @@
 		<dependency>
 			<groupId>com.commsen.em.demo</groupId>
 			<artifactId>em.demo.calc-api</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
+			<version>0.1.0</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.commsen.em</groupId>
 			<artifactId>em.annotations</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
+			<version>0.1.0</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -140,7 +140,7 @@
 			<extension>
 				<groupId>com.commsen.em</groupId>
 				<artifactId>em-maven-extension</artifactId>
-				<version>0.1.0-SNAPSHOT</version>
+				<version>0.1.0</version>
 			</extension>
 		</extensions>
 	</build>

@@ -5,11 +5,12 @@
 	<parent>
 		<groupId>com.commsen.em</groupId>
 		<artifactId>em</artifactId>
-		<version>0.1.0-SNAPSHOT</version>
+		<version>0.1.0</version>
 	</parent>
 	
 	<artifactId>em.demo</artifactId>
 	<packaging>pom</packaging>
+	<version>0.1.0</version>
 
 	<name>Fantastic Java Contracts demo</name>
 
@@ -17,10 +18,10 @@
 		
 		<module>calc-api</module>
 		<module>calc-simple</module>
+		<module>calc-fancy</module>
 		<module>em.demo.calc-bom</module>
 		<module>markup</module>
 		<module>editor</module>
-		<module>calc-fancy</module>
 		<module>rest</module>
 	</modules>
 </project>
