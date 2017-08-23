@@ -2,20 +2,29 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.commsen.em</groupId>
-		<artifactId>em</artifactId>
-		<version>0.1.0</version>
-	</parent>
-	
+	<groupId>com.commsen.em</groupId>
 	<artifactId>em.demo</artifactId>
 	<packaging>pom</packaging>
-	<version>0.1.0</version>
+	<version>0.1.1-SNAPSHOT</version>
 
 	<name>Fantastic Java Contracts demo</name>
 
+	<properties>
+		<em.version>0.1.1-SNAPSHOT</em.version>
+		<em.demo.version>${project.version}</em.demo.version>
+	</properties>
+
+	<build>
+		<extensions>
+			<extension>
+				<groupId>com.commsen.em</groupId>
+				<artifactId>em-maven-extension</artifactId>
+				<version>${em.version}</version>
+			</extension>
+		</extensions>
+	</build>
+
 	<modules>
-		
 		<module>calc-api</module>
 		<module>calc-simple</module>
 		<module>calc-fancy</module>

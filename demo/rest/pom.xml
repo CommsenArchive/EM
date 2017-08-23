@@ -1,10 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
+	<parent>
+		<groupId>com.commsen.em</groupId>
+		<artifactId>em.demo</artifactId>
+		<version>0.1.1-SNAPSHOT</version>
+	</parent>
+	
 	<groupId>com.commsen.em.demo</groupId>
 	<artifactId>em.demo.rest</artifactId>
-	<version>0.1.0</version>
 
 	<properties>
 
@@ -68,7 +72,7 @@
 				<!-- Basic framework libraries -->
 				<groupId>com.commsen.em</groupId>
 				<artifactId>em.bom.framework</artifactId>
-				<version>0.1.0</version>
+				<version>${em.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -76,7 +80,7 @@
 				<!-- libraries needed to run REST services -->
 				<groupId>com.commsen.em</groupId>
 				<artifactId>em.bom.rest</artifactId>
-				<version>0.1.0</version>
+				<version>${em.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -84,7 +88,7 @@
 				<!-- libraries needed to run shell -->
 				<groupId>com.commsen.em</groupId>
 				<artifactId>em.bom.shell</artifactId>
-				<version>0.1.0</version>
+				<version>${em.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -92,7 +96,7 @@
 				<!-- libraries needed for logging -->
 				<groupId>com.commsen.em</groupId>
 				<artifactId>em.bom.logging</artifactId>
-				<version>0.1.0</version>
+				<version>${em.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -100,7 +104,7 @@
 				<!-- calculator implementations -->
 				<groupId>com.commsen.em.demo</groupId>
 				<artifactId>em.demo.calc-bom</artifactId>
-				<version>0.1.0</version>
+				<version>${em.demo.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -116,13 +120,13 @@
 		<dependency>
 			<groupId>com.commsen.em.demo</groupId>
 			<artifactId>em.demo.calc-api</artifactId>
-			<version>0.1.0</version>
+			<version>${em.demo.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.commsen.em</groupId>
 			<artifactId>em.annotations</artifactId>
-			<version>0.1.0</version>
+			<version>${em.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -135,13 +139,4 @@
 
 	</dependencies>
 
-	<build>
-		<extensions>
-			<extension>
-				<groupId>com.commsen.em</groupId>
-				<artifactId>em-maven-extension</artifactId>
-				<version>0.1.0</version>
-			</extension>
-		</extensions>
-	</build>
 </project>
