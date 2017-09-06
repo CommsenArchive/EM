@@ -146,6 +146,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 	private void generateBndrun(MavenProject project, File bndFile) throws MavenExecutionException {
 
 		StringBuilder stringBuilder = new StringBuilder();
+		generateVariables(stringBuilder);
 		stringBuilder.append("-standalone:\n");
 		stringBuilder.append("-runee: JavaSE-1.8\n");
 		stringBuilder.append("-runfw: org.apache.felix.framework;version='[5,6)'\n");
@@ -193,6 +194,15 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 			writeBndrun(new File(project.getBasedir(), "_em.generated.bndrun"), bndrunContent);
 		}
 	}
+	
+	private void generateVariables(StringBuilder stringBuilder) throws MavenExecutionException {
+		stringBuilder.append("requirements.shell = ")
+				.append("osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.runtime)',")
+				.append("osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.jline)',")
+				.append("osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.command)'")
+				.append("\n");
+	}
+	
 
 	private String getAdditionalInitialRequirments(MavenProject project) {
 		String additionalInitialRequirements = project.getProperties().getProperty(PROP_CONFIG_REQUIREMENTS, "");
