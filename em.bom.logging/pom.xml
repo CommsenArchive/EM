@@ -17,10 +17,10 @@
 		<dependencies>
 
 			<dependency>
-				<!-- Logback -->
-				<groupId>ch.qos.logback</groupId>
-				<artifactId>logback-classic</artifactId>
-				<version>1.2.3</version>
+				<!-- PAX logging -->
+				<groupId>org.ops4j.pax.logging</groupId>
+				<artifactId>pax-logging-service</artifactId>
+				<version>1.10.1</version>
 				<scope>runtime</scope>
 			</dependency>
 
