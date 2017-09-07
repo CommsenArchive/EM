@@ -134,5 +134,7 @@
 		<module>em.bom.framework</module>
 		<module>em.bom.logging</module>
 		<module>em.bom.shell</module>
+		<module>em.bom.config</module>
+		<module>em.bom.scheduler</module>
 	</modules>
 </project>

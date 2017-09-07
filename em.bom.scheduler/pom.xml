@@ -1,0 +1,30 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.commsen.em</groupId>
+		<artifactId>em</artifactId>
+		<version>0.2.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>em.bom.scheduler</artifactId>
+	<packaging>pom</packaging>
+	<name>EM - Scheduler BOM </name>
+	<description>
+		Bill of Material containing scheduler libraries used in resolve process
+	</description>
+	<dependencyManagement>
+		<dependencies>
+
+			<dependency>
+				<!-- Apache Karaf Scheduler -->
+				<groupId>org.apache.karaf.scheduler</groupId>
+				<artifactId>org.apache.karaf.scheduler.core</artifactId>
+				<version>4.1.2</version>
+				<scope>runtime</scope>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+</project>
