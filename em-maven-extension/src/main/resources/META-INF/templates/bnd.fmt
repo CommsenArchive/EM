@@ -1,0 +1,10 @@
+filterClean: ($<1>=$<2>)
+filterCondition: (&($<1>=$<2>)($<3>))
+filterFromCondition: $<if;$<is;∅;$<3>>;$<filterClean;$<1>;$<2>>;$<filterCondition;$<1>;$<2>;$<3>>>
+buildFilter: $<if;$<is;∅;$<4>>;$<filterFromCondition;$<1>;$<2>;$<3>>;$<4>>
+
+
+Private-Package: ${includePackages}
+Import-Package: ${importStatement}
+
+-exportcontents: $<packages;ANNOTATED;aQute.bnd.annotation.Export>

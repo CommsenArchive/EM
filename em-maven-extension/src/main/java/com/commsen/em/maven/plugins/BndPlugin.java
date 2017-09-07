@@ -6,7 +6,10 @@ import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_IMPORT_PACKAG
 import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_INCLUDE_PACKAGES;
 import static com.commsen.em.maven.extension.Constants.VAL_BND_VERSION;
 
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.model.Plugin;
@@ -14,6 +17,10 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.commsen.em.maven.extension.Templates;
+
+import freemarker.template.TemplateException;
 
 @Component(role = BndPlugin.class)
 public class BndPlugin extends DynamicMavenPlugin {
@@ -36,11 +43,20 @@ public class BndPlugin extends DynamicMavenPlugin {
 		}
 		importStatement.append("*");
 		
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("includePackages", includePackages);
+		model.put("importStatement", importStatement);
+		
+		String bndContent = null;
+		try {
+			bndContent = Templates.process("META-INF/templates/bnd.fmt", model);
+		} catch (IOException | TemplateException e) {
+			logger.warn("Failed to porcess template file!", e);
+		}
+				
 		StringBuilder configuration = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n") //
 				.append("<configuration><bnd><![CDATA[ \n") //
-				.append("	Private-Package:").append(includePackages).append("\n") //
-				.append("	Import-Package: ").append(importStatement).append("\n") //
-				.append("	-exportcontents: ${packages;ANNOTATED;aQute.bnd.annotation.Export}\n") //
+				.append(bndContent)
 				.append("]]></bnd></configuration>"); //
 
 		logger.debug("Generated bnd-maven-plugin confgiguration: \n {}", configuration);
