@@ -2,15 +2,30 @@
 	javax.ws.rs-api; \
 		requirement:="compile.only"
 
--augment.com.eclipsesource.jaxrs.publisher: \
-	com.eclipsesource.jaxrs.publisher; \
-		capability:="osgi.contract;\
-			osgi.contract=JavaJAXRS;\
-			version:Version=2;\
+-augment.org.eclipse.osgi: \
+	org.eclipse.osgi; \
+		requirement:="compile.only"
+
+-augment.org.apache.karaf.scheduler.core: \
+	org.apache.karaf.scheduler.core; \
+		capability:="em.contract;\
+			em.contract=scheduler;\
+			provider=karaf;\
 			whiteboard=true \
 		"
-			
-#-augment.org.apache.felix.http.api: \
-#	org.apache.felix.http.api; \
-#		requirement:="compile.only"
 		
+-augment.osgi.enroute.configurer.simple.provider: \
+	osgi.enroute.configurer.simple.provider; \
+		capability:="em.contract;\
+			em.contract=configurer;\
+			provider=enroute;\
+			dynamic=false \
+		"
+
+-augment.com.eclipsesource.jaxrs.publisher: \
+	com.eclipsesource.jaxrs.publisher; \
+		capability:="em.contract;\
+			em.contract=jaxrs.publisher;\
+			provider=osgi-jax-rs-connector;\
+			whiteboard=true \
+		"

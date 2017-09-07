@@ -7,11 +7,11 @@ import aQute.bnd.annotation.headers.RequireCapability;
 
 @RequireCapability (
 		ns="em.contract",
-		filter="$[buildFilter;em.contract;jaxrs.publisher;${conditions};${customFilter}]",
+		filter="$[buildFilter;em.contract;scheduler;${conditions};${customFilter}]",
 		effective="assemble"
 		)
 @Retention(RetentionPolicy.CLASS)
-public @interface RequireJaxrsPublisher {
+public @interface RequireScheduler {
 
 	String conditions() default "∅";
 

@@ -7,13 +7,14 @@ import aQute.bnd.annotation.headers.RequireCapability;
 
 @RequireCapability (
 		ns="em.contract",
-		filter="$[buildFilter;em.contract;jaxrs.publisher;${conditions};${customFilter}]",
+		filter="$[buildFilter;em.contract;configurer;${conditions};${customFilter}]",
 		effective="assemble"
 		)
 @Retention(RetentionPolicy.CLASS)
-public @interface RequireJaxrsPublisher {
+public @interface RequireConfigurer {
 
 	String conditions() default "∅";
 
 	String customFilter() default "∅";
 }
+
