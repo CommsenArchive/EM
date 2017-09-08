@@ -16,9 +16,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -35,7 +37,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.commsen.em.maven.util.DependencyUtil;
+import com.commsen.em.maven.util.Templates;
 import com.commsen.em.maven.util.VersionUtil;
+
+import freemarker.template.TemplateException;
 
 @Component(role = BndExportPlugin.class)
 public class BndExportPlugin extends DynamicMavenPlugin {
@@ -69,31 +74,22 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 	public void addToPom(MavenProject project, boolean bundlesOnly, String bndrun) throws MavenExecutionException {
 		
 		Set<File> bundles = prepareDependencies(project);
-		
 		File thisArtifact = new File (project.getBuild().getDirectory(), project.getBuild().getFinalName() + "." + project.getPackaging());
+		bundles.add(thisArtifact);
 		
-		StringBuilder configuration = new StringBuilder()
-			.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>") //
-			.append("<configuration>") //
-			.append("	<failOnChanges>false</failOnChanges>") //
-			.append("	<resolve>true</resolve>") //
-			.append("	<bundlesOnly>").append(bundlesOnly).append("</bundlesOnly>") //
-			.append("	<bndruns>") //
-			.append("		<bndrun>").append(bndrun).append(".bndrun</bndrun>") //
-			.append("	</bndruns>") //
-			.append("	<useMavenDependencies>false</useMavenDependencies>") //
-			.append("	<bundles>") //
-			.append("		<bundle>").append(thisArtifact).append("</bundle>");
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("bundlesOnly", bundlesOnly);
+		model.put("bndrun", bndrun);
+		model.put("bundles", bundles);
 		
-		for (File file : bundles) {
-			configuration.append("<bundle>").append(file).append("</bundle>");
+		String configuration = null;
+		try {
+			configuration = Templates.process("META-INF/templates/bnd-export-maven-plugin-configuration.fmt", model);
+		} catch (IOException | TemplateException e) {
+			logger.warn("Failed to porcess template file!", e);
 		}
 
-		configuration
-			.append("</bundles>") //
-			.append("</configuration>"); //
-
-		Plugin plugin = createPlugin("biz.aQute.bnd", "bnd-export-maven-plugin", VAL_BND_VERSION, configuration.toString(),
+		Plugin plugin = createPlugin("biz.aQute.bnd", "bnd-export-maven-plugin", VAL_BND_VERSION, configuration,
 				"export", "export", "package");
 		project.getBuild().getPlugins().add(0, plugin);
 	}
@@ -131,7 +127,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		File bndrunFile = new File(project.getBasedir(), bndrunName + ".bndrun");
 
 		if (bndrunFile.exists() && !bndrunFile.isFile()) {
-			throw new MavenExecutionException("{} is not a file!", project.getFile());
+			throw new MavenExecutionException("'" + bndrunFile + "' is not a file!", project.getFile());
 		} else {
 			String distro = project.getProperties().getProperty(PROP_DEPLOY_TARGET, "");
 			if (distro.trim().isEmpty()) {
@@ -166,7 +162,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		stringBuilder.append(")'");
 		String bndrunContent = stringBuilder.toString();
 
-		logger.debug("Generated bndrun file: \n{}", bndrunContent);
+		if (logger.isDebugEnabled()) logger.debug("Generated bndrun file: \n{}", bndrunContent);
 
 		writeBndrun(bndFile, bndrunContent);
 		
@@ -269,7 +265,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		} catch (MavenExecutionException e) {
 			throw new RuntimeException("Failed to analyze dependencies", e);
 		}
-					
+		
 		/*
 		 * For each managed artifact :
 		 *  - convert to bundle if it's not
