@@ -6,6 +6,18 @@
 	org.eclipse.osgi; \
 		requirement:="compile.only"
 
+-augment.osgi.core: \
+	osgi.core; \
+		requirement:="compile.only"
+
+-augment.osgi.cmpn: \
+	osgi.cmpn; \
+		requirement:="compile.only"
+
+-augment.osgi.enterprise: \
+	osgi.enterprise; \
+		requirement:="compile.only"
+
 -augment.org.apache.karaf.scheduler.core: \
 	org.apache.karaf.scheduler.core; \
 		capability:="em.contract;\
