@@ -99,6 +99,7 @@ public class Dependencies {
 	public boolean isOSGiBundle (Artifact artifact) {
 		try (JarFile jarFile = new JarFile(artifact.getFile()))  {
 			Manifest manifest = jarFile.getManifest();
+			if (manifest == null) return false;
 			return manifest.getMainAttributes().getValue("Bundle-SymbolicName") != null;
 		} catch (IOException e) {
 			logger.warn("Failed to check if " + artifact.getFile() + " is OSGi bundle!", e);
