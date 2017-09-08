@@ -18,7 +18,7 @@ import org.codehaus.plexus.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.commsen.em.maven.extension.Templates;
+import com.commsen.em.maven.util.Templates;
 
 import freemarker.template.TemplateException;
 

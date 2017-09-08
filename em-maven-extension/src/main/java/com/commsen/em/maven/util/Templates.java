@@ -1,4 +1,4 @@
-package com.commsen.em.maven.extension;
+package com.commsen.em.maven.util;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -39,11 +39,5 @@ public class Templates {
 		get(template).process(dataModel, out);
 		return out.toString();
 	}
-	
-	public static void main(String[] args) throws IOException {
-		Template t = get("META-INF/templates/bnd.fmt");
-		System.out.println(t);
-	}
-	
 	
 }
