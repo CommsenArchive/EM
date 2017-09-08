@@ -236,7 +236,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		 */
 		Set<Artifact> managedArtifacts = null;
 		try {
-			managedArtifacts = dependencies.mangedAsArtifacts(project);
+			managedArtifacts = dependencies.managedAsArtifacts(project);
 		} catch (MavenExecutionException e) {
 			throw new RuntimeException("Failed to analyze dependencies", e);
 		}

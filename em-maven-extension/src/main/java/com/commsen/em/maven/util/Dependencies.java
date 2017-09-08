@@ -3,6 +3,7 @@ package com.commsen.em.maven.util;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.JarFile;
@@ -13,7 +14,10 @@ import org.apache.maven.MavenExecutionException;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
 import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
+import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
+import org.apache.maven.artifact.resolver.filter.ExclusionSetFilter;
 import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Exclusion;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.artifact.DefaultArtifactCoordinate;
@@ -40,7 +44,7 @@ public class Dependencies {
 		return asArtifacts(project, project.getDependencies());
 	}
 
-	public Set<Artifact> mangedAsArtifacts(MavenProject project) throws MavenExecutionException {
+	public Set<Artifact> managedAsArtifacts(MavenProject project) throws MavenExecutionException {
 		if (project.getDependencyManagement() != null) {
 			return asArtifacts(project, project.getDependencyManagement().getDependencies());
 		} else {
@@ -65,10 +69,24 @@ public class Dependencies {
 		);
 		
 		for (Dependency dependency : jarDependencies) {
+		
+			// make sure to not process excluded dependencies
+			Set<String> excludes = new HashSet<>();
+			for (Exclusion exclusion : dependency.getExclusions()) {
+				if (exclusion.getGroupId() != null) {
+					excludes.add(exclusion.getGroupId() + ":" + exclusion.getArtifactId());
+				} else {
+					excludes.add(exclusion.getArtifactId());
+				}
+			} 
+			ArtifactFilter filter = new ExclusionSetFilter(excludes);
+			
 			Artifact artifact = asArtifact(project, dependency);
 			artifacts.add(artifact);
 			artifactResolutionRequest.setArtifact(artifact);
+			artifactResolutionRequest.setCollectionFilter(filter);
 			ArtifactResolutionResult artifactResolutionResult = mavenRepoSystem.resolve(artifactResolutionRequest);
+
 			artifactResolutionResult.getArtifacts().stream()
 				.filter(d -> "jar".equals(d.getType()))
 				.filter(d -> "compile".equals(d.getScope()) || "provided".equals(d.getScope()) || "runtime".equals(d.getScope()))
