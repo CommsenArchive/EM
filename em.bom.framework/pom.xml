@@ -66,6 +66,14 @@
 				<scope>runtime</scope>
 			</dependency>
 
+			<dependency>
+				<!-- Coordinator service -->
+				<groupId>org.osgi</groupId>
+				<artifactId>org.osgi.service.coordinator</artifactId>
+				<version>1.0.2</version>
+				<scope>runtime</scope>
+			</dependency>
+
 
 		</dependencies>
 	</dependencyManagement>
