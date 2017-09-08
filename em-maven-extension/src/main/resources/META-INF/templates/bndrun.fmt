@@ -5,9 +5,13 @@ requirements.shell = \
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.runtime)',\
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.jline)',\
 	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.command)'
-
+	
 requirements.configurer = \
 	em.contract;filter:='(em.contract=configurer)'
+
+requirements.webconsole = \
+	osgi.identity;filter:='(osgi.identity=org.apache.felix.webconsole)'
+
 #
 # Run without BND workspace
 #
