@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.commsen.em.maven.util.Dependencies;
+import com.commsen.em.maven.util.Flag;
 import com.commsen.em.maven.util.Templates;
 import com.commsen.em.maven.util.Version;
 
@@ -152,7 +153,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		try {
 			bndrunContent = templates.process("META-INF/templates/bndrun.fmt", model);
 		} catch (IOException | TemplateException e) {
-			logger.warn("Failed to porcess template file!", e);
+			if (logger.isDebugEnabled()) logger.warn("Failed to porcess template file!", e);
 		}
 
 		
@@ -160,20 +161,11 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 
 		writeBndrun(bndFile, bndrunContent);
 		
-		if (System.getProperty("keepBndrun") != null) {
+		if (Flag.keepBndrun()) {
 			writeBndrun(new File(project.getBasedir(), "_em.generated.bndrun"), bndrunContent);
 		}
 	}
 	
-	private void generateVariables(StringBuilder stringBuilder) throws MavenExecutionException {
-		stringBuilder.append("requirements.shell = ")
-				.append("osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.runtime)',")
-				.append("osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.jline)',")
-				.append("osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.command)'")
-				.append("\n");
-	}
-	
-
 	private void addAdditionalInitialRequirments(Set<String> requirements, MavenProject project) {
 		String additionalInitialRequirements = project.getProperties().getProperty(PROP_CONFIG_REQUIREMENTS, "");
 		if (!additionalInitialRequirements.trim().isEmpty()) {
@@ -199,7 +191,11 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 
 	private Set<File> prepareDependencies(MavenProject project) {
 
-		logger.debug("Analysing project's BOMs!");
+		if (logger.isDebugEnabled()) {
+			logger.debug("Analysing project's BOMs!");
+		} else if (Flag.verbose()) {
+			logger.info("Analysing project's BOMs!");
+		}
 
 		File tmpBundleFolder = new File(project.getBasedir(), project.getProperties().getProperty(PROP_CONFIG_TMP_BUNDLES, DEFAULT_TMP_BUNDLES));
 		try {
@@ -279,7 +275,11 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		}
 		
 		bundlesSet.add(f);
-		logger.debug("Made '{}' module available to the resolver", artifact);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Made '{}' module available to the resolver", artifact);
+		} else if (Flag.verbose()) {
+			logger.info("Made '{}' module available to the resolver", artifact);
+		}
 	}
 
 	private boolean makeBundle(Artifact artifact, File targetFile) {
@@ -300,7 +300,11 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		        outStream.write(buffer, 0, bytesRead);
 		    }
 		    
-			logger.debug("'{}' wrapped in module '{}'", artifact.getFile(), targetFile);
+		    if (logger.isDebugEnabled()) {
+		    		logger.debug("'{}' wrapped in module '{}'", artifact.getFile(), targetFile);
+		    } else if (Flag.verbose()) {
+				logger.info("'{}' wrapped in module '{}'", artifact.getFile(), targetFile);
+		    }
 		    return true;
 
 		} catch (IOException e) {
