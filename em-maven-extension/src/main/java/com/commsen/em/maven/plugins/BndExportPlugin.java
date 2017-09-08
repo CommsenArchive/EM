@@ -90,7 +90,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		try {
 			configuration = templates.process("META-INF/templates/bnd-export-maven-plugin-configuration.fmt", model);
 		} catch (IOException | TemplateException e) {
-			logger.warn("Failed to porcess template file!", e);
+			throw new MavenExecutionException("Failed to process template file!", e);
 		}
 
 		Plugin plugin = createPlugin("biz.aQute.bnd", "bnd-export-maven-plugin", VAL_BND_VERSION, configuration,
@@ -153,7 +153,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		try {
 			bndrunContent = templates.process("META-INF/templates/bndrun.fmt", model);
 		} catch (IOException | TemplateException e) {
-			if (logger.isDebugEnabled()) logger.warn("Failed to porcess template file!", e);
+			throw new MavenExecutionException("Failed to process template file!", e);
 		}
 
 		
@@ -178,6 +178,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 	}
 
 	private void writeBndrun(File generatedBndrunFile, String content) throws MavenExecutionException {
+		
 		try {
 			generatedBndrunFile.createNewFile();
 			PrintWriter writer = new PrintWriter(generatedBndrunFile, "UTF-8");

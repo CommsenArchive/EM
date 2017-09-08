@@ -54,7 +54,7 @@ public class BndPlugin extends DynamicMavenPlugin {
 		try {
 			bndContent = templates.process("META-INF/templates/bnd.fmt", model);
 		} catch (IOException | TemplateException e) {
-			logger.warn("Failed to porcess template file!", e);
+			throw new MavenExecutionException("Failed to process template file!", e);
 		}
 				
 		StringBuilder configuration = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n") //

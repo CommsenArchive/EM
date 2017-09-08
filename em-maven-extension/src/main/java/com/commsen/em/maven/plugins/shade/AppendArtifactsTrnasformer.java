@@ -51,23 +51,26 @@ public class AppendArtifactsTrnasformer implements ResourceTransformer {
 			return;
 		}
 
-		for (File file : location.listFiles()) {
-			JarFile jarFile = new JarFile(file);
-			jarFile.stream().forEach(entry -> {
-				if (!entry.getName().startsWith("META-INF/MANIFEST.MF")) {
-					try {
-						jos.putNextEntry(new JarEntry(entry.getName()));
-						IOUtil.copy(jarFile.getInputStream(entry), jos);
-					} catch (IOException e) {
-						if (e instanceof ZipException && e.getMessage().startsWith("duplicate entry")) {
-							logger.debug("Skipped existing file " + entry.getName());
-						} else {
-							logger.warn("Could not copy file '" + entry.getName() + "' from '" + jarFile.getName() + "' to the generated jar", e);
+		File[] files = location.listFiles();
+		if (files != null) {
+			for (File file : files) {
+				JarFile jarFile = new JarFile(file);
+				jarFile.stream().forEach(entry -> {
+					if (!entry.getName().startsWith("META-INF/MANIFEST.MF")) {
+						try {
+							jos.putNextEntry(new JarEntry(entry.getName()));
+							IOUtil.copy(jarFile.getInputStream(entry), jos);
+						} catch (IOException e) {
+							if (e instanceof ZipException && e.getMessage().startsWith("duplicate entry")) {
+								logger.debug("Skipped existing file " + entry.getName());
+							} else {
+								logger.warn("Could not copy file '" + entry.getName() + "' from '" + jarFile.getName() + "' to the generated jar", e);
+							}
 						}
 					}
-				}
-			});
-			jarFile.close();
+				});
+				jarFile.close();
+			}
 		}
 
 		done = true;
