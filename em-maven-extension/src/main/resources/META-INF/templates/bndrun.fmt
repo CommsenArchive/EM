@@ -1,0 +1,55 @@
+#
+# Variables for simplifying common requirements
+#
+requirements.shell = \
+	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.runtime)',\
+	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.jline)',\
+	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.command)'
+
+requirements.configurer = \
+	em.contract;filter:='(em.contract=configurer)'
+#
+# Run without BND workspace
+#
+-standalone:
+
+#
+# If `distro` is provided then tell BND about it
+#
+<#if distro?has_content>
+-distro: ${distro};version=file
+</#if>
+
+#
+# Runtime environment 
+#
+-runee: JavaSE-1.8
+
+#
+# OSGi framework implementation 
+#
+-runfw: org.apache.felix.framework;version='[5,6)'
+#-runfw: org.eclipse.osgi;version='[3.10,4)'
+
+#
+# The following line enables console in Equinox!
+# However it also breaks the resolver (it resolves OK but output does not contain required bundles) !!!
+#
+#-runproperties: osgi.console=, osgi.console.enable.builtin=false
+
+#
+# Requirements to taken into account in the assembly process:
+# resolve - those are the ones OSGi runtime will enforce
+# active - used by SCR to wire service components
+# assemble - used by EM contracts 
+#
+-resolve.effective: resolve, active, assemble
+
+#
+# What are the initial requirements
+#
+-runrequires: \
+	<#list requirements as requirement>
+		  ${requirement}<#sep>,\</#sep>
+	</#list>	
+	

@@ -133,62 +133,33 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 			throw new MavenExecutionException("'" + bndrunFile + "' is not a file!", project.getFile());
 		} else {
 			String distro = project.getProperties().getProperty(PROP_DEPLOY_TARGET, "");
-			if (distro.trim().isEmpty()) {
-				generateBndrun(project, bndrunFile);
-			} else {
-				generateBndrun4Distro(project, distro, bndrunFile);
-			}
+			generateBndrun(project, distro, bndrunFile);
 			filesToCleanup.add(bndrunFile);
 		}
 	}
 
-	private void generateBndrun(MavenProject project, File bndFile) throws MavenExecutionException {
+	private void generateBndrun(MavenProject project, String distro, File bndFile) throws MavenExecutionException {
 
-		StringBuilder stringBuilder = new StringBuilder();
-		generateVariables(stringBuilder);
-		stringBuilder.append("-standalone:\n");
-		stringBuilder.append("-runee: JavaSE-1.8\n");
-		stringBuilder.append("-runfw: org.apache.felix.framework;version='[5,6)'\n");
-//		stringBuilder.append("-runfw: org.eclipse.osgi;version='[3.10,4)'\\n");
+		Set<String> requirements = new HashSet<>();
+		requirements.add("osgi.identity;filter:='(osgi.identity=" + project.getArtifactId() + ")'");
+		addAdditionalInitialRequirments(requirements, project);
+		
+		Map<String, Object> model = new HashMap<>();
+		model.put("requirements", requirements);
+		model.put("distro", distro);
+		
+		String bndrunContent = null;
+		try {
+			bndrunContent = templates.process("META-INF/templates/bndrun.fmt", model);
+		} catch (IOException | TemplateException e) {
+			logger.warn("Failed to porcess template file!", e);
+		}
 
-		/*
-		 * The following line enables console in Equinox!
-		 * However it also breaks the resolver (it resolves OK but output does not contain required bundles) !!!
-		 */
-//		stringBuilder.append("-runproperties: osgi.console=, osgi.console.enable.builtin=false \\\n");
-
-		stringBuilder.append("-resolve.effective: resolve, active, assemble\n");
-		stringBuilder.append("-runrequires: \\\n");
-		stringBuilder.append(getAdditionalInitialRequirments(project));
-		stringBuilder.append("		osgi.identity;filter:='(osgi.identity=");
-		stringBuilder.append(project.getArtifactId());
-		stringBuilder.append(")'");
-		String bndrunContent = stringBuilder.toString();
-
+		
 		if (logger.isDebugEnabled()) logger.debug("Generated bndrun file: \n{}", bndrunContent);
 
 		writeBndrun(bndFile, bndrunContent);
 		
-		if (System.getProperty("keepBndrun") != null) {
-			writeBndrun(new File(project.getBasedir(), "_em.generated.bndrun"), bndrunContent);
-		}
-	}
-
-	private void generateBndrun4Distro(MavenProject project, String distro, File bndFile) throws MavenExecutionException {
-
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("-standalone:\n");
-		stringBuilder.append("-distro: ").append(distro).append(";version=file \n");
-		stringBuilder.append("-resolve.effective: resolve, active, assemble\n");
-		stringBuilder.append("-runrequires: \\\n");
-		stringBuilder.append(		getAdditionalInitialRequirments(project));
-		stringBuilder.append("		osgi.identity;filter:='(osgi.identity=").append(project.getArtifactId()).append(")'");
-		String bndrunContent = stringBuilder.toString();
-
-		logger.debug("Generated bndrun file: \n{}", bndrunContent);
-
-		writeBndrun(bndFile, bndrunContent);
-
 		if (System.getProperty("keepBndrun") != null) {
 			writeBndrun(new File(project.getBasedir(), "_em.generated.bndrun"), bndrunContent);
 		}
@@ -203,14 +174,15 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 	}
 	
 
-	private String getAdditionalInitialRequirments(MavenProject project) {
+	private void addAdditionalInitialRequirments(Set<String> requirements, MavenProject project) {
 		String additionalInitialRequirements = project.getProperties().getProperty(PROP_CONFIG_REQUIREMENTS, "");
-		
 		if (!additionalInitialRequirements.trim().isEmpty()) {
-			additionalInitialRequirements = additionalInitialRequirements.replace(System.getProperty("line.separator"), "\\\n");
-			additionalInitialRequirements += ",\\\n";
+			additionalInitialRequirements = additionalInitialRequirements.replace(System.getProperty("line.separator"), "");
 		}
-		return additionalInitialRequirements;
+		
+		for (String string : additionalInitialRequirements.split(",")) {
+			requirements.add(string);
+		}
 	}
 
 	private void writeBndrun(File generatedBndrunFile, String content) throws MavenExecutionException {
