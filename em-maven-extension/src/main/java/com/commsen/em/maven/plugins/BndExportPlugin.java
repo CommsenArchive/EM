@@ -36,9 +36,9 @@ import org.ops4j.pax.swissbox.bnd.OverwriteMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.commsen.em.maven.util.DependencyUtil;
+import com.commsen.em.maven.util.Dependencies;
 import com.commsen.em.maven.util.Templates;
-import com.commsen.em.maven.util.VersionUtil;
+import com.commsen.em.maven.util.Version;
 
 import freemarker.template.TemplateException;
 
@@ -48,7 +48,10 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 	private Logger logger = LoggerFactory.getLogger(BndExportPlugin.class);
 
 	@Requirement
-	private DependencyUtil dependencyUtil;
+	private Dependencies dependencies;
+
+	@Requirement
+	private Templates templates;
 
 	private List<File> filesToCleanup = new LinkedList<>();
 
@@ -84,7 +87,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		
 		String configuration = null;
 		try {
-			configuration = Templates.process("META-INF/templates/bnd-export-maven-plugin-configuration.fmt", model);
+			configuration = templates.process("META-INF/templates/bnd-export-maven-plugin-configuration.fmt", model);
 		} catch (IOException | TemplateException e) {
 			logger.warn("Failed to porcess template file!", e);
 		}
@@ -243,7 +246,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		 */
 		Set<Artifact> resolvedArtifacts = null;
 		try {
-			resolvedArtifacts = dependencyUtil.getProjectDependencies(project);
+			resolvedArtifacts = dependencies.asArtifacts(project);
 		} catch (MavenExecutionException e) {
 			throw new RuntimeException("Failed to analyze dependencies", e);
 		}
@@ -261,7 +264,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		 */
 		Set<Artifact> managedArtifacts = null;
 		try {
-			managedArtifacts = dependencyUtil.getProjectMangedDependencies(project);
+			managedArtifacts = dependencies.mangedAsArtifacts(project);
 		} catch (MavenExecutionException e) {
 			throw new RuntimeException("Failed to analyze dependencies", e);
 		}
@@ -286,7 +289,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 	private void addToBundleSet(Artifact artifact, File bundlesDirectory, Set<File> bundlesSet,
 			boolean indexGeneration) {
 		File f;
-		if (dependencyUtil.isOSGiBundle(artifact)) {
+		if (dependencies.isOSGiBundle(artifact)) {
 			f = artifact.getFile();
 			/*
 			 * If index is to be created copy the bundles to the temporary folder
@@ -310,7 +313,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 	private boolean makeBundle(Artifact artifact, File targetFile) {
 		Properties properties = new Properties();
 		properties.put("Bundle-SymbolicName", artifact.getArtifactId());
-		properties.put("Bundle-Version", VersionUtil.sementicVersion(artifact.getVersion()));
+		properties.put("Bundle-Version", Version.semantic(artifact.getVersion()));
 		properties.put("Original-Version", artifact.getVersion());
 
 		try (

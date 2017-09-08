@@ -15,6 +15,7 @@ import org.apache.maven.MavenExecutionException;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.annotations.Component;
+import org.codehaus.plexus.component.annotations.Requirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +28,8 @@ public class BndPlugin extends DynamicMavenPlugin {
 
 	private Logger logger = LoggerFactory.getLogger(BndPlugin.class);
 
+	@Requirement
+	private Templates templates;
 	
 	public void addToBuild(MavenProject project) throws MavenExecutionException {
 
@@ -49,7 +52,7 @@ public class BndPlugin extends DynamicMavenPlugin {
 		
 		String bndContent = null;
 		try {
-			bndContent = Templates.process("META-INF/templates/bnd.fmt", model);
+			bndContent = templates.process("META-INF/templates/bnd.fmt", model);
 		} catch (IOException | TemplateException e) {
 			logger.warn("Failed to porcess template file!", e);
 		}

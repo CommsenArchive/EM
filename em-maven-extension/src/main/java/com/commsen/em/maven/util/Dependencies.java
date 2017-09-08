@@ -25,31 +25,31 @@ import org.codehaus.plexus.component.annotations.Requirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Component(role = DependencyUtil.class)
-public class DependencyUtil {
+@Component(role = Dependencies.class)
+public class Dependencies {
 		
-	private Logger logger = LoggerFactory.getLogger(DependencyUtil.class);
+	private Logger logger = LoggerFactory.getLogger(Dependencies.class);
 
 	@Requirement
 	private ArtifactResolver artifactResolver;
 
 	@Requirement
-	RepositorySystem mavenRepoSystem;
+	private RepositorySystem mavenRepoSystem;
 	
-	public Set<Artifact> getProjectDependencies(MavenProject project) throws MavenExecutionException {
-		return getProjectDependencies(project, project.getDependencies());
+	public Set<Artifact> asArtifacts(MavenProject project) throws MavenExecutionException {
+		return asArtifacts(project, project.getDependencies());
 	}
 
-	public Set<Artifact> getProjectMangedDependencies(MavenProject project) throws MavenExecutionException {
+	public Set<Artifact> mangedAsArtifacts(MavenProject project) throws MavenExecutionException {
 		if (project.getDependencyManagement() != null) {
-			return getProjectDependencies(project, project.getDependencyManagement().getDependencies());
+			return asArtifacts(project, project.getDependencyManagement().getDependencies());
 		} else {
 			return Collections.emptySet();
 		}
 	}
 
 	@SuppressWarnings("deprecation")
-	public Set<Artifact> getProjectDependencies(MavenProject project, List<Dependency> initial) throws MavenExecutionException {
+	public Set<Artifact> asArtifacts(MavenProject project, List<Dependency> initial) throws MavenExecutionException {
 
 		ArtifactResolutionRequest artifactResolutionRequest = new ArtifactResolutionRequest();
 		artifactResolutionRequest.setResolveTransitively(true);
@@ -65,7 +65,7 @@ public class DependencyUtil {
 		);
 		
 		for (Dependency dependency : jarDependencies) {
-			Artifact artifact = getArtifact(project, dependency);
+			Artifact artifact = asArtifact(project, dependency);
 			artifacts.add(artifact);
 			artifactResolutionRequest.setArtifact(artifact);
 			ArtifactResolutionResult artifactResolutionResult = mavenRepoSystem.resolve(artifactResolutionRequest);
@@ -78,7 +78,7 @@ public class DependencyUtil {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public Artifact getArtifact (MavenProject project, Dependency dependency) throws MavenExecutionException {
+	public Artifact asArtifact (MavenProject project, Dependency dependency) throws MavenExecutionException {
 		DefaultArtifactCoordinate coordinate = new DefaultArtifactCoordinate();
 		coordinate.setGroupId(dependency.getGroupId());
 		coordinate.setArtifactId(dependency.getArtifactId());

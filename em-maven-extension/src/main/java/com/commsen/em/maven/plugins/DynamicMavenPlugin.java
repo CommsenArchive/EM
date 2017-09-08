@@ -6,12 +6,12 @@ import org.apache.maven.model.PluginExecution;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.annotations.Requirement;
 
-import com.commsen.em.maven.util.MavenConfigUtil;
+import com.commsen.em.maven.util.MavenConfig;
 
 public abstract class DynamicMavenPlugin {
 
 	@Requirement
-	MavenConfigUtil configUtil;
+	MavenConfig mavenConfig;
 	
 	protected Plugin createPlugin(String groupId, String artifactId, String version, String configuration,
 			String executionId, String goal, String phase) throws MavenExecutionException {
@@ -27,7 +27,7 @@ public abstract class DynamicMavenPlugin {
 			execution.setPhase(phase);
 		}
 		if (configuration != null) {
-			execution.setConfiguration(configUtil.config2dom(configuration));
+			execution.setConfiguration(mavenConfig.asXpp3Dom(configuration));
 		}
 		plugin.addExecution(execution);
 
@@ -42,7 +42,7 @@ public abstract class DynamicMavenPlugin {
 	public void configurePlugin(Plugin plugin, String execution, String configuration) throws MavenExecutionException {
 		if (plugin == null) return;
 		if (execution == null || execution.trim().isEmpty()) return;
-		plugin.getExecutionsAsMap().get(execution).setConfiguration(configUtil.config2dom(configuration));
+		plugin.getExecutionsAsMap().get(execution).setConfiguration(mavenConfig.asXpp3Dom(configuration));
 	}
 	
 	

@@ -2,10 +2,10 @@ package com.commsen.em.maven.util;
 
 import aQute.libg.tuple.Pair;
 
-public class VersionUtil {
+public class Version {
 	
 	
-	public static String sementicVersion (String version) {
+	public static String semantic (String version) {
 		
 		if (version == null || version.trim().isEmpty()) return "0.0.0";
 
