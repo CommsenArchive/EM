@@ -14,8 +14,11 @@
 	<description>
 		Bill of Material containing libraries for restful services used in resolve process
 	</description>
-	
-	
+
+	<properties>
+		<jersey.version>2.25.1</jersey.version>
+	</properties>
+
 	<dependencyManagement>
 		<dependencies>
 
@@ -36,18 +39,32 @@
 			</dependency>
 
 			<dependency>
-				<!-- OSGi HTTP - Jetty implementation-->
+				<!-- OSGi HTTP - Jetty implementation -->
 				<groupId>org.apache.felix</groupId>
 				<artifactId>org.apache.felix.http.jetty</artifactId>
 				<version>3.2.0</version>
 				<scope>runtime</scope>
 			</dependency>
 
-			<dependency>
+ 			<dependency>
 				<!-- JAX-RS publisher -->
 				<groupId>com.eclipsesource.jaxrs</groupId>
 				<artifactId>publisher</artifactId>
 				<version>5.3.1</version>
+				<scope>runtime</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>com.eclipsesource.jaxrs</groupId>
+						<artifactId>jersey-all</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<dependency>
+				<!-- Jersey core Servlet 3.x implementation -->
+				<groupId>org.glassfish.jersey.containers</groupId>
+				<artifactId>jersey-container-servlet</artifactId>
+				<version>${jersey.version}</version>
 				<scope>runtime</scope>
 			</dependency>
 
