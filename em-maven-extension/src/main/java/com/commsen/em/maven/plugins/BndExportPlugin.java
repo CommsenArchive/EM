@@ -181,6 +181,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		
 		try {
 			generatedBndrunFile.createNewFile();
+			generatedBndrunFile.deleteOnExit();
 			PrintWriter writer = new PrintWriter(generatedBndrunFile, "UTF-8");
 			writer.print(content.replaceAll("\\t", "    "));
 			writer.close();
