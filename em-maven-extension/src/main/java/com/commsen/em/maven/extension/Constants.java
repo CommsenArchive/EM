@@ -9,7 +9,8 @@ public class Constants {
 
 	public static final String VAL_INDEX_TYPE = "index";
 	
-	public static final String PROP_PREFIX = "_.eccentric.modularity.";
+	public static final String PROP_OLD_PREFIX = "_.eccentric.modularity.";
+	public static final String PROP_PREFIX = "em.--";
 
 	public static final String PROP_ACTION_METADATA = PROP_PREFIX + "metadata";
 	

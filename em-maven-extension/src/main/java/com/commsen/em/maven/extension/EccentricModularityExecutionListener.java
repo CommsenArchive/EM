@@ -5,6 +5,7 @@ import static com.commsen.em.maven.extension.Constants.PROP_ACTION_DEPLOY;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_EXECUTABLE;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_METADATA;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_RESOLVE;
+import static com.commsen.em.maven.extension.Constants.PROP_OLD_PREFIX;
 import static com.commsen.em.maven.extension.Constants.PROP_PREFIX;
 import static com.commsen.em.maven.extension.Constants.VAL_BND_VERSION;
 import static com.commsen.em.maven.extension.Constants.VAL_INDEX_TYPE;
@@ -62,6 +63,16 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 
 		MavenProject project = event.getProject();
 		
+		boolean hasOld = project.getProperties().keySet().stream()
+			.filter(p -> p.toString().startsWith(PROP_OLD_PREFIX))
+			.peek(p -> logger.error("Property '{}' uses old prefix! Use '{}' instead!", p, p.toString().replace(PROP_OLD_PREFIX, PROP_PREFIX)))
+			.count() > 0;
+		
+		if (hasOld) {
+			throw new RuntimeException("Can't build project using old properties!");
+		}
+		
+		
 		if (VAL_BND_VERSION.toLowerCase().contains("snapshot")) {
 			addBndSnapshotRepo(project);
 		}
@@ -73,7 +84,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 		 * TODO: figure out what to do if more than one action is provided! 
 		 * For now all will be executed which may have weird results 
 		 */
-		logger.info("Adding plugins and adapting project configuration based on provided '" + PROP_PREFIX + "*' propeties!");
+		logger.info("Adding plugins and adapting project configuration based on provided '" + PROP_PREFIX + "*' properties!");
 
 		if (project.getProperties().containsKey(PROP_ACTION_METADATA)) {
 			actionFound = true;
