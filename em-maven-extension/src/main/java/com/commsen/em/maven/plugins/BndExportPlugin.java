@@ -214,37 +214,20 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		/*
 		 *  get resolved artifacts
 		 */
-		Set<Artifact> resolvedArtifacts = null;
+		Set<Artifact> artifacts = new HashSet<>();
 		try {
-			resolvedArtifacts = dependencies.asArtifacts(project);
+			artifacts.addAll(dependencies.asArtifacts(project));
+			artifacts.addAll(dependencies.managedAsArtifacts(project));
 		} catch (MavenExecutionException e) {
 			throw new RuntimeException("Failed to analyze dependencies", e);
 		}
 
 		/*
-		 * For each resolved artifact :
+		 * For each artifact :
 		 *  - convert to bundle if it's not
 		 *  - add it to the bundle set 
 		 */
-		resolvedArtifacts.stream().forEach(a -> addToBundleSet(a, tmpBundleFolder, bundleSet, indexBundles));
-		
-		/*
-		 * get managed artifacts
-		 * TODO: get only from special imports (for example those with 'index' type or classifier)
-		 */
-		Set<Artifact> managedArtifacts = null;
-		try {
-			managedArtifacts = dependencies.managedAsArtifacts(project);
-		} catch (MavenExecutionException e) {
-			throw new RuntimeException("Failed to analyze dependencies", e);
-		}
-		
-		/*
-		 * For each managed artifact :
-		 *  - convert to bundle if it's not
-		 *  - add it to the bundle set 
-		 */
-		managedArtifacts.stream().forEach(a -> addToBundleSet(a, tmpBundleFolder, bundleSet, indexBundles));
+		artifacts.stream().forEach(a -> addToBundleSet(a, tmpBundleFolder, bundleSet, indexBundles));
 	
 		return bundleSet;
 
