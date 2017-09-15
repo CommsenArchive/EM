@@ -87,6 +87,7 @@ public class Dependencies {
 			ArtifactResolutionResult artifactResolutionResult = mavenRepoSystem.resolve(artifactResolutionRequest);
 
 			artifactResolutionResult.getArtifacts().stream()
+				.peek(d -> { if (Flag.verbose()) logger.info("Processing '{}' from '{}'", d,  toId(dependency)); })
 				.filter(d -> "jar".equals(d.getType()))
 				.filter(d -> "compile".equals(d.getScope()) || "provided".equals(d.getScope()) || "runtime".equals(d.getScope()))
 				.forEach(d -> artifacts.add(d));
@@ -122,6 +123,10 @@ public class Dependencies {
 			logger.warn("Failed to check if " + artifact.getFile() + " is OSGi bundle!", e);
 		}
 		return false;
+	}
+	
+	private String toId (Dependency dependency) {
+		return dependency.getGroupId() + ":" + dependency.getArtifactId() + ":" + dependency.getVersion();
 	}
 	
 	
