@@ -1,6 +1,7 @@
 package com.commsen.em.maven.util;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.artifact.resolver.filter.ExclusionSetFilter;
 import org.apache.maven.model.Dependency;
+import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.model.Exclusion;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.repository.RepositorySystem;
@@ -51,8 +53,44 @@ public class Dependencies {
 		}
 	}
 
+	public Set<Artifact> resolve(MavenProject project, Artifact artifact) throws MavenExecutionException {
+		Set<Artifact> artifacts = new HashSet<>();
+		ArtifactResolutionRequest artifactResolutionRequest = new ArtifactResolutionRequest();
+		artifactResolutionRequest.setResolveTransitively(true);
+		artifactResolutionRequest.setRemoteRepositories(project.getRemoteArtifactRepositories());
+		artifactResolutionRequest.setLocalRepository(project.getProjectBuildingRequest().getLocalRepository());
+		artifactResolutionRequest.setArtifact(artifact);
+		ArtifactResolutionResult artifactResolutionResult = mavenRepoSystem.resolve(artifactResolutionRequest);
+		artifactResolutionResult.getArtifacts().stream()
+			.peek(d -> { if (Flag.verbose()) logger.info("RESOLVED '{}' FROM '{}'", d,  artifact); })
+			.filter(d -> "jar".equals(d.getType()))
+			.filter(d -> "compile".equals(d.getScope()) || "provided".equals(d.getScope()) || "runtime".equals(d.getScope()))
+			.forEach(d -> artifacts.add(d));
+		return artifacts;
+	}
+
+	public Set<Artifact> directDependencies(MavenProject project, Collection<Dependency> initial) throws MavenExecutionException {
+		ArtifactResolutionRequest artifactResolutionRequest = new ArtifactResolutionRequest();
+		artifactResolutionRequest.setResolveTransitively(true);
+		artifactResolutionRequest.setRemoteRepositories(project.getRemoteArtifactRepositories());
+		artifactResolutionRequest.setLocalRepository(project.getProjectBuildingRequest().getLocalRepository());
+		Set<Artifact> artifacts = new HashSet<>();
+		for (Dependency dependency : initial) {
+			Artifact artifact = asArtifact(project, dependency);
+			artifactResolutionRequest.setArtifact(artifact);
+
+			ArtifactResolutionResult artifactResolutionResult = mavenRepoSystem.resolve(artifactResolutionRequest);
+			artifactResolutionResult.getArtifacts().stream()
+				.peek(d -> { if (Flag.verbose()) logger.info("Processing '{}' from '{}'", d,  toId(dependency)); })
+				.filter(d -> "jar".equals(d.getType()))
+				.filter(d -> "compile".equals(d.getScope()) || "provided".equals(d.getScope()) || "runtime".equals(d.getScope()))
+				.forEach(d -> artifacts.add(d));
+		}
+		return artifacts;
+	}
+	
 	@SuppressWarnings("deprecation")
-	public Set<Artifact> asArtifacts(MavenProject project, List<Dependency> initial) throws MavenExecutionException {
+	public Set<Artifact> asArtifacts(MavenProject project, Collection<Dependency> initial) throws MavenExecutionException {
 
 		ArtifactResolutionRequest artifactResolutionRequest = new ArtifactResolutionRequest();
 		artifactResolutionRequest.setResolveTransitively(true);
@@ -68,7 +106,12 @@ public class Dependencies {
 		);
 		
 		for (Dependency dependency : jarDependencies) {
-		
+
+			System.out.println("Processing: " + dependency);
+			
+			Set<Artifact> tmpArtifacts = new HashSet<>();
+			
+			
 			// make sure to not process excluded dependencies
 			Set<String> excludes = new HashSet<>();
 			for (Exclusion exclusion : dependency.getExclusions()) {
@@ -90,11 +133,17 @@ public class Dependencies {
 				.peek(d -> { if (Flag.verbose()) logger.info("Processing '{}' from '{}'", d,  toId(dependency)); })
 				.filter(d -> "jar".equals(d.getType()))
 				.filter(d -> "compile".equals(d.getScope()) || "provided".equals(d.getScope()) || "runtime".equals(d.getScope()))
-				.forEach(d -> artifacts.add(d));
+				.forEach(d -> tmpArtifacts.add(d));
+			
+			tmpArtifacts.stream().sorted().forEach( a -> System.out.println("   Found: " + a));
+			
+			artifacts.addAll(tmpArtifacts);
 		}
 		return artifacts;
 	}
-	
+
+
+
 	@SuppressWarnings("deprecation")
 	public Artifact asArtifact (MavenProject project, Dependency dependency) throws MavenExecutionException {
 		DefaultArtifactCoordinate coordinate = new DefaultArtifactCoordinate();
@@ -124,6 +173,15 @@ public class Dependencies {
 		}
 		return false;
 	}
+	
+
+	public void addToDependencyManagement(MavenProject project, Dependency dependency) {
+		if (project.getModel().getDependencyManagement() == null) {
+			project.getModel().setDependencyManagement(new DependencyManagement());
+		}
+		project.getModel().getDependencyManagement().addDependency(dependency);;
+	}
+
 	
 	private String toId (Dependency dependency) {
 		return dependency.getGroupId() + ":" + dependency.getArtifactId() + ":" + dependency.getVersion();

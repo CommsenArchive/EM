@@ -3,9 +3,10 @@ package com.commsen.em.maven.plugins;
 import static com.commsen.em.maven.extension.Constants.DEFAULT_TMP_BUNDLES;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_RESOLVE;
 import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_INDEX;
-import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_REQUIREMENTS;
 import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_TMP_BUNDLES;
+import static com.commsen.em.maven.extension.Constants.PROP_CONTRACTORS;
 import static com.commsen.em.maven.extension.Constants.PROP_DEPLOY_TARGET;
+import static com.commsen.em.maven.extension.Constants.PROP_MODULES;
 import static com.commsen.em.maven.extension.Constants.PROP_RESOLVE_OUTPUT;
 import static com.commsen.em.maven.extension.Constants.VAL_BND_VERSION;
 
@@ -27,7 +28,11 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.DependencyManagement;
+import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
@@ -41,6 +46,7 @@ import com.commsen.em.maven.util.Flag;
 import com.commsen.em.maven.util.Templates;
 import com.commsen.em.maven.util.Version;
 
+import aQute.bnd.osgi.Analyzer;
 import freemarker.template.TemplateException;
 
 @Component(role = BndExportPlugin.class)
@@ -56,36 +62,32 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 
 	private List<File> filesToCleanup = new LinkedList<>();
 
-	public void addToPomForExport(MavenProject project) throws MavenExecutionException {
+	private List<String> requiredModules = new LinkedList<>();
 
+	public void addToPomForExport(MavenProject project) throws MavenExecutionException {
 		String bndrunName = getBndrunName(project);
-		createBndrunIfNotExists(project, bndrunName);
 		addToPom(project, true, bndrunName);
 		project.getProperties().setProperty(PROP_RESOLVE_OUTPUT, "${project.build.directory}/export/" + bndrunName);
-
 		logger.info("Added `bnd-export-maven-plugin` to genrate list of modules needed at runtume!");
 	}
 
 	public void addToPomForExecutable(MavenProject project) throws MavenExecutionException {
-
-		String bndrunName = getBndrunName(project);
-		createBndrunIfNotExists(project, bndrunName);
-		addToPom(project, false, bndrunName);
-
+		addToPom(project, false, getBndrunName(project));
 		logger.info("Added `bnd-export-maven-plugin` to genrate list of modules incuded in executable jar!");
 	}
 
 	public void addToPom(MavenProject project, boolean bundlesOnly, String bndrun) throws MavenExecutionException {
-		
+
 		Set<File> bundles = prepareDependencies(project);
-		File thisArtifact = new File (project.getBuild().getDirectory(), project.getBuild().getFinalName() + "." + project.getPackaging());
+		File thisArtifact = new File(project.getBuild().getDirectory(),
+				project.getBuild().getFinalName() + "." + project.getPackaging());
 		bundles.add(thisArtifact);
-		
+
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("bundlesOnly", bundlesOnly);
 		model.put("bndrun", bndrun);
 		model.put("bundles", bundles);
-		
+
 		String configuration = null;
 		try {
 			configuration = templates.process("META-INF/templates/bnd-export-maven-plugin-configuration.fmt", model);
@@ -96,6 +98,9 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		Plugin plugin = createPlugin("biz.aQute.bnd", "bnd-export-maven-plugin", VAL_BND_VERSION, configuration,
 				"export", "export", "package");
 		project.getBuild().getPlugins().add(0, plugin);
+
+		createBndrunIfNotExists(project, bndrun);
+
 	}
 
 	public void cleanup() {
@@ -109,7 +114,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		if (bndrunName.trim().isEmpty()) {
 			bndrunName = project.getName();
 		}
-		
+
 		if (bndrunName.endsWith(".bndrun")) {
 			bndrunName = bndrunName.substring(0, bndrunName.length() - ".bndrun".length());
 		}
@@ -118,7 +123,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		while (new File(project.getBasedir(), bndrunName + ".bndrun").isFile()) {
 			bndrunName = bndrunName + "." + ++count;
 		}
-		
+
 		return bndrunName;
 	}
 
@@ -143,12 +148,17 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 
 		Set<String> requirements = new HashSet<>();
 		requirements.add("osgi.identity;filter:='(osgi.identity=" + project.getArtifactId() + ")'");
-		addAdditionalInitialRequirments(requirements, project);
-		
+
+		for (String module : requiredModules) {
+			requirements.add("osgi.identity;filter:='(osgi.identity=" + module + ")'");
+		}
+
+		// addAdditionalInitialRequirments(requirements, project);
+
 		Map<String, Object> model = new HashMap<>();
 		model.put("requirements", requirements);
 		model.put("distro", distro);
-		
+
 		String bndrunContent = null;
 		try {
 			bndrunContent = templates.process("META-INF/templates/bndrun.fmt", model);
@@ -156,29 +166,18 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 			throw new MavenExecutionException("Failed to process template file!", e);
 		}
 
-		
-		if (logger.isDebugEnabled()) logger.debug("Generated bndrun file: \n{}", bndrunContent);
+		if (logger.isDebugEnabled())
+			logger.debug("Generated bndrun file: \n{}", bndrunContent);
 
 		writeBndrun(bndFile, bndrunContent);
-		
+
 		if (Flag.keepBndrun()) {
 			writeBndrun(new File(project.getBasedir(), "_em.generated.bndrun"), bndrunContent);
 		}
 	}
-	
-	private void addAdditionalInitialRequirments(Set<String> requirements, MavenProject project) {
-		String additionalInitialRequirements = project.getProperties().getProperty(PROP_CONFIG_REQUIREMENTS, "");
-		if (!additionalInitialRequirements.trim().isEmpty()) {
-			additionalInitialRequirements = additionalInitialRequirements.replace(System.getProperty("line.separator"), "");
-		}
-		
-		for (String string : additionalInitialRequirements.split(",")) {
-			requirements.add(string);
-		}
-	}
 
 	private void writeBndrun(File generatedBndrunFile, String content) throws MavenExecutionException {
-		
+
 		try {
 			generatedBndrunFile.createNewFile();
 			generatedBndrunFile.deleteOnExit();
@@ -190,7 +189,6 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		}
 	}
 
-
 	private Set<File> prepareDependencies(MavenProject project) {
 
 		if (logger.isDebugEnabled()) {
@@ -199,7 +197,8 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 			logger.info("Analysing project's BOMs!");
 		}
 
-		File tmpBundleFolder = new File(project.getBasedir(), project.getProperties().getProperty(PROP_CONFIG_TMP_BUNDLES, DEFAULT_TMP_BUNDLES));
+		File tmpBundleFolder = new File(project.getBasedir(),
+				project.getProperties().getProperty(PROP_CONFIG_TMP_BUNDLES, DEFAULT_TMP_BUNDLES));
 		try {
 			FileUtils.forceMkdir(tmpBundleFolder);
 		} catch (IOException e) {
@@ -209,11 +208,10 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 
 		Set<File> bundleSet = new HashSet<File>();
 
-		boolean indexBundles = project.getProperties().containsKey(PROP_CONFIG_INDEX);
-		
-		/*
-		 *  get resolved artifacts
-		 */
+		boolean generateIndex = project.getProperties().containsKey(PROP_CONFIG_INDEX);
+
+		processModules(project);
+
 		Set<Artifact> artifacts = new HashSet<>();
 		try {
 			artifacts.addAll(dependencies.asArtifacts(project));
@@ -223,14 +221,88 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		}
 
 		/*
-		 * For each artifact :
-		 *  - convert to bundle if it's not
-		 *  - add it to the bundle set 
+		 * For each artifact : - convert to bundle if it's not - add it to the bundle
+		 * set
 		 */
-		artifacts.stream().forEach(a -> addToBundleSet(a, tmpBundleFolder, bundleSet, indexBundles));
-	
+		artifacts.stream().forEach(a -> addToBundleSet(a, tmpBundleFolder, bundleSet, generateIndex));
+
 		return bundleSet;
 
+	}
+
+	public void processModules(MavenProject project) {
+
+		Map<String[], Boolean> modules = new HashMap<>();
+
+		fillModulesFrom(modules, project, PROP_CONTRACTORS, false);
+		fillModulesFrom(modules, project, PROP_MODULES, true);
+
+		for (String[] coordinates : modules.keySet()) {
+			Dependency dependency = new Dependency();
+			dependency.setGroupId(coordinates[0]);
+			dependency.setArtifactId(coordinates[1]);
+			dependency.setVersion(coordinates[2]);
+			dependency.setScope("runtime");
+			dependency.setType("pom");
+
+			try {
+				Artifact pomArtifact = dependencies.asArtifact(project, dependency);
+				dependency.setType("jar");
+				MavenXpp3Reader reader = new MavenXpp3Reader();
+				Model model = reader.read(new FileInputStream(pomArtifact.getFile()));
+				DependencyManagement dm = model.getDependencyManagement();
+				
+				if (dm == null) {
+					dependencies.addToDependencyManagement(project, dependency);
+				} else {
+					for (Dependency d : dm.getDependencies()) {
+						/*
+						 * TODO handle variables properly! For now assume variable is referring to the
+						 * contract's artifact itself (that's what EM contractors do).
+						 */
+						if (d.getArtifactId().startsWith("${")) {
+							dependencies.addToDependencyManagement(project, dependency);
+						} else {
+							dependencies.addToDependencyManagement(project, d);
+						}
+					}
+				}
+
+				if (modules.get(coordinates)) {
+					Artifact jarArtifact = dependencies.asArtifact(project, dependency);
+					Properties manifestProperties = Analyzer.getManifest(jarArtifact.getFile());
+					requiredModules.add(manifestProperties.getProperty("Bundle-SymbolicName"));
+				}
+			} catch (Exception e) {
+				logger.warn("Could not process modules from " + coordinates[0] + ":" + coordinates[1] + ":"
+						+ coordinates[2], e);
+			}
+		}
+
+	}
+
+	private void fillModulesFrom(Map<String[], Boolean> modules, MavenProject project, String property,
+			boolean required) {
+
+		String modulesText = project.getProperties().getProperty(property);
+
+		if (modulesText == null || modulesText.trim().isEmpty()) {
+			if (Flag.verbose()) {
+				logger.info("No available modules in '{}'", PROP_CONTRACTORS);
+			} else if (logger.isDebugEnabled()) {
+				logger.debug("No available modules in '{}'", PROP_CONTRACTORS);
+			}
+			return;
+		}
+		String[] modulesArray = modulesText.split("[\\s]*,[\\s]*");
+		for (String moduleText : modulesArray) {
+			String[] coordinates = moduleText.split(":");
+			if (coordinates.length != 3) {
+				logger.warn("Invalid maven coordinates for module '{}'! It will be ignored!", moduleText);
+				continue;
+			}
+			modules.put(coordinates, required);
+		}
 	}
 
 	/**
@@ -249,16 +321,16 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 			 */
 			if (indexGeneration) {
 				try {
-					FileUtils.copyFile(artifact.getFile(), new File (bundlesDirectory, f.getName()));
+					FileUtils.copyFile(artifact.getFile(), new File(bundlesDirectory, f.getName()));
 				} catch (IOException e) {
 					throw new RuntimeException("Failed to copy file to temporary folder", e);
 				}
 			}
 		} else {
-			f = new File(bundlesDirectory, artifact.getArtifactId() + "-" + artifact.getVersion() +"-EM.jar");
+			f = new File(bundlesDirectory, artifact.getArtifactId() + "-" + artifact.getVersion() + "-EM.jar");
 			makeBundle(artifact, f);
 		}
-		
+
 		bundlesSet.add(f);
 		if (logger.isDebugEnabled()) {
 			logger.debug("Made '{}' module available to the resolver", artifact);
@@ -273,29 +345,28 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		properties.put("Bundle-Version", Version.semantic(artifact.getVersion()));
 		properties.put("Original-Version", artifact.getVersion());
 
-		try (
-			FileInputStream fileStream = new FileInputStream(artifact.getFile());
-			InputStream bndStream = BndUtils.createBundle(fileStream, properties, artifact.getFile().getName(), OverwriteMode.FULL);
-		    OutputStream outStream = new FileOutputStream(targetFile);
-		) {
-			
-		    byte[] buffer = new byte[8 * 1024];
-		    int bytesRead;
-		    while ((bytesRead = bndStream.read(buffer)) != -1) {
-		        outStream.write(buffer, 0, bytesRead);
-		    }
-		    
-		    if (logger.isDebugEnabled()) {
-		    		logger.debug("'{}' wrapped in module '{}'", artifact.getFile(), targetFile);
-		    } else if (Flag.verbose()) {
+		try (FileInputStream fileStream = new FileInputStream(artifact.getFile());
+				InputStream bndStream = BndUtils.createBundle(fileStream, properties, artifact.getFile().getName(),
+						OverwriteMode.FULL);
+				OutputStream outStream = new FileOutputStream(targetFile);) {
+
+			byte[] buffer = new byte[8 * 1024];
+			int bytesRead;
+			while ((bytesRead = bndStream.read(buffer)) != -1) {
+				outStream.write(buffer, 0, bytesRead);
+			}
+
+			if (logger.isDebugEnabled()) {
+				logger.debug("'{}' wrapped in module '{}'", artifact.getFile(), targetFile);
+			} else if (Flag.verbose()) {
 				logger.info("'{}' wrapped in module '{}'", artifact.getFile(), targetFile);
-		    }
-		    return true;
+			}
+			return true;
 
 		} catch (IOException e) {
 			logger.warn("Failed to convert '{}' to module ", artifact, e);
-		    return false;
+			return false;
 		}
 	}
-	
+
 }
