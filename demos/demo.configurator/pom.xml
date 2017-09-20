@@ -3,27 +3,24 @@
 	xmlns:em="EM">
 	<modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.commsen.em.demo</groupId>
-		<artifactId>demos</artifactId>
-		<version>0.2.0-SNAPSHOT</version>
-	</parent>
-
+	<groupId>com.commsen.em.demo</groupId>
 	<artifactId>demo.configurator</artifactId>
+	<version>0.2.0-SNAPSHOT</version>
 
 	<properties>
 		<em.version>0.2.0-SNAPSHOT</em.version>
-		
+
 		<em:executable />
 		<em:contractors>
-  			com.commsen.em.contractors:em.contractors.pax-web-jetty:6.0.7,
-  			com.commsen.em.contractors:em.contractors.runtime:${em.version},
+			com.commsen.em.contractors:em.contractors.runtime:${em.version},
 			com.commsen.em.contractors:em.contractors.enroute.configurer:2.0.0,
-			com.commsen.em.contractors:em.contractors.pax-logging:1.10.1
- 		</em:contractors>
- 		<em:modules>
+			com.commsen.em.contractors:em.contractors.pax-logging:1.10.1,
+			com.commsen.em.contractors:em.contractors.pax-web-jetty:6.0.7,
 			com.commsen.em.contractors:em.contractors.webconsole:4.3.4
- 		</em:modules>
+		</em:contractors>
+		<em:contracts>
+			WebAdminUI
+		</em:contracts>
 	</properties>
 
 	<dependencies>

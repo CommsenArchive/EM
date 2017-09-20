@@ -1,8 +1,11 @@
 package com.commsen.em.contractors.webconsole;
 
+import com.commsen.em.annotations.Provides;
 import com.commsen.em.annotations.Requires;
 import com.commsen.em.annotations.RequiresServletContainer;
 
+@Provides("webconsole")
+@Provides("WebAdminUI")
 @Requires(raw="osgi.identity;filter:='(&(osgi.identity=org.apache.felix.webconsole)(version>=4.3.4))'")
 @Requires(ns="osgi.identity", filter="(&(osgi.identity=org.apache.felix.webconsole.plugins.ds))")
 @Requires(ns="osgi.identity", filter="(&(osgi.identity=org.apache.felix.webconsole.plugins.obr))")

@@ -5,8 +5,8 @@ import static com.commsen.em.maven.extension.Constants.PROP_ACTION_RESOLVE;
 import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_INDEX;
 import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_TMP_BUNDLES;
 import static com.commsen.em.maven.extension.Constants.PROP_CONTRACTORS;
+import static com.commsen.em.maven.extension.Constants.PROP_CONTRACTS;
 import static com.commsen.em.maven.extension.Constants.PROP_DEPLOY_TARGET;
-import static com.commsen.em.maven.extension.Constants.PROP_MODULES;
 import static com.commsen.em.maven.extension.Constants.PROP_RESOLVE_OUTPUT;
 import static com.commsen.em.maven.extension.Constants.VAL_BND_VERSION;
 
@@ -46,7 +46,6 @@ import com.commsen.em.maven.util.Flag;
 import com.commsen.em.maven.util.Templates;
 import com.commsen.em.maven.util.Version;
 
-import aQute.bnd.osgi.Analyzer;
 import freemarker.template.TemplateException;
 
 @Component(role = BndExportPlugin.class)
@@ -61,8 +60,6 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 	private Templates templates;
 
 	private List<File> filesToCleanup = new LinkedList<>();
-
-	private List<String> requiredModules = new LinkedList<>();
 
 	public void addToPomForExport(MavenProject project) throws MavenExecutionException {
 		String bndrunName = getBndrunName(project);
@@ -79,6 +76,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 	public void addToPom(MavenProject project, boolean bundlesOnly, String bndrun) throws MavenExecutionException {
 
 		Set<File> bundles = prepareDependencies(project);
+
 		File thisArtifact = new File(project.getBuild().getDirectory(),
 				project.getBuild().getFinalName() + "." + project.getPackaging());
 		bundles.add(thisArtifact);
@@ -149,11 +147,13 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		Set<String> requirements = new HashSet<>();
 		requirements.add("osgi.identity;filter:='(osgi.identity=" + project.getArtifactId() + ")'");
 
-		for (String module : requiredModules) {
-			requirements.add("osgi.identity;filter:='(osgi.identity=" + module + ")'");
+		String contracts = project.getProperties().getProperty(PROP_CONTRACTS);
+		if (contracts != null && !contracts.trim().isEmpty()) {
+			String[] contractsArray = contracts.split("[\\s]*,[\\s]*");
+			for (String contract : contractsArray) {
+				requirements.add("em.contract;filter:='(em.contract=" + contract + ")';effective:=assemble");
+			}
 		}
-
-		// addAdditionalInitialRequirments(requirements, project);
 
 		Map<String, Object> model = new HashMap<>();
 		model.put("requirements", requirements);
@@ -231,13 +231,23 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 	}
 
 	public void processModules(MavenProject project) {
+		String modulesText = project.getProperties().getProperty(PROP_CONTRACTORS);
+		if (modulesText == null || modulesText.trim().isEmpty()) {
+			if (Flag.verbose()) {
+				logger.info("No available modules in '{}'", PROP_CONTRACTORS);
+			} else if (logger.isDebugEnabled()) {
+				logger.debug("No available modules in '{}'", PROP_CONTRACTORS);
+			}
+			return;
+		}
+		String[] modulesArray = modulesText.split("[\\s]*,[\\s]*");
+		for (String moduleText : modulesArray) {
+			String[] coordinates = moduleText.split(":");
+			if (coordinates.length != 3) {
+				logger.warn("Invalid maven coordinates for module '{}'! It will be ignored!", moduleText);
+				continue;
+			}
 
-		Map<String[], Boolean> modules = new HashMap<>();
-
-		fillModulesFrom(modules, project, PROP_CONTRACTORS, false);
-		fillModulesFrom(modules, project, PROP_MODULES, true);
-
-		for (String[] coordinates : modules.keySet()) {
 			Dependency dependency = new Dependency();
 			dependency.setGroupId(coordinates[0]);
 			dependency.setArtifactId(coordinates[1]);
@@ -251,7 +261,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 				MavenXpp3Reader reader = new MavenXpp3Reader();
 				Model model = reader.read(new FileInputStream(pomArtifact.getFile()));
 				DependencyManagement dm = model.getDependencyManagement();
-				
+
 				if (dm == null) {
 					dependencies.addToDependencyManagement(project, dependency);
 				} else {
@@ -268,11 +278,6 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 					}
 				}
 
-				if (modules.get(coordinates)) {
-					Artifact jarArtifact = dependencies.asArtifact(project, dependency);
-					Properties manifestProperties = Analyzer.getManifest(jarArtifact.getFile());
-					requiredModules.add(manifestProperties.getProperty("Bundle-SymbolicName"));
-				}
 			} catch (Exception e) {
 				logger.warn("Could not process modules from " + coordinates[0] + ":" + coordinates[1] + ":"
 						+ coordinates[2], e);
@@ -281,29 +286,6 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 
 	}
 
-	private void fillModulesFrom(Map<String[], Boolean> modules, MavenProject project, String property,
-			boolean required) {
-
-		String modulesText = project.getProperties().getProperty(property);
-
-		if (modulesText == null || modulesText.trim().isEmpty()) {
-			if (Flag.verbose()) {
-				logger.info("No available modules in '{}'", PROP_CONTRACTORS);
-			} else if (logger.isDebugEnabled()) {
-				logger.debug("No available modules in '{}'", PROP_CONTRACTORS);
-			}
-			return;
-		}
-		String[] modulesArray = modulesText.split("[\\s]*,[\\s]*");
-		for (String moduleText : modulesArray) {
-			String[] coordinates = moduleText.split(":");
-			if (coordinates.length != 3) {
-				logger.warn("Invalid maven coordinates for module '{}'! It will be ignored!", moduleText);
-				continue;
-			}
-			modules.put(coordinates, required);
-		}
-	}
 
 	/**
 	 * @param artifact

@@ -1,5 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns:em="EM">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.commsen.em.demos</groupId>
@@ -8,7 +9,7 @@
 
 	<properties>
 		<em.version>0.2.0-SNAPSHOT</em.version>
-		<em.--executable />
+		<em:executable />
 	</properties>
 
 	<profiles>
@@ -17,72 +18,44 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-			<dependencyManagement>
-				<dependencies>
-					<dependency>
-						<groupId>com.commsen.em.contractors</groupId>
-						<artifactId>em.contractors.pax-web-jetty</artifactId>
-						<version>6.0.7</version>
-						<type>pom</type>
-						<scope>import</scope>
-					</dependency>
-				</dependencies>
-			</dependencyManagement>
+			<properties>
+				<em:contractors>
+					com.commsen.em.contractors:em.contractors.runtime:${em.version},
+					com.commsen.em.contractors:em.contractors.pax-logging:1.10.1,
+					com.commsen.em.contractors:em.contractors.pax-web-jetty:6.0.7,
+					com.commsen.em.contractors:em.contractors.webconsole:4.3.4
+				</em:contractors>
+			</properties>
 		</profile>
 		<profile>
 			<id>tomcat</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<dependencyManagement>
-				<dependencies>
-					<dependency>
-						<groupId>com.commsen.em.contractors</groupId>
-						<artifactId>em.contractors.pax-web-tomcat</artifactId>
-						<version>6.0.7</version>
-						<type>pom</type>
-						<scope>import</scope>
-					</dependency>
-				</dependencies>
-			</dependencyManagement>
+			<properties>
+				<em:contractors>
+					com.commsen.em.contractors:em.contractors.runtime:${em.version},
+					com.commsen.em.contractors:em.contractors.pax-logging:1.10.1,
+					com.commsen.em.contractors:em.contractors.pax-web-tomcat:6.0.7,
+					com.commsen.em.contractors:em.contractors.webconsole:4.3.4
+				</em:contractors>
+			</properties>
 		</profile>
 		<profile>
 			<id>undertow</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<dependencyManagement>
-				<dependencies>
-					<dependency>
-						<groupId>com.commsen.em.contractors</groupId>
-						<artifactId>em.contractors.pax-web-undertow</artifactId>
-						<version>6.0.7</version>
-						<type>pom</type>
-						<scope>import</scope>
-					</dependency>
-				</dependencies>
-			</dependencyManagement>
+			<properties>
+				<em:contractors>
+					com.commsen.em.contractors:em.contractors.runtime:${em.version},
+					com.commsen.em.contractors:em.contractors.pax-logging:1.10.1,
+					com.commsen.em.contractors:em.contractors.pax-web-undertow:6.0.7,
+					com.commsen.em.contractors:em.contractors.webconsole:4.3.4
+				</em:contractors>
+			</properties>
+		</profile>
+		<profile>
+			<id>webconsole</id>
+			<properties>
+				<em:contracts>WebAdminUI</em:contracts>
+			</properties>
 		</profile>
 	</profiles>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>com.commsen.em.contractors</groupId>
-				<artifactId>em.contractors.runtime</artifactId>
-				<version>${em.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>com.commsen.em.contractors</groupId>
-				<artifactId>em.contractors.pax-logging</artifactId>
-				<version>1.10.1</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
