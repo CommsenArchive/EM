@@ -36,10 +36,12 @@ requirements.webconsole = \
 #-runfw: org.eclipse.osgi;version='[3.10,4)'
 
 #
-# The following line enables console in Equinox!
+# The following properties enable console in Equinox!
 # However it also breaks the resolver (it resolves OK but output does not contain required bundles) !!!
 #
 #-runproperties: osgi.console=, osgi.console.enable.builtin=false
+
+-runproperties: org.osgi.framework.bootdelegation="sun.*,com.sun.*"
 
 #
 # Requirements to taken into account in the assembly process:
@@ -48,6 +50,11 @@ requirements.webconsole = \
 # assemble - used by EM contracts 
 #
 -resolve.effective: resolve, active, assemble
+
+#
+# Packages exported by the runtime:
+#
+-runsystempackages: sun.*,com.sun.*
 
 #
 # What are the initial requirements
