@@ -130,12 +130,8 @@
 		<module>em.augment</module>
 		<module>em.annotations</module>
 		<module>em.bom.rest</module>
-		<module>em.bom.framework</module>
-		<module>em.bom.logging</module>
 		<module>em.bom.shell</module>
-		<module>em.bom.config</module>
 		<module>em.bom.scheduler</module>
-		<module>em.bom.utils</module>
 		<module>em-maven-plugin</module>
 		<module>em.annotation.processors</module>
 	</modules>
