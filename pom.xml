@@ -137,5 +137,6 @@
 		<module>em.bom.config</module>
 		<module>em.bom.scheduler</module>
 		<module>em.bom.utils</module>
+		<module>em.annotation.processors</module>
 	</modules>
 </project>

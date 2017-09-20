@@ -20,6 +20,7 @@ import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.execution.AbstractExecutionListener;
 import org.apache.maven.execution.ExecutionEvent;
 import org.apache.maven.execution.ExecutionListener;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
@@ -77,8 +78,11 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 			addBndSnapshotRepo(project);
 		}
 
-		boolean indexBundles = project.getProperties().containsKey(Constants.PROP_CONFIG_INDEX);
+		boolean generateIndex = project.getProperties().containsKey(Constants.PROP_CONFIG_INDEX);
 		boolean actionFound = false;
+
+		
+		addAnnotationProcessorsAsDependency(project);
 
 		/*
 		 * TODO: figure out what to do if more than one action is provided! 
@@ -127,7 +131,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 				 * beginning of the list
 				 */
 				bndExportPlugin.addToPomForExport(project);
-				if (indexBundles) bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
+				if (generateIndex) bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
 				bndPlugin.addToBuild(project);
 			} catch (MavenExecutionException e) {
 				throw new RuntimeException("Failed to add one of the required bnd plugins!", e);
@@ -143,7 +147,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 				 * beginning of the list
 				 */
 				bndExportPlugin.addToPomForExecutable(project);
-				if (indexBundles) bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
+				if (generateIndex) bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
 				bndPlugin.addToBuild(project);
 			} catch (MavenExecutionException e) {
 				throw new RuntimeException("Failed to add one of the required bnd plugins!", e);
@@ -165,7 +169,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 				 * beginning of the list
 				 */
 				bndExportPlugin.addToPomForExport(project);
-				if (indexBundles) bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
+				if (generateIndex) bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
 				bndPlugin.addToBuild(project);
 			} catch (MavenExecutionException e) {
 				throw new RuntimeException("Failed to add one of the required bnd plugins!", e);
@@ -176,7 +180,6 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 			logger.info("No '" + PROP_PREFIX + "*' action found! Project will be executed AS IS!");
 		}
 	}
-
 
 	@Override
 	public void projectDiscoveryStarted(ExecutionEvent event) {
@@ -273,6 +276,15 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 	public void forkedProjectFailed(ExecutionEvent event) {
 
 		delegate.forkedProjectFailed(event);
+	}
+
+
+	private void addAnnotationProcessorsAsDependency(MavenProject project) {
+		Dependency dep = new Dependency();
+		dep.setGroupId("com.commsen.em");
+		dep.setArtifactId("em.annotation.processors");
+		dep.setVersion("(0.1.0,)");
+		project.getModel().getDependencies().add(dep);
 	}
 
 	private void addBndSnapshotRepo(MavenProject project) {
