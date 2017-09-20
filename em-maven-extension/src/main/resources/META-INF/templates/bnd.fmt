@@ -8,3 +8,5 @@ Private-Package: ${includePackages}
 Import-Package: ${importStatement}
 
 -exportcontents: $<packages;ANNOTATED;aQute.bnd.annotation.Export>
+
+-include: -target/generated-sources/annotations/em.generated.bnd
