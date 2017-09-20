@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns:em="EM">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.commsen.em.demo</groupId>
+		<artifactId>demos</artifactId>
+		<version>0.2.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>demo.configurator</artifactId>
+
+	<properties>
+		<em.version>0.2.0-SNAPSHOT</em.version>
+		
+		<em:executable />
+		<em:contractors>
+  			com.commsen.em.contractors:em.contractors.pax-web-jetty:6.0.7,
+  			com.commsen.em.contractors:em.contractors.runtime:${em.version},
+			com.commsen.em.contractors:em.contractors.enroute.configurer:2.0.0,
+			com.commsen.em.contractors:em.contractors.pax-logging:1.10.1
+ 		</em:contractors>
+ 		<em:modules>
+			com.commsen.em.contractors:em.contractors.webconsole:4.3.4
+ 		</em:modules>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.commsen.em</groupId>
+			<artifactId>em.annotations</artifactId>
+			<version>${em.version}</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<extensions>
+			<extension>
+				<groupId>com.commsen.em</groupId>
+				<artifactId>em-maven-extension</artifactId>
+				<version>${em.version}</version>
+			</extension>
+		</extensions>
+	</build>
+
+</project>
