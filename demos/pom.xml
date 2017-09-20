@@ -15,5 +15,6 @@
 	<modules>
 		<module>demo.servlet</module>
 		<module>demo.configurator</module>
+		<module>demo.vaadin</module>
 	</modules>
 </project>

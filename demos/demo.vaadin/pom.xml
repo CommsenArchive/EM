@@ -1,0 +1,59 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns:em="EM">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.commsen.em.demo</groupId>
+	<artifactId>demo.vaadin</artifactId>
+	<version>0.2.0-SNAPSHOT</version>
+
+	<properties>
+		<em.version>${project.version}</em.version>
+		<em:executable />
+		<em:contractors>
+			com.commsen.em.contractors:em.contractors.runtime:${em.version},
+			com.commsen.em.contractors:em.contractors.pax-logging:1.10.1,
+			com.commsen.em.contractors:em.contractors.pax-web-jetty:6.0.7,
+			com.commsen.em.contractors:em.contractors.vaadin:8.1.3,
+			com.commsen.em.contractors:em.contractors.webconsole:4.3.4
+		</em:contractors>
+	</properties>
+
+
+	<dependencies>
+		<dependency>
+			<groupId>com.commsen.em</groupId>
+			<artifactId>em.annotations</artifactId>
+			<version>${em.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-server</artifactId>
+			<version>8.1.3</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-shared</artifactId>
+			<version>8.1.3</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<extensions>
+			<extension>
+				<groupId>com.commsen.em</groupId>
+				<artifactId>em-maven-extension</artifactId>
+				<version>${em.version}</version>
+			</extension>
+		</extensions>
+	</build>
+
+</project>
