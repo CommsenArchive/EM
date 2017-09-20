@@ -8,7 +8,7 @@
 	<version>0.2.0-SNAPSHOT</version>
 
 	<properties>
-		<em.version>0.2.0-SNAPSHOT</em.version>
+		<em.version>${project.version}</em.version>
 		<em:executable />
 	</properties>
 
