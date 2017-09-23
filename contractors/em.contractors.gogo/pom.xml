@@ -42,25 +42,6 @@
 				<version>1.0.8</version>
 				<scope>runtime</scope>
 			</dependency> 
-
-<!--
-			<dependency>
-			    <groupId>org.jline</groupId>
-			    <artifactId>jline</artifactId>
-			    <version>3.3.0</version>
-				<scope>runtime</scope>
-			</dependency>
- 			<dependency>
-				<groupId>org.fusesource.jansi</groupId>
-				<artifactId>jansi</artifactId>
-				<version>1.16</version>
-				<scope>runtime</scope>
-			</dependency>
-
-
-			-->
 		</dependencies>
-
 	</dependencyManagement>
-
 </project>
