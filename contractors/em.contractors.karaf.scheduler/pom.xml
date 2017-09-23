@@ -3,20 +3,23 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.commsen.em</groupId>
-		<artifactId>em</artifactId>
+		<groupId>com.commsen.em.contractors</groupId>
+		<artifactId>contractors</artifactId>
 		<version>0.2.0-SNAPSHOT</version>
 	</parent>
+	
+	<artifactId>em.contractors.karaf.scheduler</artifactId>
+	<version>4.1.2</version>
 
-	<artifactId>em.bom.scheduler</artifactId>
-	<packaging>pom</packaging>
-	<name>EM - Scheduler BOM </name>
-	<description>
-		Bill of Material containing scheduler libraries used in resolve process
-	</description>
 	<dependencyManagement>
 		<dependencies>
-
+			<dependency>
+				<!-- THIS -->
+				<groupId>${project.groupId}</groupId>
+				<artifactId>${project.artifactId}</artifactId>
+				<version>${project.version}</version>
+				<scope>runtime</scope>
+			</dependency>
 			<dependency>
 				<!-- Apache Karaf Scheduler -->
 				<groupId>org.apache.karaf.scheduler</groupId>
@@ -24,7 +27,6 @@
 				<version>4.1.2</version>
 				<scope>runtime</scope>
 			</dependency>
-
 		</dependencies>
 	</dependencyManagement>
 </project>

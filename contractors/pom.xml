@@ -49,5 +49,6 @@
 		<module>em.contractors.vaadin</module>
 		<module>em.contractors.webconsole</module>
 		<module>em.contractors.gogo</module>
+		<module>em.contractors.karaf.scheduler</module>
 	</modules>
 </project>

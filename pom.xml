@@ -131,7 +131,6 @@
 		<module>em.annotations</module>
 		<module>em.bom.rest</module>
 		<module>em.bom.shell</module>
-		<module>em.bom.scheduler</module>
 		<module>em-maven-plugin</module>
 		<module>em.annotation.processors</module>
 	</modules>

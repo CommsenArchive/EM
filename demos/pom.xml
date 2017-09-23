@@ -17,5 +17,6 @@
 		<module>demo.configurator</module>
 		<module>demo.vaadin</module>
 		<module>demo.command.gogo</module>
+		<module>demo.scheduler</module>
 	</modules>
 </project>
