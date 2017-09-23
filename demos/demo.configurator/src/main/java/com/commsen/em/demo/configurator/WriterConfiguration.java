@@ -3,7 +3,7 @@ package com.commsen.em.demo.configurator;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-@ObjectClassDefinition
+@ObjectClassDefinition (name="Writer Configuration")
 public @interface WriterConfiguration {
 
 	@AttributeDefinition (name = "Server's host name")
