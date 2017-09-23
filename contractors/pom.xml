@@ -50,5 +50,6 @@
 		<module>em.contractors.webconsole</module>
 		<module>em.contractors.gogo</module>
 		<module>em.contractors.karaf.scheduler</module>
+		<module>em.contractors.felix.http.jetty</module>
 	</modules>
 </project>

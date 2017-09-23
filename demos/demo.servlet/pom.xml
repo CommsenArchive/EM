@@ -50,6 +50,17 @@
 			</properties>
 		</profile>
 		<profile>
+			<id>felix</id>
+			<properties>
+				<em:contractors>
+					com.commsen.em.contractors:em.contractors.runtime:${em.version},
+					com.commsen.em.contractors:em.contractors.pax-logging:1.10.1,
+					com.commsen.em.contractors:em.contractors.felix.http.jetty:3.2.0,
+					com.commsen.em.contractors:em.contractors.webconsole:4.3.4
+				</em:contractors>
+			</properties>
+		</profile>
+		<profile>
 			<id>webconsole</id>
 			<properties>
 				<em:contracts>WebAdminUI</em:contracts>
