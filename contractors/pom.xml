@@ -48,5 +48,6 @@
 		<module>em.contractors.pax-logging</module>
 		<module>em.contractors.vaadin</module>
 		<module>em.contractors.webconsole</module>
+		<module>em.contractors.gogo</module>
 	</modules>
 </project>

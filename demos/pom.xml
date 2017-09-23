@@ -16,5 +16,6 @@
 		<module>demo.servlet</module>
 		<module>demo.configurator</module>
 		<module>demo.vaadin</module>
+		<module>demo.command.gogo</module>
 	</modules>
 </project>
