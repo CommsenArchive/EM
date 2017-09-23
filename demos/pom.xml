@@ -18,5 +18,6 @@
 		<module>demo.vaadin</module>
 		<module>demo.command.gogo</module>
 		<module>demo.scheduler</module>
+		<module>demo.jaxrs</module>
 	</modules>
 </project>

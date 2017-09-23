@@ -51,5 +51,6 @@
 		<module>em.contractors.gogo</module>
 		<module>em.contractors.karaf.scheduler</module>
 		<module>em.contractors.felix.http.jetty</module>
+		<module>em.contractors.jaxrs.publisher</module>
 	</modules>
 </project>
