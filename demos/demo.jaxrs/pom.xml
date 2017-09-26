@@ -10,12 +10,34 @@
 	<properties>
 		<em.version>${project.version}</em.version>
 		<em:executable />
-		<em:contractors>
-			com.commsen.em.contractors:em.contractors.runtime:${em.version},
-			com.commsen.em.contractors:em.contractors.jaxrs.publisher:5.3.1,
-			com.commsen.em.contractors:em.contractors.felix.http.jetty:3.2.0
-		</em:contractors>
 	</properties>
+
+	<profiles>
+		<profile>
+			<id>felix</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<em:contractors>
+					com.commsen.em.contractors:em.contractors.runtime:${em.version},
+					com.commsen.em.contractors:em.contractors.jaxrs.publisher:5.3.1,
+					com.commsen.em.contractors:em.contractors.felix.http.jetty:3.2.0
+				</em:contractors>
+			</properties>
+		</profile>
+		<profile>
+			<id>jetty</id>
+			<properties>
+				<em:contractors>
+					com.commsen.em.contractors:em.contractors.runtime:${em.version},
+					com.commsen.em.contractors:em.contractors.jaxrs.publisher:5.3.1,
+					com.commsen.em.contractors:em.contractors.pax-logging:1.10.1,
+					com.commsen.em.contractors:em.contractors.pax-web-jetty:6.0.7
+				</em:contractors>
+			</properties>
+		</profile>
+	</profiles>
 
 	<dependencies>
 		<dependency>
