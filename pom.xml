@@ -127,11 +127,10 @@
 
 	<modules>
 		<module>em-maven-extension</module>
-		<module>em.augment</module>
 		<module>em.annotations</module>
-		<module>em.bom.rest</module>
+		<module>em.annotation.processors</module>
+		<module>em.augment</module>
 		<module>em.bom.shell</module>
 		<module>em-maven-plugin</module>
-		<module>em.annotation.processors</module>
 	</modules>
 </project>
