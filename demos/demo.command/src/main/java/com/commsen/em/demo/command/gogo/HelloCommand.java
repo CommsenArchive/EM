@@ -14,7 +14,7 @@ import com.commsen.em.annotations.RequiresLocalConsole;
 		}, //
 		service = Object.class //
 )
-@RequiresLocalConsole(provider="gogo")
+@RequiresLocalConsole
 public class HelloCommand {
 	
 	@Descriptor("Says hello")

@@ -5,17 +5,41 @@
 
 
 	<groupId>com.commsen.em.demo</groupId>
-	<artifactId>demo.command.gogo</artifactId>
+	<artifactId>demo.command</artifactId>
 	<version>0.2.0-SNAPSHOT</version>
 
 	<properties>
 		<em.version>${project.version}</em.version>
 		<em:executable />
-		<em:contractors>
-			com.commsen.em.contractors:em.contractors.runtime:${em.version},
-			com.commsen.em.contractors:em.contractors.gogo:0.2.0-SNAPSHOT
-		</em:contractors>
 	</properties>
+
+	<profiles>
+		<profile>
+			<id>gogo</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<em:contractors>
+					com.commsen.em.contractors:em.contractors.runtime:${em.version},
+					com.commsen.em.contractors:em.contractors.gogo:0.2.0-SNAPSHOT
+				</em:contractors>
+			</properties>
+		</profile>
+		<profile>
+			<id>karaf</id>
+			<properties>
+				<em:contractors>
+					com.commsen.em.contractors:em.contractors.runtime:${em.version},
+					com.commsen.em.contractors:em.contractors.karaf.shell:4.1.2,
+					com.commsen.em.contractors:em.contractors.pax-logging:1.10.1
+				</em:contractors>
+				<em:run.properties>
+					karaf.startLocalConsole=true
+				</em:run.properties>
+			</properties>
+		</profile>
+	</profiles>
 
 	<dependencies>
 		<dependency>
