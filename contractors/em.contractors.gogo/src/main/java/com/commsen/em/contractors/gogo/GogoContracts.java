@@ -11,5 +11,5 @@ import com.commsen.em.annotations.Requires;
 )
 @Requires(raw = "osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.shell)'")
 @Requires(raw = "osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.jline)'")
-public class GogoContracts {
-}
+@Requires(raw = "osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.command)'")
+public class GogoContracts {}
