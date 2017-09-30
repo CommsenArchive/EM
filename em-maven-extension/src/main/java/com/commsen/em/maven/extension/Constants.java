@@ -59,4 +59,5 @@ public class Constants {
 	
 	public static final String PROP_CONTRACTORS = PROP_PREFIX + "contractors";
 	public static final String PROP_CONTRACTS = PROP_PREFIX + "contracts";
+	public static final String PROP_RUN_PROPERTIES = PROP_PREFIX + "run.properties";
 }

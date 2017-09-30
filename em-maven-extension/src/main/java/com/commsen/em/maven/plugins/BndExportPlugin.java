@@ -8,6 +8,7 @@ import static com.commsen.em.maven.extension.Constants.PROP_CONTRACTORS;
 import static com.commsen.em.maven.extension.Constants.PROP_CONTRACTS;
 import static com.commsen.em.maven.extension.Constants.PROP_DEPLOY_TARGET;
 import static com.commsen.em.maven.extension.Constants.PROP_RESOLVE_OUTPUT;
+import static com.commsen.em.maven.extension.Constants.PROP_RUN_PROPERTIES;
 import static com.commsen.em.maven.extension.Constants.VAL_BND_VERSION;
 
 import java.io.File;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -41,6 +43,7 @@ import org.ops4j.pax.swissbox.bnd.OverwriteMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.commsen.em.maven.extension.Constants;
 import com.commsen.em.maven.util.Dependencies;
 import com.commsen.em.maven.util.Flag;
 import com.commsen.em.maven.util.Templates;
@@ -155,8 +158,18 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 			}
 		}
 
+		Set<String> runProperties = new HashSet<>();
+		
+		String runPropertiesText = project.getProperties().getProperty(PROP_RUN_PROPERTIES);
+		if (runPropertiesText != null && !runPropertiesText.trim().isEmpty()) {
+			String[] propertiesArray = runPropertiesText.split("[\\s]*\\n[\\s]*");
+			runProperties.addAll(Arrays.asList(propertiesArray));
+		}
+		
+		
 		Map<String, Object> model = new HashMap<>();
 		model.put("requirements", requirements);
+		model.put("runProperties", runProperties);
 		model.put("distro", distro);
 
 		String bndrunContent = null;

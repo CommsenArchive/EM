@@ -41,8 +41,12 @@ requirements.webconsole = \
 #
 #-runproperties: osgi.console=, osgi.console.enable.builtin=false
 
--runproperties: org.osgi.framework.bootdelegation="sun.*,com.sun.*"
+#-runproperties: org.osgi.framework.bootdelegation="sun.*,com.sun.*"
 
+-runproperties: \
+	<#list runProperties as property>
+		  ${property}<#sep>,\</#sep>
+	</#list>	
 #
 # Requirements to taken into account in the assembly process:
 # resolve - those are the ones OSGi runtime will enforce
