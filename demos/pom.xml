@@ -19,5 +19,6 @@
 		<module>demo.command</module>
 		<module>demo.scheduler</module>
 		<module>demo.jaxrs</module>
+		<module>demo.extension</module>
 	</modules>
 </project>
