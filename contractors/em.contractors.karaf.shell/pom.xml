@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.commsen.em.contractors</groupId>
+		<artifactId>contractors</artifactId>
+		<version>0.2.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>em.contractors.karaf.shell</artifactId>
+	<version>4.1.2</version>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<!-- THIS -->
+				<groupId>${project.groupId}</groupId>
+				<artifactId>${project.artifactId}</artifactId>
+				<version>${project.version}</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<!-- Karaf console -->
+				<groupId>org.apache.karaf.shell</groupId>
+				<artifactId>org.apache.karaf.shell.core</artifactId>
+				<version>4.1.2</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<!-- Karaf commands -->
+				<groupId>org.apache.karaf.shell</groupId>
+				<artifactId>org.apache.karaf.shell.commands</artifactId>
+				<version>4.1.2</version>
+				<scope>runtime</scope>
+			</dependency>
+			<dependency>
+				<!-- Karaf bundle commands -->
+				<groupId>org.apache.karaf.bundle</groupId>
+				<artifactId>org.apache.karaf.bundle.core</artifactId>
+				<version>4.1.2</version>
+				<scope>runtime</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+</project>

@@ -52,5 +52,6 @@
 		<module>em.contractors.karaf.scheduler</module>
 		<module>em.contractors.felix.http.jetty</module>
 		<module>em.contractors.jaxrs.publisher</module>
+		<module>em.contractors.karaf.shell</module>
 	</modules>
 </project>
