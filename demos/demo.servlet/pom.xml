@@ -47,6 +47,9 @@
 					com.commsen.em.contractors:em.contractors.pax-web-undertow:6.0.7,
 					com.commsen.em.contractors:em.contractors.webconsole:4.3.4
 				</em:contractors>
+				<em:run.properties>
+					org.osgi.framework.bootdelegation="sun.*,com.sun.*"
+				</em:run.properties>
 			</properties>
 		</profile>
 		<profile>
