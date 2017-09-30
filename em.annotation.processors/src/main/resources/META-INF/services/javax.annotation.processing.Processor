@@ -1,1 +1,3 @@
 com.commsen.em.annotation.processors.ContractsAnnotationProcessor
+com.commsen.em.annotation.processors.ActivatorAnnotationProcessor
+com.commsen.em.annotation.processors.FragmentAnnotationProcessor

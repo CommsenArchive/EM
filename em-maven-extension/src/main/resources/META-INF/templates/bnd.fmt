@@ -9,4 +9,7 @@ Import-Package: ${importStatement}
 
 -exportcontents: $<packages;ANNOTATED;aQute.bnd.annotation.Export>
 
--include: -target/generated-sources/annotations/em.generated.bnd
+-include: \
+	-target/generated-sources/annotations/em.generated.bnd, \
+	-target/generated-sources/annotations/em.activator.bnd, \
+	-target/generated-sources/annotations/em.fragment.bnd
