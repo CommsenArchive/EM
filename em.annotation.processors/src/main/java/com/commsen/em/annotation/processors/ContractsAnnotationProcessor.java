@@ -1,5 +1,7 @@
 package com.commsen.em.annotation.processors;
 
+import static javax.lang.model.element.ElementKind.ANNOTATION_TYPE;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -81,7 +83,9 @@ public class ContractsAnnotationProcessor extends AbstractProcessor {
 		for (TypeElement annotation : annotations) {
 			for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
 //				System.out.println(" ===> Processing " + element);
-				processElement(element);
+				if (ANNOTATION_TYPE != element.getKind()) {
+					processElement(element);
+				}
 			}
 		}
 
