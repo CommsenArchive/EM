@@ -87,7 +87,11 @@ public class Dependencies {
 		
 		for (Dependency dependency : jarDependencies) {
 
-			System.out.println("Processing: " + dependency);
+			if (Flag.verbose()) {
+				logger.info("Processing: " + dependency);
+			} else if (logger.isDebugEnabled()) {
+				logger.debug("Processing: " + dependency);
+			}
 			
 			Set<Artifact> tmpArtifacts = new HashSet<>();
 			
@@ -115,7 +119,11 @@ public class Dependencies {
 				.filter(d -> "compile".equals(d.getScope()) || "provided".equals(d.getScope()) || "runtime".equals(d.getScope()))
 				.forEach(d -> tmpArtifacts.add(d));
 			
-			tmpArtifacts.stream().sorted().forEach( a -> System.out.println("   Found: " + a));
+			if (Flag.verbose()) {
+				tmpArtifacts.stream().sorted().forEach( a -> logger.info("   Found: " + a));
+			} else if (logger.isDebugEnabled()) {
+				tmpArtifacts.stream().sorted().forEach( a -> logger.debug("   Found: " + a));
+			}
 			
 			artifacts.addAll(tmpArtifacts);
 		}
