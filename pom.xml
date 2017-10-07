@@ -130,7 +130,6 @@
 		<module>em.annotations</module>
 		<module>em.annotation.processors</module>
 		<module>em.augment</module>
-		<module>em.bom.shell</module>
 		<module>em-maven-plugin</module>
 		<module>em.contract.storage</module>
 	</modules>
