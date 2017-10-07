@@ -10,6 +10,8 @@ import static com.commsen.em.maven.extension.Constants.PROP_PREFIX;
 import static com.commsen.em.maven.extension.Constants.VAL_BND_VERSION;
 import static com.commsen.em.maven.extension.Constants.VAL_INDEX_TYPE;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,6 +26,7 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
+import org.osgi.service.resolver.ResolutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +34,7 @@ import com.commsen.em.maven.plugins.BndExportPlugin;
 import com.commsen.em.maven.plugins.BndIndexerPlugin;
 import com.commsen.em.maven.plugins.BndPlugin;
 import com.commsen.em.maven.plugins.DistroPlugin;
+import com.commsen.em.maven.plugins.EmRegisterContractPlugin;
 
 @Component(role = ExecutionListener.class, hint = "em")
 public class EccentricModularityExecutionListener extends AbstractExecutionListener {
@@ -46,7 +50,10 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 
 	@Requirement
 	private DistroPlugin distroPlugin;
-	
+
+	@Requirement
+	private EmRegisterContractPlugin contractExporterPlugin;
+
 	@Requirement(role = ArtifactRepositoryLayout.class, hint = "default")
 	private ArtifactRepositoryLayout defaultLayout;
 
@@ -93,6 +100,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 		if (project.getProperties().containsKey(PROP_ACTION_METADATA)) {
 			actionFound = true;
 			try {
+				contractExporterPlugin.addToPom(project);
 				bndPlugin.addToBuild(project);
 			} catch (MavenExecutionException e) {
 				throw new RuntimeException("Failed to add bnd-maven-plugin!", e);
@@ -130,6 +138,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 				 * plugins in reverse order since they are added to the
 				 * beginning of the list
 				 */
+				contractExporterPlugin.addToPom(project);
 				bndExportPlugin.addToPomForExport(project);
 				if (generateIndex) bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
 				bndPlugin.addToBuild(project);
@@ -146,6 +155,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 				 * plugins in reverse order since they are added to the
 				 * beginning of the list
 				 */
+				contractExporterPlugin.addToPom(project);
 				bndExportPlugin.addToPomForExecutable(project);
 				if (generateIndex) bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
 				bndPlugin.addToBuild(project);
