@@ -10,6 +10,7 @@ import static com.commsen.em.maven.extension.Constants.PROP_DEPLOY_TARGET;
 import static com.commsen.em.maven.extension.Constants.PROP_RESOLVE_OUTPUT;
 import static com.commsen.em.maven.extension.Constants.PROP_RUN_PROPERTIES;
 import static com.commsen.em.maven.extension.Constants.VAL_BND_VERSION;
+import static com.commsen.em.maven.extension.Constants.VAL_EM_VERSION;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -96,8 +97,10 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 			throw new MavenExecutionException("Failed to process template file!", e);
 		}
 
-		Plugin plugin = createPlugin("biz.aQute.bnd", "bnd-export-maven-plugin", VAL_BND_VERSION, configuration,
-				"export", "export", "package");
+		Plugin plugin = createPlugin("com.commsen.em", "em-maven-plugin", VAL_EM_VERSION, configuration, "export", "export", "package");
+		
+//		Plugin plugin = createPlugin("biz.aQute.bnd", "bnd-export-maven-plugin", VAL_BND_VERSION, configuration,
+//				"export", "export", "package");
 		project.getBuild().getPlugins().add(0, plugin);
 
 		createBndrunIfNotExists(project, bndrun);
