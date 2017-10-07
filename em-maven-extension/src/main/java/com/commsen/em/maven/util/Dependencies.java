@@ -68,26 +68,6 @@ public class Dependencies {
 			.forEach(d -> artifacts.add(d));
 		return artifacts;
 	}
-
-	public Set<Artifact> directDependencies(MavenProject project, Collection<Dependency> initial) throws MavenExecutionException {
-		ArtifactResolutionRequest artifactResolutionRequest = new ArtifactResolutionRequest();
-		artifactResolutionRequest.setResolveTransitively(true);
-		artifactResolutionRequest.setRemoteRepositories(project.getRemoteArtifactRepositories());
-		artifactResolutionRequest.setLocalRepository(project.getProjectBuildingRequest().getLocalRepository());
-		Set<Artifact> artifacts = new HashSet<>();
-		for (Dependency dependency : initial) {
-			Artifact artifact = asArtifact(project, dependency);
-			artifactResolutionRequest.setArtifact(artifact);
-
-			ArtifactResolutionResult artifactResolutionResult = mavenRepoSystem.resolve(artifactResolutionRequest);
-			artifactResolutionResult.getArtifacts().stream()
-				.peek(d -> { if (Flag.verbose()) logger.info("Processing '{}' from '{}'", d,  toId(dependency)); })
-				.filter(d -> "jar".equals(d.getType()))
-				.filter(d -> "compile".equals(d.getScope()) || "provided".equals(d.getScope()) || "runtime".equals(d.getScope()))
-				.forEach(d -> artifacts.add(d));
-		}
-		return artifacts;
-	}
 	
 	@SuppressWarnings("deprecation")
 	public Set<Artifact> asArtifacts(MavenProject project, Collection<Dependency> initial) throws MavenExecutionException {
