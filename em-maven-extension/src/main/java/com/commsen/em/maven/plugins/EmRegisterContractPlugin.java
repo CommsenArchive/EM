@@ -1,6 +1,6 @@
 package com.commsen.em.maven.plugins;
 
-import static com.commsen.em.maven.extension.Constants.VAL_EM_VERSION;
+import static com.commsen.em.maven.extension.Constants.VAL_EXTENSION_VERSION;
 
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.model.Plugin;
@@ -16,7 +16,7 @@ public class EmRegisterContractPlugin extends DynamicMavenPlugin {
 
 
 	public void addToPom(MavenProject project) throws MavenExecutionException {
-		Plugin plugin = createPlugin("com.commsen.em", "em-maven-plugin", VAL_EM_VERSION, null, "registerContract", "registerContract", "package");
+		Plugin plugin = createPlugin("com.commsen.em", "em-maven-plugin", VAL_EXTENSION_VERSION, null, "registerContract", "registerContract", "package");
 		project.getBuild().getPlugins().add(0, plugin);
 		logger.info("Added `em-maven-plugin` to register contacts!");
 

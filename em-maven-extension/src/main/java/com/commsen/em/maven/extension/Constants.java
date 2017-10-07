@@ -3,18 +3,26 @@ package com.commsen.em.maven.extension;
 public class Constants {
 
 	public static final String VAL_BND_VERSION = "3.4.0";
-	public static final String VAL_EM_VERSION = "0.2.0-SNAPSHOT";
 
 	public static final String VAL_EXTENSION_GROUP = "com.commsen.em";
 	public static final String VAL_EXTENSION_ARTIFACT = "em-maven-extension";
+	public static final String VAL_EXTENSION_VERSION = "0.2.0-SNAPSHOT";
 
 	public static final String VAL_INDEX_TYPE = "index";
 	
-	public static final String PROP_OLD_PREFIX = "_.eccentric.modularity.";
+	public static final String PROP_PREFIX_OLD = "_.eccentric.modularity.";
 	public static final String PROP_PREFIX = "em:";
 
-	public static final String PROP_ACTION_METADATA = PROP_PREFIX + "metadata";
+	/*
+	 *  properties for MODULE action
+	 */
+	public static final String PROP_ACTION_MODULE = PROP_PREFIX + "module";
+	public static final String PROP_ACTION_MODULE_OLD = PROP_PREFIX + "metadata";
 	
+	/*
+	 *  properties for AUGMENT action
+	 */
+
 	public static final String PROP_ACTION_AUGMENT = PROP_PREFIX + "augment";
 	public static final String PROP_AUGMENT_FILE = PROP_ACTION_AUGMENT + ".file";
 

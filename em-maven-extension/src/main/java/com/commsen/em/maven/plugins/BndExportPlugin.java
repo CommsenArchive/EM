@@ -9,7 +9,7 @@ import static com.commsen.em.maven.extension.Constants.PROP_CONTRACTS;
 import static com.commsen.em.maven.extension.Constants.PROP_DEPLOY_TARGET;
 import static com.commsen.em.maven.extension.Constants.PROP_RESOLVE_OUTPUT;
 import static com.commsen.em.maven.extension.Constants.PROP_RUN_PROPERTIES;
-import static com.commsen.em.maven.extension.Constants.VAL_EM_VERSION;
+import static com.commsen.em.maven.extension.Constants.VAL_EXTENSION_VERSION;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,7 +44,6 @@ import org.ops4j.pax.swissbox.bnd.OverwriteMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.commsen.em.maven.extension.Constants;
 import com.commsen.em.maven.util.Dependencies;
 import com.commsen.em.maven.util.Flag;
 import com.commsen.em.maven.util.Templates;
@@ -97,7 +96,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 			throw new MavenExecutionException("Failed to process template file!", e);
 		}
 
-		Plugin plugin = createPlugin("com.commsen.em", "em-maven-plugin", VAL_EM_VERSION, configuration, "export", "export", "package");
+		Plugin plugin = createPlugin("com.commsen.em", "em-maven-plugin", VAL_EXTENSION_VERSION, configuration, "export", "export", "package");
 		
 //		Plugin plugin = createPlugin("biz.aQute.bnd", "bnd-export-maven-plugin", VAL_BND_VERSION, configuration,
 //				"export", "export", "package");
@@ -258,7 +257,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		}
 		String[] modulesArray = modulesText.split("[\\s]*[,\\n][\\s]*");
 		Set<String> modulesSet = Arrays.stream(modulesArray).collect(Collectors.toSet());
-		modulesSet.add("com.commsen.em.contractors:em.contractors.runtime:" + VAL_EM_VERSION);
+		modulesSet.add("com.commsen.em.contractors:em.contractors.runtime:" + VAL_EXTENSION_VERSION);
 		for (String moduleText : modulesSet) {
 			String[] coordinates = moduleText.split(":");
 			if (coordinates.length != 3) {

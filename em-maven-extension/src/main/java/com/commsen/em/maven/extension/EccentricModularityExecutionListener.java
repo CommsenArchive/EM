@@ -3,9 +3,10 @@ package com.commsen.em.maven.extension;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_AUGMENT;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_DEPLOY;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_EXECUTABLE;
-import static com.commsen.em.maven.extension.Constants.PROP_ACTION_METADATA;
+import static com.commsen.em.maven.extension.Constants.PROP_ACTION_MODULE;
+import static com.commsen.em.maven.extension.Constants.PROP_ACTION_MODULE_OLD;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_RESOLVE;
-import static com.commsen.em.maven.extension.Constants.PROP_OLD_PREFIX;
+import static com.commsen.em.maven.extension.Constants.PROP_PREFIX_OLD;
 import static com.commsen.em.maven.extension.Constants.PROP_PREFIX;
 import static com.commsen.em.maven.extension.Constants.VAL_BND_VERSION;
 import static com.commsen.em.maven.extension.Constants.VAL_INDEX_TYPE;
@@ -71,15 +72,25 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 
 		MavenProject project = event.getProject();
 		
-		boolean hasOld = project.getProperties().keySet().stream()
-			.filter(p -> p.toString().startsWith(PROP_OLD_PREFIX))
-			.peek(p -> logger.error("Property '{}' uses old prefix! Use '{}' instead!", p, p.toString().replace(PROP_OLD_PREFIX, PROP_PREFIX)))
-			.count() > 0;
-		
+		boolean hasOld = project.getProperties().keySet().stream() //
+				.filter(p -> p.toString().startsWith(PROP_PREFIX_OLD)) //
+ 				.peek(p -> logger.error("Property '{}' uses old prefix! Use '{}' instead!", p, p.toString().replace(PROP_PREFIX_OLD, PROP_PREFIX))) //
+				.count() > 0; 
+
+				
 		if (hasOld) {
 			throw new RuntimeException("Can't build project using old properties!");
 		}
-		
+
+		hasOld = project.getProperties().keySet().stream() //
+				.filter(p -> p.toString().startsWith(PROP_ACTION_MODULE_OLD))
+				.peek(p -> logger.error("Property '{}' uses old syntax! Use '{}' instead!", p,
+						p.toString().replace(PROP_ACTION_MODULE_OLD, PROP_ACTION_MODULE)))
+				.count() > 0;
+
+		if (hasOld) {
+			throw new RuntimeException("Can't build project using old properties!");
+		}		
 		
 		if (VAL_BND_VERSION.toLowerCase().contains("snapshot")) {
 			addBndSnapshotRepo(project);
@@ -97,7 +108,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 		 */
 		logger.info("Adding plugins and adapting project configuration based on provided '" + PROP_PREFIX + "*' properties!");
 
-		if (project.getProperties().containsKey(PROP_ACTION_METADATA)) {
+		if (project.getProperties().containsKey(PROP_ACTION_MODULE)) {
 			actionFound = true;
 			try {
 				contractExporterPlugin.addToPom(project);
