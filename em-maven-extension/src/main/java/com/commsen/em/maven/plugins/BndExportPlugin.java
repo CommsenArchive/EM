@@ -9,7 +9,6 @@ import static com.commsen.em.maven.extension.Constants.PROP_CONTRACTS;
 import static com.commsen.em.maven.extension.Constants.PROP_DEPLOY_TARGET;
 import static com.commsen.em.maven.extension.Constants.PROP_RESOLVE_OUTPUT;
 import static com.commsen.em.maven.extension.Constants.PROP_RUN_PROPERTIES;
-import static com.commsen.em.maven.extension.Constants.VAL_BND_VERSION;
 import static com.commsen.em.maven.extension.Constants.VAL_EM_VERSION;
 
 import java.io.File;
@@ -27,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.MavenExecutionException;
@@ -256,8 +256,10 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 			}
 			return;
 		}
-		String[] modulesArray = modulesText.split("[\\s]*,[\\s]*");
-		for (String moduleText : modulesArray) {
+		String[] modulesArray = modulesText.split("[\\s]*[,\\n][\\s]*");
+		Set<String> modulesSet = Arrays.stream(modulesArray).collect(Collectors.toSet());
+		modulesSet.add("com.commsen.em.contractors:em.contractors.runtime:" + VAL_EM_VERSION);
+		for (String moduleText : modulesSet) {
 			String[] coordinates = moduleText.split(":");
 			if (coordinates.length != 3) {
 				logger.warn("Invalid maven coordinates for module '{}'! It will be ignored!", moduleText);
