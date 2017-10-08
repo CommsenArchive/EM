@@ -9,6 +9,10 @@
 	</parent>
 
 	<artifactId>em.annotation.processors</artifactId>
+	<name>EM - Annotation processors</name>
+	<description>
+		Annotation processors for generating module matadata
+	</description>
 
 	<dependencies>
 		<dependency>

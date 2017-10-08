@@ -9,6 +9,10 @@
 	</parent>
 
 	<artifactId>em.contract.storage</artifactId>
+	<name>EM - Contract storage</name>
+	<description>
+		Very simple local storage for known contracts
+	</description>
 
 	<dependencies>
 		<dependency>
