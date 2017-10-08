@@ -34,9 +34,9 @@
 					com.commsen.em.contractors:em.contractors.karaf.shell:4.1.2,
 					com.commsen.em.contractors:em.contractors.pax-logging:1.10.1
 				</em:contractors>
-				<em:run.properties>
+				<em:executable.properties>
 					karaf.startLocalConsole=true
-				</em:run.properties>
+				</em:executable.properties>
 			</properties>
 		</profile>
 	</profiles>

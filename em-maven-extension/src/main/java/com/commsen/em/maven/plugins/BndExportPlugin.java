@@ -6,9 +6,9 @@ import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_INDEX;
 import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_TMP_BUNDLES;
 import static com.commsen.em.maven.extension.Constants.PROP_CONTRACTORS;
 import static com.commsen.em.maven.extension.Constants.PROP_CONTRACTS;
-import static com.commsen.em.maven.extension.Constants.PROP_DEPLOY_TARGET;
+import static com.commsen.em.maven.extension.Constants.INTERNAL_DISTRO_FILE;
 import static com.commsen.em.maven.extension.Constants.PROP_RESOLVE_OUTPUT;
-import static com.commsen.em.maven.extension.Constants.PROP_RUN_PROPERTIES;
+import static com.commsen.em.maven.extension.Constants.PROP_EXECUTABLE_RUN_PROPERTIES;
 import static com.commsen.em.maven.extension.Constants.VAL_EXTENSION_VERSION;
 
 import java.io.File;
@@ -141,7 +141,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		if (bndrunFile.exists() && !bndrunFile.isFile()) {
 			throw new MavenExecutionException("'" + bndrunFile + "' is not a file!", project.getFile());
 		} else {
-			String distro = project.getProperties().getProperty(PROP_DEPLOY_TARGET, "");
+			String distro = project.getProperties().getProperty(INTERNAL_DISTRO_FILE, "");
 			generateBndrun(project, distro, bndrunFile);
 			filesToCleanup.add(bndrunFile);
 		}
@@ -162,7 +162,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 
 		Set<String> runProperties = new HashSet<>();
 		
-		String runPropertiesText = project.getProperties().getProperty(PROP_RUN_PROPERTIES);
+		String runPropertiesText = project.getProperties().getProperty(PROP_EXECUTABLE_RUN_PROPERTIES);
 		if (runPropertiesText != null && !runPropertiesText.trim().isEmpty()) {
 			String[] propertiesArray = runPropertiesText.split("[\\s]*\\n[\\s]*");
 			runProperties.addAll(Arrays.asList(propertiesArray));

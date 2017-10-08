@@ -1,6 +1,8 @@
 package com.commsen.em.maven.plugins;
 
-import static com.commsen.em.maven.extension.Constants.PROP_DEPLOY_TARGET;
+import static com.commsen.em.maven.extension.Constants.DEFAULT_DISTROS_FOLDER;
+import static com.commsen.em.maven.extension.Constants.INTERNAL_DISTRO_FILE;
+import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_DISTRO_FOLDER;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,21 +11,29 @@ import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.security.auth.login.ConfigurationSpi;
+
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.commsen.em.maven.extension.Constants;
+
 import aQute.bnd.main.bnd;
+import aQute.configurable.Config;
 
 @Component(role = DistroPlugin.class)
 public class DistroPlugin {
 
-	private static final String DISTROS_FOLDER_NAME = ".distros";
 	private Logger logger = LoggerFactory.getLogger(DistroPlugin.class);
 
+
 	public void createDistroJar(MavenProject project, String remote) throws MavenExecutionException {
+
+		String distrosFolder = project.getProperties().getProperty(PROP_CONFIG_DISTRO_FOLDER, DEFAULT_DISTROS_FOLDER);
+
 		bnd bnd = new bnd();
 		try {
 			String[] params = remote.split(":");
@@ -32,7 +42,7 @@ public class DistroPlugin {
 						project.getFile());
 			}
 
-			File output = new File(project.getBasedir(), DISTROS_FOLDER_NAME);
+			File output = new File(project.getBasedir(), distrosFolder);
 
 			if (output.exists()) {
 				if (!output.isDirectory()) {
@@ -75,7 +85,7 @@ public class DistroPlugin {
 			}
 			logger.info("  - Saved distro jar in " + distroFile);
 
-			project.getProperties().setProperty(PROP_DEPLOY_TARGET, distroFile.getAbsolutePath());
+			project.getProperties().setProperty(INTERNAL_DISTRO_FILE, distroFile.getAbsolutePath());
 
 		} finally {
 			try {
@@ -87,7 +97,8 @@ public class DistroPlugin {
 	}
 
 	public void clean(MavenProject project) throws MavenExecutionException, IOException {
-		File f = new File(project.getBasedir(), DISTROS_FOLDER_NAME);
+		String distrosFolder = project.getProperties().getProperty(PROP_CONFIG_DISTRO_FOLDER, DEFAULT_DISTROS_FOLDER);
+		File f = new File(project.getBasedir(), distrosFolder);
 		if (f.exists() && f.isDirectory()) {
 			logger.info("Deleting " + f);
 			Files.walk(f.toPath()) //

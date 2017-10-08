@@ -10,14 +10,15 @@ public class Constants {
 
 	public static final String VAL_INDEX_TYPE = "index";
 	
-	public static final String PROP_PREFIX_OLD = "_.eccentric.modularity.";
 	public static final String PROP_PREFIX = "em:";
 
 	/*
 	 *  properties for MODULE action
 	 */
 	public static final String PROP_ACTION_MODULE = PROP_PREFIX + "module";
-	public static final String PROP_ACTION_MODULE_OLD = PROP_PREFIX + "metadata";
+	public static final String PROP_MODULE_INCLUDE_PACKAGES = PROP_ACTION_MODULE + ".includePackages";
+	public static final String PROP_MODULE_IMPORT_PACKAGES = PROP_ACTION_MODULE + ".importPackages";
+	public static final String PROP_MODULE_IGNORE_PACKAGES = PROP_ACTION_MODULE + ".ignorePackages";
 	
 	/*
 	 *  properties for AUGMENT action
@@ -37,36 +38,53 @@ public class Constants {
 	 *  properties for EXECUTABLE action
 	 */
 	public static final String PROP_ACTION_EXECUTABLE = PROP_PREFIX + "executable";
+	public static final String PROP_EXECUTABLE_RUN_PROPERTIES = PROP_ACTION_EXECUTABLE + "properties";
 
 	
 	/*
-	 *  properties for DEPLOYABLE action
+	 * properties for action instructions  
 	 */
-	public static final String PROP_ACTION_DEPLOY = PROP_PREFIX + "deploy";
-	public static final String PROP_DEPLOY_TARGET = PROP_ACTION_DEPLOY + ".target";
-
+	public static final String PROP_CONTRACTORS = PROP_PREFIX + "contractors";
+	public static final String PROP_CONTRACTS = PROP_PREFIX + "contracts";
+	
+	
 	
 	/*
-	 * config 
+	 * EM configuration properties 
 	 */
 	
-	public static final String CONFIG_PREFIX = PROP_PREFIX + "cfg.";
+	// prefix for all configuration properties
+	public static final String CONFIG_PREFIX = PROP_PREFIX + "config.";
+	// should an index be generated 
 	public static final String PROP_CONFIG_INDEX = CONFIG_PREFIX + "createIndex";
-	public static final String PROP_CONFIG_TMP_BUNDLES = CONFIG_PREFIX + "tempBundlesDirectory";
-//	public static final String PROP_CONFIG_REQUIREMENTS = CONFIG_PREFIX + "requirements";
-	public static final String PROP_CONFIG_INCLUDE_PACKAGES = CONFIG_PREFIX + "includePackages";
-	public static final String PROP_CONFIG_IMPORT_PACKAGES = CONFIG_PREFIX + "importPackages";
-	public static final String PROP_CONFIG_IGNORE_PACKAGES = CONFIG_PREFIX + "ignorePackages";
+	// where temporary bundles are stored (relative to project.getBasedir())
+	public static final String PROP_CONFIG_TMP_BUNDLES = CONFIG_PREFIX + ".tempBundlesDirectory";
+	// where distro files are stored (relative project.getBasedir())
+	public static final String PROP_CONFIG_DISTRO_FOLDER = PROP_ACTION_RESOLVE + ".distro";
 
-
+	
 	/*
 	 * defaults 
 	 */
-
-	public static final String DEFAULT_TMP_BUNDLES = ".bundles";
-
 	
-	public static final String PROP_CONTRACTORS = PROP_PREFIX + "contractors";
-	public static final String PROP_CONTRACTS = PROP_PREFIX + "contracts";
-	public static final String PROP_RUN_PROPERTIES = PROP_PREFIX + "run.properties";
+	// the default value for PROP_CONFIG_TMP_BUNDLES
+	public static final String DEFAULT_TMP_BUNDLES = ".bundles";
+	// the default value for PROP_CONFIG_DISTRO_FOLDER
+	public static final String DEFAULT_DISTROS_FOLDER = ".distros";
+
+
+	/*
+	 * properties for internal cross-plugin communication  
+	 */
+
+	// prefix for all properties
+	public static final String INTERNAL_PREFIX = PROP_PREFIX + "internal.";
+	public static final String INTERNAL_DISTRO_FILE = INTERNAL_PREFIX + "distro";
+	
+	/*
+	 *  old properties not used anymore
+	 */
+	public static final String PROP_PREFIX_OLD = "_.eccentric.modularity.";
+	public static final String PROP_ACTION_MODULE_OLD = PROP_PREFIX + "metadata";
+
 }

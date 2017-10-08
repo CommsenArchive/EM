@@ -1,9 +1,9 @@
 package com.commsen.em.maven.plugins;
 
 import static com.commsen.em.maven.extension.Constants.PROP_AUGMENT_FILE;
-import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_IGNORE_PACKAGES;
-import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_IMPORT_PACKAGES;
-import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_INCLUDE_PACKAGES;
+import static com.commsen.em.maven.extension.Constants.PROP_MODULE_IGNORE_PACKAGES;
+import static com.commsen.em.maven.extension.Constants.PROP_MODULE_IMPORT_PACKAGES;
+import static com.commsen.em.maven.extension.Constants.PROP_MODULE_INCLUDE_PACKAGES;
 import static com.commsen.em.maven.extension.Constants.VAL_BND_VERSION;
 
 import java.io.IOException;
@@ -33,9 +33,9 @@ public class BndPlugin extends DynamicMavenPlugin {
 	
 	public void addToBuild(MavenProject project) throws MavenExecutionException {
 
-		String includePackages = project.getProperties().getProperty(PROP_CONFIG_INCLUDE_PACKAGES, "");
-		String importPackages = project.getProperties().getProperty(PROP_CONFIG_IMPORT_PACKAGES, "");
-		String ignorePackages = project.getProperties().getProperty(PROP_CONFIG_IGNORE_PACKAGES, "");
+		String includePackages = project.getProperties().getProperty(PROP_MODULE_INCLUDE_PACKAGES, "");
+		String importPackages = project.getProperties().getProperty(PROP_MODULE_IMPORT_PACKAGES, "");
+		String ignorePackages = project.getProperties().getProperty(PROP_MODULE_IGNORE_PACKAGES, "");
 		
 		StringBuilder importStatement = new StringBuilder();
 		if (!ignorePackages.isEmpty()) {

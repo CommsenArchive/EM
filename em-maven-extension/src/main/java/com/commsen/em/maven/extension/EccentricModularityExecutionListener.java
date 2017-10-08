@@ -1,18 +1,15 @@
 package com.commsen.em.maven.extension;
 
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_AUGMENT;
-import static com.commsen.em.maven.extension.Constants.PROP_ACTION_DEPLOY;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_EXECUTABLE;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_MODULE;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_MODULE_OLD;
 import static com.commsen.em.maven.extension.Constants.PROP_ACTION_RESOLVE;
-import static com.commsen.em.maven.extension.Constants.PROP_PREFIX_OLD;
 import static com.commsen.em.maven.extension.Constants.PROP_PREFIX;
+import static com.commsen.em.maven.extension.Constants.PROP_PREFIX_OLD;
 import static com.commsen.em.maven.extension.Constants.VAL_BND_VERSION;
 import static com.commsen.em.maven.extension.Constants.VAL_INDEX_TYPE;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,7 +24,6 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
-import org.osgi.service.resolver.ResolutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +55,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 	private ArtifactRepositoryLayout defaultLayout;
 
 	private ExecutionListener delegate;
-	
+
 	private Logger logger = LoggerFactory.getLogger(EccentricModularityExecutionListener.class);
 
 	public void setDelegate(ExecutionListener executionListener) {
@@ -71,13 +67,13 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 		delegate.projectStarted(event);
 
 		MavenProject project = event.getProject();
-		
+
 		boolean hasOld = project.getProperties().keySet().stream() //
 				.filter(p -> p.toString().startsWith(PROP_PREFIX_OLD)) //
- 				.peek(p -> logger.error("Property '{}' uses old prefix! Use '{}' instead!", p, p.toString().replace(PROP_PREFIX_OLD, PROP_PREFIX))) //
-				.count() > 0; 
+				.peek(p -> logger.error("Property '{}' uses old prefix! Use '{}' instead!", p,
+						p.toString().replace(PROP_PREFIX_OLD, PROP_PREFIX))) //
+				.count() > 0;
 
-				
 		if (hasOld) {
 			throw new RuntimeException("Can't build project using old properties!");
 		}
@@ -90,8 +86,8 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 
 		if (hasOld) {
 			throw new RuntimeException("Can't build project using old properties!");
-		}		
-		
+		}
+
 		if (VAL_BND_VERSION.toLowerCase().contains("snapshot")) {
 			addBndSnapshotRepo(project);
 		}
@@ -99,14 +95,14 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 		boolean generateIndex = project.getProperties().containsKey(Constants.PROP_CONFIG_INDEX);
 		boolean actionFound = false;
 
-		
 		addAnnotationProcessorsAsDependency(project);
 
 		/*
-		 * TODO: figure out what to do if more than one action is provided! 
-		 * For now all will be executed which may have weird results 
+		 * TODO: figure out what to do if more than one action is provided! For now all
+		 * will be executed which may have weird results
 		 */
-		logger.info("Adding plugins and adapting project configuration based on provided '" + PROP_PREFIX + "*' properties!");
+		logger.info("Adding plugins and adapting project configuration based on provided '" + PROP_PREFIX
+				+ "*' properties!");
 
 		if (project.getProperties().containsKey(PROP_ACTION_MODULE)) {
 			actionFound = true;
@@ -131,8 +127,8 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 		if (VAL_INDEX_TYPE.equals(project.getPackaging())) {
 			actionFound = true;
 			/*
-			 * BND indexer plug-in is already added in the custom lifecycle for
-			 * "index" type, so we only need to configure it
+			 * BND indexer plug-in is already added in the custom lifecycle for "index"
+			 * type, so we only need to configure it
 			 */
 			try {
 				bndIndexerPlugin.configureForIndexGeneration(project);
@@ -142,16 +138,25 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 		}
 
 		if (project.getProperties().containsKey(PROP_ACTION_RESOLVE)) {
-			actionFound = true;			
+			actionFound = true;
+
+			String resolveTarget = project.getProperties().getProperty(PROP_ACTION_RESOLVE, "");
+			if (!resolveTarget.trim().isEmpty()) {
+				try {
+					distroPlugin.createDistroJar(project, resolveTarget);
+				} catch (MavenExecutionException e) {
+					throw new RuntimeException("Failed to extract metadata from the target runtime '" + resolveTarget + "'!", e);
+				}
+			}
 			try {
 				/*
-				 * TODO: Need a better way to add multiple plugins! For now add
-				 * plugins in reverse order since they are added to the
-				 * beginning of the list
+				 * TODO: Need a better way to add multiple plugins! For now add plugins in
+				 * reverse order since they are added to the beginning of the list
 				 */
 				contractExporterPlugin.addToPom(project);
 				bndExportPlugin.addToPomForExport(project);
-				if (generateIndex) bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
+				if (generateIndex)
+					bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
 				bndPlugin.addToBuild(project);
 			} catch (MavenExecutionException e) {
 				throw new RuntimeException("Failed to add one of the required bnd plugins!", e);
@@ -162,41 +167,43 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 			actionFound = true;
 			try {
 				/*
-				 * TODO: Need a better way to add multiple plugins! For now add
-				 * plugins in reverse order since they are added to the
-				 * beginning of the list
+				 * TODO: Need a better way to add multiple plugins! For now add plugins in
+				 * reverse order since they are added to the beginning of the list
 				 */
 				contractExporterPlugin.addToPom(project);
 				bndExportPlugin.addToPomForExecutable(project);
-				if (generateIndex) bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
+				if (generateIndex)
+					bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
 				bndPlugin.addToBuild(project);
 			} catch (MavenExecutionException e) {
 				throw new RuntimeException("Failed to add one of the required bnd plugins!", e);
 			}
 		}
 
-		if (project.getProperties().containsKey(PROP_ACTION_DEPLOY)) {
-			actionFound = true;
-			String runtime = project.getProperties().getProperty(PROP_ACTION_DEPLOY, "");
-			try {
-				distroPlugin.createDistroJar(project, runtime);
-			} catch (MavenExecutionException e) {
-				throw new RuntimeException("Failed to extract metadata from the target runtime!", e);
-			}
-			try {
-				/*
-				 * TODO: Need a better way to add multiple plugins! For now add
-				 * plugins in reverse order since they are added to the
-				 * beginning of the list
-				 */
-				bndExportPlugin.addToPomForExport(project);
-				if (generateIndex) bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
-				bndPlugin.addToBuild(project);
-			} catch (MavenExecutionException e) {
-				throw new RuntimeException("Failed to add one of the required bnd plugins!", e);
-			}
-		}
-		
+		// if (project.getProperties().containsKey(PROP_ACTION_DEPLOY)) {
+		// actionFound = true;
+		// String runtime = project.getProperties().getProperty(PROP_ACTION_DEPLOY, "");
+		// try {
+		// distroPlugin.createDistroJar(project, runtime);
+		// } catch (MavenExecutionException e) {
+		// throw new RuntimeException("Failed to extract metadata from the target
+		// runtime!", e);
+		// }
+		// try {
+		// /*
+		// * TODO: Need a better way to add multiple plugins! For now add
+		// * plugins in reverse order since they are added to the
+		// * beginning of the list
+		// */
+		// bndExportPlugin.addToPomForExport(project);
+		// if (generateIndex) bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
+		// bndPlugin.addToBuild(project);
+		// } catch (MavenExecutionException e) {
+		// throw new RuntimeException("Failed to add one of the required bnd plugins!",
+		// e);
+		// }
+		// }
+
 		if (!actionFound) {
 			logger.info("No '" + PROP_PREFIX + "*' action found! Project will be executed AS IS!");
 		}
@@ -299,7 +306,6 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 		delegate.forkedProjectFailed(event);
 	}
 
-
 	private void addAnnotationProcessorsAsDependency(MavenProject project) {
 		Dependency dep = new Dependency();
 		dep.setGroupId("com.commsen.em");
@@ -326,6 +332,5 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 		project.setRemoteArtifactRepositories(repos);
 
 	}
-	
 
 }
