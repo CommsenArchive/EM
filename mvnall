@@ -1,0 +1,9 @@
+#!/bin/bash
+
+
+mvn $@
+cd contractors
+mvn $@
+cd ../demos
+mvn $@
+cd ..
