@@ -63,7 +63,7 @@ It will not do anything unless you instruct it via one of the following properti
  - `<em:resolve>host:port:name:version</em:resolve>` - same as `<em:resolve />` but skips the modules already available in the runtime accessible at `host:port`
  - `<em:executable />` - builds a standalone executable jar (much like Spring Boot)
 
-Please see [demo projects](https://github.com/azzazzel/EM/tree/master/demos) for examples!
+Please see [demo projects](https://github.com/commsen/EM/tree/master/demos) for examples!
 
 _[HINT]: `em:` prefix is XML namespace which Maven ignores but proper XML editors will complain about. To get rid of the warnings you can add `xmlns:em="EM"` to `<project ...>` top level tag of the POM._
 
