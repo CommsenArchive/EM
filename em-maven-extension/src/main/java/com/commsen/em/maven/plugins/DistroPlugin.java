@@ -11,18 +11,13 @@ import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.security.auth.login.ConfigurationSpi;
-
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.commsen.em.maven.extension.Constants;
-
 import aQute.bnd.main.bnd;
-import aQute.configurable.Config;
 
 @Component(role = DistroPlugin.class)
 public class DistroPlugin {

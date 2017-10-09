@@ -18,7 +18,7 @@ public class EmRegisterContractPlugin extends DynamicMavenPlugin {
 	public void addToPom(MavenProject project) throws MavenExecutionException {
 		Plugin plugin = createPlugin("com.commsen.em", "em-maven-plugin", VAL_EXTENSION_VERSION, null, "registerContract", "registerContract", "package");
 		project.getBuild().getPlugins().add(0, plugin);
-		logger.info("Added `em-maven-plugin` to register contacts!");
+		logger.info("Added `em-maven-plugin` to register contracts!");
 
 	}
 
