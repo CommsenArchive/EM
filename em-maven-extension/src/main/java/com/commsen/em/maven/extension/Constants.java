@@ -10,11 +10,6 @@ public class Constants {
 
 	static {
 		InputStream resourceAsStream = Constants.class.getClassLoader().getResourceAsStream("META-INF/versions.properties");
-		
-		
-		System.out.println(Constants.class.getClassLoader());
-		System.out.println(Thread.currentThread().getContextClassLoader());
-		System.out.println(resourceAsStream);
 		try {
 			VERSIONS.load(resourceAsStream);
 		} catch (IOException e) {
