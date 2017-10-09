@@ -22,4 +22,6 @@ import com.vaadin.server.VaadinServlet;
 )
 @Requires("vaadin")
 public class MainServlet extends VaadinServlet {
+
+	private static final long serialVersionUID = 1L;
 }

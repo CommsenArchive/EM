@@ -8,6 +8,8 @@ import com.vaadin.ui.VerticalLayout;
 
 public class MainUI extends UI {
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	protected void init(VaadinRequest request) {
 		// The root of the component hierarchy
