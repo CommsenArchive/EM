@@ -9,7 +9,7 @@
 
 	<groupId>com.commsen.em</groupId>
 	<artifactId>em</artifactId>
-	<version>0.2.0-SNAPSHOT</version>
+	<version>0.3.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Eccentric Modularity</name>
