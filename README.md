@@ -1,6 +1,7 @@
 
-_This README describes version 0.2.0. This is a work in progress, so it may not be fully accurate! Links to released versions READMEs are provided below:_
+_This README describes version 0.3.0. This is a work in progress, so it may not be fully accurate! Links to released versions READMEs are provided below:_
 
+ - [version 0.2.x](https://github.com/commsen/EM/blob/0.2.x/README.md)
  - [version 0.1.x](https://github.com/commsen/EM/blob/0.1.x/README.md)
 
 # Eccentric Modularity
@@ -34,7 +35,7 @@ No. It may be seen as such in the sense that it can generate standalone executab
 
 ## Installation
 
-Until all `0.2.0` artifacts are released in central, you need to build the project locally. The steps are as follows:
+Until all `0.3.0` artifacts are released in central, you need to build the project locally. The steps are as follows:
 
  - clone the project
  - run `mvn install` in the main folder to build and install locally the main artifacts
