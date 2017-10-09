@@ -1,7 +1,12 @@
 
+_This README describes version 0.2.0. This is a work in progress, so it may not be fully accurate! Links to released versions READMEs are provided below:_
+
+ - [version 0.1.x](https://github.com/commsen/EM/blob/0.1.x/README.md)
+
 # Eccentric Modularity
 
 Eccentric Modularity (EM) is Maven extension making it easy to build modular, contract-based Java applications
+
 
 ## What it does?
 
@@ -38,7 +43,7 @@ Until all `0.2.0` artifacts are released in central, you need to build the proje
 
 ## Usage
 
-You need to add Eccentric Modularity extension to your project:
+Add EM extension to your project:
 ```xml
 <build>
   <extensions>
@@ -59,6 +64,8 @@ It will not do anything unless you instruct it via one of the following properti
  - `<em:executable />` - builds a standalone executable jar (much like Spring Boot)
 
 Please see [demo projects](https://github.com/azzazzel/EM/tree/master/demos) for examples!
+
+_[HINT]: `em:` prefix is XML namespace which Maven ignores but proper XML editors will complain about. To get rid of the warnings you can add `xmlns:em="EM"` to `<project ...>` top level tag of the POM._
 
 ## How does it work
 
