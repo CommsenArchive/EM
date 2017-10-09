@@ -11,7 +11,7 @@
 	<artifactId>em-maven-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
 
-	<name>EM Maven Plugin</name>
+	<name>EM - Maven plugin</name>
 
 	<!-- FIXME change it to the project's website -->
 	<url>http://maven.apache.org</url>
