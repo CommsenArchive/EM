@@ -52,7 +52,6 @@ public class CreateMojo extends AbstractMojo {
 	}
 	
 	private void createProject () throws MojoExecutionException {
-		textIO.getTextTerminal().print("JUST A MESSAGE");
 		
 		String project = textIO.newStringInputReader()
 		        .withDefaultValue("com.commsen.em.generated:generated-project:1.0.0-SNAPSHOT")
@@ -60,7 +59,7 @@ public class CreateMojo extends AbstractMojo {
 					@Override
 					public List<String> getErrorMessages(String val, String itemName) {
 						if (val.matches("^.*:.*:.*$")) return null;
-						return Arrays.asList("Id should be 'group:artifact:version' ");
+						return Arrays.asList("ID should be 'group:artifact:version' ");
 					}
 		        })
 		        .read("project ID");
@@ -71,7 +70,7 @@ public class CreateMojo extends AbstractMojo {
 		
 		if (multimodule) {
 			List<String> modules = textIO.newStringInputReader()
-				.readList("module IDs", "what is this for", "interesting");
+				.readList("module IDs (comma separated)");
 			for (String string : modules) {
 				System.out.println("Module: " + string);
 			}
