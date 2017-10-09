@@ -15,7 +15,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectDependenciesResolver;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
-import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
 import org.osgi.service.resolver.ResolutionException;
 import org.slf4j.Logger;
@@ -27,8 +26,6 @@ import com.commsen.em.contract.storage.NitriteContractStorage;
 import aQute.bnd.build.Workspace;
 import aQute.bnd.maven.lib.resolve.DependencyResolver;
 import aQute.bnd.osgi.Constants;
-import aQute.bnd.osgi.resource.FilterParser;
-import aQute.bnd.osgi.resource.FilterParser.Expression;
 import aQute.bnd.repository.fileset.FileSetRepository;
 import aQute.bnd.service.RepositoryPlugin;
 import aQute.lib.io.IO;
@@ -106,20 +103,22 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 			ResolutionException rex = (ResolutionException) t;
 			System.out.println("ResolutionException:" + rex);
 
-			ContractStorage contractStorage = null;
-			try {
-				contractStorage = new NitriteContractStorage();
-			} catch (IOException e1) {
-				throw new MojoExecutionException(e.getMessage(), e);
-			}
-
 			UnsatisfiedRequirementsException.Builder exBuilder = new UnsatisfiedRequirementsException.Builder();
-			for (Requirement requirement : rex.getUnresolvedRequirements()) {
-				if (rex.getMessage().contains(requirement.toString())) {
-					Set<String> found = contractStorage.getContractors(requirement);
-					if (found != null && !found.isEmpty()) {
-						found.forEach(contractor -> exBuilder.add(requirement.toString(), contractor));
-					} else {
+			try (ContractStorage contractStorage = new NitriteContractStorage()) {
+				for (Requirement requirement : rex.getUnresolvedRequirements()) {
+					if (rex.getMessage().contains(requirement.toString())) {
+						Set<String> found = contractStorage.getContractors(requirement);
+						if (found != null && !found.isEmpty()) {
+							found.forEach(contractor -> exBuilder.add(requirement.toString(), contractor));
+						} else {
+							exBuilder.add(requirement.toString());
+						}
+					}
+				}
+			} catch (IOException ioex) {
+				logger.warn("Can not find hits in local storage!", e);
+				for (Requirement requirement : rex.getUnresolvedRequirements()) {
+					if (rex.getMessage().contains(requirement.toString())) {
 						exBuilder.add(requirement.toString());
 					}
 				}
