@@ -3,11 +3,18 @@
 	xmlns:em="EM">
 	<modelVersion>4.0.0</modelVersion>
 
+	<parent>
+		<groupId>com.commsen.em</groupId>
+		<artifactId>em</artifactId>
+		<version>0.3.0-SNAPSHOT</version>
+	</parent>
+
 	<groupId>com.commsen.em.contractors</groupId>
 	<artifactId>contractors</artifactId>
-	<version>0.3.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
+	<name>EM Contractors</name>
+	<description>Parent project for all contractors</description>
 
 	<properties>
 		<em:module />
