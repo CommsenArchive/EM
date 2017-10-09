@@ -7,7 +7,7 @@ import com.commsen.em.annotations.Activator;
 import com.commsen.em.annotations.Requires;
 
 @Activator
-@Requires("DemoFramworkExtension")
+@Requires("DemoFrameworkExtension")
 public class ModuleActivator implements BundleActivator {
 
 	@Override

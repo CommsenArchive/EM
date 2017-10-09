@@ -10,7 +10,7 @@ import com.commsen.em.annotations.RuntimeExtension;
 
 @RuntimeExtension
 @Activator(extension=true)
-@Provides("DemoFramworkExtension")
+@Provides("DemoFrameworkExtension")
 public class FragmentActivator implements BundleActivator {
 
 	@Override
