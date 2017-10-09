@@ -40,9 +40,9 @@ It will not do anything unless you instruct it via one of the following properti
  - `<_.eccentric.modularity.augment />` - generates a jar file that only contains metadata about other jar functionalities
  - `<_.eccentric.modularity.resolve />` - saves in one place all jars that are needed to fulfill the requirements of your applications
  - `<_.eccentric.modularity.executable />` - builds a single executable jar (much like Spring Boot)
- - `<_.eccentric.modularity.deploy />` - saves in one place all jars that needed to be deployed to given target runtime 
+ - `<_.eccentric.modularity.deploy />` - saves in one place all jars that needed to be deployed to given target runtime
 
-Please see [demo projects](https://github.com/azzazzel/EM/tree/master/demo) for examples!
+Please see [demo projects](https://github.com/commsen/EM/tree/0.1.x/demo) for examples!
 
 ## How does it work
 
@@ -60,4 +60,3 @@ This work was heavily influenced and borrows ideas and examples from the followi
 ## License
 
 The project is released under [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)
-
