@@ -25,7 +25,7 @@
 			<properties>
 				<em:contractors>
 					com.commsen.em.contractors:em.contractors.runtime:${em.version},
-					com.commsen.em.contractors:em.contractors.gogo:0.2.0-SNAPSHOT
+					com.commsen.em.contractors:em.contractors.gogo:${em.version}
 				</em:contractors>
 			</properties>
 		</profile>
