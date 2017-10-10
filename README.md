@@ -32,16 +32,25 @@ No. It may be seen as such in the sense that it can generate standalone executab
 
 ## Installation
 
-Until all `0.2.0` artifacts are released in central, you need to build the project locally. The steps are as follows:
+All `0.2.0` artifacts are released in Maven central, so no special installation is required. You can add the extension to your POM and use it.
 
- - clone the project
- - run `mvn install` in the main folder to build and install locally the main artifacts
- - run `mvn install` in `contractors` folder to build and install locally the OOTB contractors
- - optionally run `mvn clean package` in `demos` folder to build the demos
+### Registering contractors
+
+EM keeps a local repository of contractors to be able to suggest some when it encounters unfulfilled contract. It automatically adds any contractor that is build locally. Any contractors available in Maven central need to be added manually. To do this you can use `em-maven-plugin`. It is best to add the `com.commsen.em` group as plugin group in your `settings.xml` to be able to use the plugin goals via `em:` prefix (without typing the full plugin name): 
+
+ ```xml
+<pluginGroups>
+	<pluginGroup>com.commsen.em</pluginGroup>
+</pluginGroups> 
+```
+
+With that configuration in place you can do `mvn em:addContractors` and provide a `group` or `group:artifact` or `group:artifact:version` for EM to scan. If it discovers modules that provides contracts in the standard `em:contract` namespace, it will register them in the local repository and suggest to use them when respective required contracts are not fulfilled. 
+
 
 ## Usage
 
 Add EM extension to your project:
+
 ```xml
 <build>
   <extensions>
