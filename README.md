@@ -1,7 +1,5 @@
 
-_This README describes version 0.2.0. This is a work in progress, so it may not be fully accurate! Links to released versions READMEs are provided below:_
-
- - [version 0.1.x](https://github.com/commsen/EM/blob/0.1.x/README.md)
+_This README describes version 0.2.0. Check [master branch](https://github.com/commsen/EM) for other versions!_
 
 # Eccentric Modularity
 
@@ -63,7 +61,7 @@ It will not do anything unless you instruct it via one of the following properti
  - `<em:resolve>host:port:name:version</em:resolve>` - same as `<em:resolve />` but skips the modules already available in the runtime accessible at `host:port`
  - `<em:executable />` - builds a standalone executable jar (much like Spring Boot)
 
-Please see [demo projects](https://github.com/commsen/EM/tree/master/demos) for examples!
+Please see [demo projects](https://github.com/commsen/EM/tree/0.2.x/demos) for examples!
 
 _[HINT]: `em:` prefix is XML namespace which Maven ignores but proper XML editors will complain about. To get rid of the warnings you can add `xmlns:em="EM"` to `<project ...>` top level tag of the POM._
 
