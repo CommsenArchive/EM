@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="4.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.m2e.core.lifecycleParticipants">
+      <participant
+            hint="EccentricModularityMavenLifecycleParticipant">
+      </participant>
+   </extension>      
+</plugin>
