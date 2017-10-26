@@ -53,7 +53,7 @@ public class Constants {
 	 * properties for EXECUTABLE action
 	 */
 	public static final String PROP_ACTION_EXECUTABLE = PROP_PREFIX + "executable";
-	public static final String PROP_EXECUTABLE_RUN_PROPERTIES = PROP_ACTION_EXECUTABLE + "properties";
+	public static final String PROP_EXECUTABLE_RUN_PROPERTIES = PROP_ACTION_EXECUTABLE + ".properties";
 
 	/*
 	 * properties for action instructions
