@@ -20,6 +20,7 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.DependencyManagement;
 import org.apache.maven.model.Exclusion;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.ProjectBuildingRequest;
 import org.apache.maven.repository.RepositorySystem;
 import org.apache.maven.shared.artifact.DefaultArtifactCoordinate;
 import org.apache.maven.shared.artifact.resolve.ArtifactResolver;
@@ -41,13 +42,13 @@ public class Dependencies {
 	@Requirement
 	private RepositorySystem mavenRepoSystem;
 	
-	public Set<Artifact> asArtifacts(MavenProject project) throws MavenExecutionException {
-		return asArtifacts(project, project.getDependencies());
+	public Set<Artifact> asArtifacts(ProjectBuildingRequest projectBuildingRequest, MavenProject project) throws MavenExecutionException {
+		return asArtifacts(projectBuildingRequest, project.getDependencies());
 	}
 
-	public Set<Artifact> managedAsArtifacts(MavenProject project) throws MavenExecutionException {
+	public Set<Artifact> managedAsArtifacts(ProjectBuildingRequest projectBuildingRequest, MavenProject project) throws MavenExecutionException {
 		if (project.getDependencyManagement() != null) {
-			return asArtifacts(project, project.getDependencyManagement().getDependencies());
+			return asArtifacts(projectBuildingRequest, project.getDependencyManagement().getDependencies());
 		} else {
 			return Collections.emptySet();
 		}
@@ -70,12 +71,12 @@ public class Dependencies {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public Set<Artifact> asArtifacts(MavenProject project, Collection<Dependency> initial) throws MavenExecutionException {
+	public Set<Artifact> asArtifacts(ProjectBuildingRequest projectBuildingRequest, Collection<Dependency> initial) throws MavenExecutionException {
 
 		ArtifactResolutionRequest artifactResolutionRequest = new ArtifactResolutionRequest();
 		artifactResolutionRequest.setResolveTransitively(true);
-		artifactResolutionRequest.setRemoteRepositories(project.getRemoteArtifactRepositories());
-		artifactResolutionRequest.setLocalRepository(project.getProjectBuildingRequest().getLocalRepository());
+		artifactResolutionRequest.setRemoteRepositories(projectBuildingRequest.getRemoteRepositories());
+		artifactResolutionRequest.setLocalRepository(projectBuildingRequest.getLocalRepository());
 
 		Set<Artifact> artifacts = new HashSet<>();
 		
@@ -107,7 +108,7 @@ public class Dependencies {
 			} 
 			ArtifactFilter filter = new ExclusionSetFilter(excludes);
 			
-			Artifact artifact = asArtifact(project, dependency);
+			Artifact artifact = asArtifact(projectBuildingRequest, dependency);
 			artifacts.add(artifact);
 			artifactResolutionRequest.setArtifact(artifact);
 			artifactResolutionRequest.setCollectionFilter(filter);
@@ -133,7 +134,7 @@ public class Dependencies {
 
 
 	@SuppressWarnings("deprecation")
-	public Artifact asArtifact (MavenProject project, Dependency dependency) throws MavenExecutionException {
+	public Artifact asArtifact (ProjectBuildingRequest projectBuildingRequest, Dependency dependency) throws MavenExecutionException {
 		DefaultArtifactCoordinate coordinate = new DefaultArtifactCoordinate();
 		coordinate.setGroupId(dependency.getGroupId());
 		coordinate.setArtifactId(dependency.getArtifactId());
@@ -143,7 +144,7 @@ public class Dependencies {
 
 		ArtifactResult ar;
 		try {
-			ar = artifactResolver.resolveArtifact(project.getProjectBuildingRequest(), coordinate);
+			ar = artifactResolver.resolveArtifact(projectBuildingRequest, coordinate);
 		} catch (ArtifactResolverException e) {
 			throw new MavenExecutionException("Failed to resolve artifact " + coordinate, e);
 		}
