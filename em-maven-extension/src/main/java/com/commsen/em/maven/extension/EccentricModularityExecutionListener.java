@@ -22,6 +22,7 @@ import org.apache.maven.execution.ExecutionEvent;
 import org.apache.maven.execution.ExecutionListener;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.ProjectBuildingRequest;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.slf4j.Logger;
@@ -65,8 +66,10 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 	@Override
 	public void projectStarted(ExecutionEvent event) {
 		delegate.projectStarted(event);
+		projectStarted(event.getSession().getProjectBuildingRequest(), event.getProject());
+	}
 
-		MavenProject project = event.getProject();
+	public void projectStarted(ProjectBuildingRequest projectBuildingRequest, MavenProject project) {
 
 		boolean hasOld = project.getProperties().keySet().stream() //
 				.filter(p -> p.toString().startsWith(PROP_PREFIX_OLD)) //
@@ -154,7 +157,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 				 * reverse order since they are added to the beginning of the list
 				 */
 				contractExporterPlugin.addToPom(project);
-				bndExportPlugin.addToPomForExport(project);
+				bndExportPlugin.addToPomForExport(projectBuildingRequest, project);
 				if (generateIndex)
 					bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
 				bndPlugin.addToBuild(project);
@@ -171,7 +174,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 				 * reverse order since they are added to the beginning of the list
 				 */
 				contractExporterPlugin.addToPom(project);
-				bndExportPlugin.addToPomForExecutable(project);
+				bndExportPlugin.addToPomForExecutable(projectBuildingRequest, project);
 				if (generateIndex)
 					bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
 				bndPlugin.addToBuild(project);

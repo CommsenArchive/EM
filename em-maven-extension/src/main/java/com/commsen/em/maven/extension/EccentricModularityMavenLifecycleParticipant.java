@@ -1,12 +1,14 @@
 package com.commsen.em.maven.extension;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.maven.AbstractMavenLifecycleParticipant;
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.execution.ExecutionListener;
 import org.apache.maven.execution.MavenSession;
+import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.slf4j.Logger;
@@ -30,9 +32,17 @@ public class EccentricModularityMavenLifecycleParticipant extends AbstractMavenL
 			return;
 		}
 
-		executionListener.setDelegate(session.getRequest().getExecutionListener());
-		session.getRequest().setExecutionListener(executionListener);
+//		executionListener.setDelegate(session.getRequest().getExecutionListener());
+//		session.getRequest().setExecutionListener(executionListener);
 		logger.info("Eccentric modularity extension started!");
+		
+		
+		List<MavenProject> allProjects = session.getProjects();
+		for (MavenProject mavenProject : allProjects) {
+			logger.info("Preparing " + mavenProject);
+			executionListener.projectStarted(session.getProjectBuildingRequest(), mavenProject);
+		}
+		
 	}
 
 }
