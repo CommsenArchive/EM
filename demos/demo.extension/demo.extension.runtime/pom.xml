@@ -14,7 +14,6 @@
 		<em.version>0.3.0-SNAPSHOT</em.version>
 		<em:executable />
 		<em:contractors>
-			com.commsen.em.contractors:em.contractors.runtime:${em.version},
 			com.commsen.em.demo:demo.extension.fragment:${em.version}
 		</em:contractors>
 	</properties>

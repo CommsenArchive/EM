@@ -15,7 +15,6 @@
 		<em.version>${project.version}</em.version>
 		<em:executable />
 		<em:contractors>
-			com.commsen.em.contractors:em.contractors.runtime:${em.version},
 			com.commsen.em.contractors:em.contractors.pax-logging:1.10.1,
 			com.commsen.em.contractors:em.contractors.pax-web-jetty:6.0.7,
 			com.commsen.em.contractors:em.contractors.vaadin:8.1.3,

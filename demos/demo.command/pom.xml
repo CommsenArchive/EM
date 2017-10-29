@@ -24,7 +24,6 @@
 			</activation>
 			<properties>
 				<em:contractors>
-					com.commsen.em.contractors:em.contractors.runtime:${em.version},
 					com.commsen.em.contractors:em.contractors.gogo:${em.version}
 				</em:contractors>
 			</properties>
@@ -33,7 +32,6 @@
 			<id>karaf</id>
 			<properties>
 				<em:contractors>
-					com.commsen.em.contractors:em.contractors.runtime:${em.version},
 					com.commsen.em.contractors:em.contractors.karaf.shell:4.1.2,
 					com.commsen.em.contractors:em.contractors.pax-logging:1.10.1
 				</em:contractors>

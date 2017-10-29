@@ -14,7 +14,6 @@
 		<em.version>${project.version}</em.version>
 		<em:executable />
 		<em:contractors>
-			com.commsen.em.contractors:em.contractors.runtime:${em.version},
 			com.commsen.em.contractors:em.contractors.karaf.scheduler:4.1.2,
 			com.commsen.em.contractors:em.contractors.pax-logging:1.10.1
 		</em:contractors>
