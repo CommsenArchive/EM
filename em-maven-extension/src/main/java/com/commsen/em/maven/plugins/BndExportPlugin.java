@@ -62,8 +62,6 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 
 	public void addToPom(ProjectBuildingRequest projectBuildingRequest, MavenProject project, boolean bundlesOnly, String bndrun) throws MavenExecutionException {
 
-
-
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("bundlesOnly", bundlesOnly);
 		model.put("bndrun", bndrun);
@@ -168,15 +166,19 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 		writeBndrun(bndFile, bndrunContent);
 
 		if (Flag.keepBndrun()) {
-			writeBndrun(new File(project.getBasedir(), "_em.generated.bndrun"), bndrunContent);
+			writeBndrun(new File(project.getBasedir(), "_em.generated.bndrun"), bndrunContent, false);
 		}
 	}
 
 	private void writeBndrun(File generatedBndrunFile, String content) throws MavenExecutionException {
+		writeBndrun(generatedBndrunFile, content, true);
+	}
+
+	private void writeBndrun(File generatedBndrunFile, String content, boolean deleteOnExit) throws MavenExecutionException {
 
 		try {
 			generatedBndrunFile.createNewFile();
-			generatedBndrunFile.deleteOnExit();
+			if (deleteOnExit) generatedBndrunFile.deleteOnExit();
 			PrintWriter writer = new PrintWriter(generatedBndrunFile, "UTF-8");
 			writer.print(content.replaceAll("\\t", "    "));
 			writer.close();
