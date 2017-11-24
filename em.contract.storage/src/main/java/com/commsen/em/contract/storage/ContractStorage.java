@@ -15,4 +15,7 @@ public interface ContractStorage extends Closeable {
 
 	Set<String> getAllContracts ();
 
+	static ContractStorage instance() throws IOException {
+		return new NitriteContractStorage();
+	}
 }

@@ -46,7 +46,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.commsen.em.contract.storage.ContractStorage;
-import com.commsen.em.contract.storage.NitriteContractStorage;
 import com.commsen.em.maven.util.Dependencies;
 import com.commsen.em.maven.util.Flag;
 import com.commsen.em.maven.util.Version;
@@ -146,7 +145,7 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 			System.out.println("ResolutionException:" + rex);
 
 			UnsatisfiedRequirementsException.Builder exBuilder = new UnsatisfiedRequirementsException.Builder();
-			try (ContractStorage contractStorage = new NitriteContractStorage()) {
+			try (ContractStorage contractStorage = ContractStorage.instance()) {
 				for (Requirement requirement : rex.getUnresolvedRequirements()) {
 					if (rex.getMessage().contains(requirement.toString())) {
 						Set<String> found = contractStorage.getContractors(requirement);

@@ -32,7 +32,7 @@ import aQute.bnd.osgi.resource.FilterParser.Op;
 import aQute.bnd.osgi.resource.FilterParser.Or;
 import aQute.bnd.osgi.resource.FilterParser.SimpleExpression;
 
-public class NitriteContractStorage implements ContractStorage {
+class NitriteContractStorage implements ContractStorage {
 
 	Set<String> supportedNamespaces = new HashSet<>();
 	String storage = System.getProperty("user.home") + "/.em/contracts.db";

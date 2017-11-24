@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.commsen.em.contract.storage.ContractStorage;
-import com.commsen.em.contract.storage.NitriteContractStorage;
 
 /**
  * Goal which ...
@@ -33,7 +32,7 @@ public class RegisterContractMojo extends AbstractMojo {
 		Artifact artifact = project.getArtifact();
 		String contractorCoordinates = artifact.getGroupId() + ":" + artifact.getArtifactId() + ":"
 				+ artifact.getVersion();
-		try (ContractStorage contractStorage = new NitriteContractStorage()) {
+		try (ContractStorage contractStorage = ContractStorage.instance()) {
 			contractStorage.saveContractor(artifact.getFile(), contractorCoordinates);
 		} catch (IOException e) {
 			logger.warn("Can not store contracts of " + contractorCoordinates, e);

@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.commsen.em.contract.storage.ContractStorage;
-import com.commsen.em.contract.storage.NitriteContractStorage;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -116,7 +115,7 @@ public class AddContractorsMojo extends AbstractMojo {
 				artifacts.add(toPair(gav, vals[0], vals[1], vals[2]));
 			}
 
-			try (ContractStorage contractStorage = new NitriteContractStorage()) {
+			try (ContractStorage contractStorage = ContractStorage.instance()) {
 				File f = new File("/tmp/.em");
 				f.mkdirs();
 				f = new File(f, "tmp.jar");
