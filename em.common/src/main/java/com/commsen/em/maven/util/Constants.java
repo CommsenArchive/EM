@@ -17,6 +17,8 @@ public class Constants {
 		}
 	}
 
+	public static final String VAL_EM_HOME = System.getProperty("user.home") + "/.em";
+			
 	public static final String VAL_BND_VERSION = getVersion("bnd");
 
 	public static final String VAL_EXTENSION_GROUP = "com.commsen.em";

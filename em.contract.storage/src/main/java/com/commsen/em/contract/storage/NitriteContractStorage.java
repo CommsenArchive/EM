@@ -1,5 +1,7 @@
 package com.commsen.em.contract.storage;
 
+import static com.commsen.em.maven.util.Constants.VAL_EM_HOME;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,6 +22,8 @@ import org.dizitart.no2.filters.Filters;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
 
+import com.commsen.em.maven.util.Constants;
+
 import aQute.bnd.header.Attrs;
 import aQute.bnd.header.Parameters;
 import aQute.bnd.osgi.Domain;
@@ -35,7 +39,7 @@ import aQute.bnd.osgi.resource.FilterParser.SimpleExpression;
 class NitriteContractStorage implements ContractStorage {
 
 	Set<String> supportedNamespaces = new HashSet<>();
-	String storage = System.getProperty("user.home") + "/.em/contracts.db";
+	String storage = VAL_EM_HOME + "/contracts.db";
 	Nitrite db;
 
 	public NitriteContractStorage() throws IOException {
