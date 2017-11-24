@@ -22,8 +22,6 @@ import org.dizitart.no2.filters.Filters;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
 
-import com.commsen.em.maven.util.Constants;
-
 import aQute.bnd.header.Attrs;
 import aQute.bnd.header.Parameters;
 import aQute.bnd.osgi.Domain;
