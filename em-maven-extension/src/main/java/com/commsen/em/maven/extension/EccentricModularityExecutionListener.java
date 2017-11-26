@@ -1,14 +1,15 @@
 package com.commsen.em.maven.extension;
 
-import static com.commsen.em.maven.extension.Constants.PROP_ACTION_AUGMENT;
-import static com.commsen.em.maven.extension.Constants.PROP_ACTION_EXECUTABLE;
-import static com.commsen.em.maven.extension.Constants.PROP_ACTION_MODULE;
-import static com.commsen.em.maven.extension.Constants.PROP_ACTION_MODULE_OLD;
-import static com.commsen.em.maven.extension.Constants.PROP_ACTION_RESOLVE;
-import static com.commsen.em.maven.extension.Constants.PROP_PREFIX;
-import static com.commsen.em.maven.extension.Constants.PROP_PREFIX_OLD;
-import static com.commsen.em.maven.extension.Constants.VAL_BND_VERSION;
-import static com.commsen.em.maven.extension.Constants.VAL_INDEX_TYPE;
+import static com.commsen.em.maven.util.Constants.PROP_ACTION_AUGMENT;
+import static com.commsen.em.maven.util.Constants.PROP_ACTION_EXECUTABLE;
+import static com.commsen.em.maven.util.Constants.PROP_ACTION_MODULE;
+import static com.commsen.em.maven.util.Constants.PROP_ACTION_MODULE_OLD;
+import static com.commsen.em.maven.util.Constants.PROP_ACTION_RESOLVE;
+import static com.commsen.em.maven.util.Constants.PROP_CONFIG_INDEX;
+import static com.commsen.em.maven.util.Constants.PROP_PREFIX;
+import static com.commsen.em.maven.util.Constants.PROP_PREFIX_OLD;
+import static com.commsen.em.maven.util.Constants.VAL_BND_VERSION;
+import static com.commsen.em.maven.util.Constants.VAL_INDEX_TYPE;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -95,7 +96,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 			addBndSnapshotRepo(project);
 		}
 
-		boolean generateIndex = project.getProperties().containsKey(Constants.PROP_CONFIG_INDEX);
+		boolean generateIndex = project.getProperties().containsKey(PROP_CONFIG_INDEX);
 		boolean actionFound = false;
 
 		addAnnotationProcessorsAsDependency(project);

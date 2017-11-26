@@ -2,7 +2,12 @@ package com.commsen.em.maven.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
+
+import org.apache.maven.project.MavenProject;
 
 public class Constants {
 
@@ -71,19 +76,6 @@ public class Constants {
 	public static final String CONFIG_PREFIX = PROP_PREFIX + "config.";
 	// should an index be generated
 	public static final String PROP_CONFIG_INDEX = CONFIG_PREFIX + "createIndex";
-	// where temporary bundles are stored (relative to project.getBasedir())
-	public static final String PROP_CONFIG_TMP_BUNDLES = CONFIG_PREFIX + ".tempBundlesDirectory";
-	// where distro files are stored (relative project.getBasedir())
-	public static final String PROP_CONFIG_DISTRO_FOLDER = PROP_ACTION_RESOLVE + ".distro";
-
-	/*
-	 * defaults
-	 */
-
-	// the default value for PROP_CONFIG_TMP_BUNDLES
-	public static final String DEFAULT_TMP_BUNDLES = ".bundles";
-	// the default value for PROP_CONFIG_DISTRO_FOLDER
-	public static final String DEFAULT_DISTROS_FOLDER = ".distros";
 
 	/*
 	 * properties for internal cross-plugin communication
@@ -99,6 +91,43 @@ public class Constants {
 	public static final String PROP_PREFIX_OLD = "_.eccentric.modularity.";
 	public static final String PROP_ACTION_MODULE_OLD = PROP_PREFIX + "metadata";
 
+	public static Path getHome (MavenProject project) throws IOException {
+		Path path = Paths.get(VAL_EM_HOME, "projects", project.getGroupId(), project.getArtifactId(), project.getVersion());
+		createDirectoryIfDoesNotExists(path);
+		return path;
+	}
+
+	public static Path getModulesFolder (MavenProject project) throws IOException {
+		Path path = getHome(project).resolve("modules");
+		createDirectoryIfDoesNotExists(path);
+		return path;
+	}
+
+	public static Path getGeneratedModulesFolder (MavenProject project) throws IOException {
+		Path path = getHome(project).resolve("generatedModules");
+		createDirectoryIfDoesNotExists(path);
+		return path;
+	}
+
+	public static Path getDistroFolder (MavenProject project) throws IOException {
+		Path path = getHome(project).resolve("distros");
+		createDirectoryIfDoesNotExists(path);
+		return path;
+	}
+
+	/**
+	 * @param path
+	 * @throws IOException
+	 */
+	private static void createDirectoryIfDoesNotExists(Path path) throws IOException {
+		if (!path.toFile().exists()) {
+			Files.createDirectories(path);
+		}
+		if (!path.toFile().isDirectory()) {
+			throw new IOException("Path " + path + " exists but is not a directory!");
+		}
+	}
+	
 	private static String getVersion(String key) {
 		return VERSIONS.getProperty(key);
 	}

@@ -1,8 +1,9 @@
 package com.commsen.em.maven.plugins;
 
-import static com.commsen.em.maven.extension.Constants.DEFAULT_TMP_BUNDLES;
-import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_TMP_BUNDLES;
-import static com.commsen.em.maven.extension.Constants.VAL_BND_VERSION;
+import static com.commsen.em.maven.util.Constants.VAL_BND_VERSION;
+
+import java.io.IOException;
+import java.nio.file.Path;
 
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.model.Plugin;
@@ -10,6 +11,8 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.commsen.em.maven.util.Constants;
 
 @Component(role = BndIndexerPlugin.class)
 public class BndIndexerPlugin extends DynamicMavenPlugin {
@@ -35,11 +38,18 @@ public class BndIndexerPlugin extends DynamicMavenPlugin {
 
 	public void addToPomForIndexingTmpBundles(MavenProject project) throws MavenExecutionException {
 
+		Path genertedModules;
+		try {
+			genertedModules = Constants.getGeneratedModulesFolder(project);
+		} catch (IOException e) {
+			throw new MavenExecutionException(e.getMessage(), e);
+		} 
+		
 		String configuration = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" //
 				+ "<configuration>" //
-				+ "		<inputDir>"
-				+ project.getProperties().getProperty(PROP_CONFIG_TMP_BUNDLES, DEFAULT_TMP_BUNDLES)
-				+ "</inputDir>" //
+				+ "		<inputDir>" //
+				+ 			genertedModules //
+				+ "		</inputDir>" //
 				+ "		<outputFile>${project.build.directory}/index/index.xml</outputFile>" //
 				+ "</configuration>"; //
 

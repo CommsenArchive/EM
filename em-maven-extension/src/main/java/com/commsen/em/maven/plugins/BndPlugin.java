@@ -1,10 +1,10 @@
 package com.commsen.em.maven.plugins;
 
-import static com.commsen.em.maven.extension.Constants.PROP_AUGMENT_FILE;
-import static com.commsen.em.maven.extension.Constants.PROP_MODULE_IGNORE_PACKAGES;
-import static com.commsen.em.maven.extension.Constants.PROP_MODULE_IMPORT_PACKAGES;
-import static com.commsen.em.maven.extension.Constants.PROP_MODULE_INCLUDE_PACKAGES;
-import static com.commsen.em.maven.extension.Constants.VAL_BND_VERSION;
+import static com.commsen.em.maven.util.Constants.PROP_AUGMENT_FILE;
+import static com.commsen.em.maven.util.Constants.PROP_MODULE_IGNORE_PACKAGES;
+import static com.commsen.em.maven.util.Constants.PROP_MODULE_IMPORT_PACKAGES;
+import static com.commsen.em.maven.util.Constants.PROP_MODULE_INCLUDE_PACKAGES;
+import static com.commsen.em.maven.util.Constants.VAL_BND_VERSION;
 
 import java.io.IOException;
 import java.util.Arrays;

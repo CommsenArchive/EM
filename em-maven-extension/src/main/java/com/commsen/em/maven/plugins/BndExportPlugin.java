@@ -1,11 +1,11 @@
 package com.commsen.em.maven.plugins;
 
-import static com.commsen.em.maven.extension.Constants.INTERNAL_DISTRO_FILE;
-import static com.commsen.em.maven.extension.Constants.PROP_ACTION_RESOLVE;
-import static com.commsen.em.maven.extension.Constants.PROP_CONTRACTS;
-import static com.commsen.em.maven.extension.Constants.PROP_EXECUTABLE_RUN_PROPERTIES;
-import static com.commsen.em.maven.extension.Constants.PROP_RESOLVE_OUTPUT;
-import static com.commsen.em.maven.extension.Constants.VAL_EXTENSION_VERSION;
+import static com.commsen.em.maven.util.Constants.INTERNAL_DISTRO_FILE;
+import static com.commsen.em.maven.util.Constants.PROP_ACTION_RESOLVE;
+import static com.commsen.em.maven.util.Constants.PROP_CONTRACTS;
+import static com.commsen.em.maven.util.Constants.PROP_EXECUTABLE_RUN_PROPERTIES;
+import static com.commsen.em.maven.util.Constants.PROP_RESOLVE_OUTPUT;
+import static com.commsen.em.maven.util.Constants.VAL_EXTENSION_VERSION;
 
 import java.io.File;
 import java.io.IOException;

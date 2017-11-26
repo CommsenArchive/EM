@@ -1,12 +1,9 @@
 package com.commsen.em.maven.plugins;
 
-import static com.commsen.em.maven.extension.Constants.DEFAULT_DISTROS_FOLDER;
-import static com.commsen.em.maven.extension.Constants.INTERNAL_DISTRO_FILE;
-import static com.commsen.em.maven.extension.Constants.PROP_CONFIG_DISTRO_FOLDER;
+import static com.commsen.em.maven.util.Constants.INTERNAL_DISTRO_FILE;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,6 +13,8 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.commsen.em.maven.util.Constants;
 
 import aQute.bnd.main.bnd;
 
@@ -27,7 +26,12 @@ public class DistroPlugin {
 
 	public void createDistroJar(MavenProject project, String remote) throws MavenExecutionException {
 
-		String distrosFolder = project.getProperties().getProperty(PROP_CONFIG_DISTRO_FOLDER, DEFAULT_DISTROS_FOLDER);
+		Path emProjectDistro;
+		try {
+			emProjectDistro = Constants.getDistroFolder(project);
+		} catch (IOException e) {
+			throw new MavenExecutionException("Failed to create distro folder!", e);
+		}
 
 		bnd bnd = new bnd();
 		try {
@@ -37,23 +41,7 @@ public class DistroPlugin {
 						project.getFile());
 			}
 
-			File output = new File(project.getBasedir(), distrosFolder);
-
-			if (output.exists()) {
-				if (!output.isDirectory()) {
-					throw new MavenExecutionException(
-							"Need to create folder " + output + " but file with that name already exists!",
-							project.getFile());
-				}
-			} else {
-				if (output.mkdirs()) {
-					logger.info("Created {} folder", output);
-				} else {
-					throw new MavenExecutionException("Failed to create folder " + output, project.getFile());
-				}
-			}
-
-			File distroFile = new File(output, params[2] + "-" + params[3] + ".jar");
+			File distroFile = emProjectDistro.resolve("-" + params[3] + ".jar").toFile();
 
 			List<String> args = new LinkedList<String>();
 			args.add("remote");
@@ -91,16 +79,5 @@ public class DistroPlugin {
 		}
 	}
 
-	public void clean(MavenProject project) throws MavenExecutionException, IOException {
-		String distrosFolder = project.getProperties().getProperty(PROP_CONFIG_DISTRO_FOLDER, DEFAULT_DISTROS_FOLDER);
-		File f = new File(project.getBasedir(), distrosFolder);
-		if (f.exists() && f.isDirectory()) {
-			logger.info("Deleting " + f);
-			Files.walk(f.toPath()) //
-					.map(Path::toFile) //
-					.sorted((o1, o2) -> -o1.compareTo(o2)) //
-					.forEach(File::delete); //
-		}
-	}
 
 }

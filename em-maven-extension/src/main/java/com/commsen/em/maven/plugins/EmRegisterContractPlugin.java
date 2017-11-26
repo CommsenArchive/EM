@@ -1,6 +1,6 @@
 package com.commsen.em.maven.plugins;
 
-import static com.commsen.em.maven.extension.Constants.VAL_EXTENSION_VERSION;
+import static com.commsen.em.maven.util.Constants.VAL_EXTENSION_VERSION;
 
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.model.Plugin;
