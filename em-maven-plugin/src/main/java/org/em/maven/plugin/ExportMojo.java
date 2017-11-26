@@ -1,8 +1,6 @@
 package org.em.maven.plugin;
 
-import static com.commsen.em.maven.util.Constants.DEFAULT_TMP_BUNDLES;
 import static com.commsen.em.maven.util.Constants.PROP_CONFIG_INDEX;
-import static com.commsen.em.maven.util.Constants.PROP_CONFIG_TMP_BUNDLES;
 import static com.commsen.em.maven.util.Constants.PROP_CONTRACTORS;
 import static com.commsen.em.maven.util.Constants.VAL_EXTENSION_VERSION;
 
@@ -12,6 +10,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -50,6 +51,7 @@ import com.commsen.em.maven.util.Dependencies;
 import com.commsen.em.maven.util.Flag;
 import com.commsen.em.maven.util.Version;
 
+import aQute.bnd.build.Container;
 import aQute.bnd.build.Workspace;
 import aQute.bnd.osgi.Constants;
 import aQute.bnd.repository.fileset.FileSetRepository;
@@ -77,7 +79,7 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 
 	@Parameter(defaultValue = "${project.build.directory}", readonly = true)
 	private File targetDir;
-
+	
 	@Parameter(readonly = true, required = false)
 	private List<File> bundles;
 
@@ -107,29 +109,36 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 	@Component
 	private Dependencies dependencies;
 
-	
 	private List<File> filesToCleanup = new LinkedList<>();
+
 	
+	private Path emProjectHome;
+	private Path emProjectModules;
+	private Path emProjectGeneratedModules;
+
 	public void execute() throws MojoExecutionException {
 		try {
-//			DependencyResolver dependencyResolver = new DependencyResolver(project, repositorySession, resolver,
-//					system);
-//
-//			FileSetRepository fileSetRepository = dependencyResolver.getFileSetRepository(project.getName(), bundles,
-//					useMavenDependencies);
 
-
+			emProjectHome = com.commsen.em.maven.util.Constants.getHome(project);
+			emProjectModules = com.commsen.em.maven.util.Constants.getModulesFolder(project);
+			emProjectGeneratedModules = com.commsen.em.maven.util.Constants.getGeneratedModulesFolder(project);
+			
 			Set<File> myBundles = prepareDependencies(session.getProjectBuildingRequest(), project);
 			File thisArtifact = new File(project.getBuild().getDirectory(),
 					project.getBuild().getFinalName() + "." + project.getPackaging());
 			myBundles.add(thisArtifact);
-
+			
 			FileSetRepository fileSetRepository = new FileSetRepository(project.getName(), myBundles);
 
-			
 			for (File runFile : bndruns) {
-				export(runFile, fileSetRepository);
+				Path runFileCopy = emProjectHome.resolve(runFile.getName());
+				Files.copy(runFile.toPath(), runFileCopy, StandardCopyOption.REPLACE_EXISTING);
+				export(runFileCopy.toFile(), fileSetRepository);
 			}
+		} catch (IOException e) {
+			
+			throw new MojoExecutionException(e.getMessage(), e);
+			
 		} catch (Exception e) {
 
 			Throwable t = e;
@@ -203,7 +212,7 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 			}
 			if (resolve) {
 				try {
-					String runBundles = run.resolve(failOnChanges, false);
+					String runBundles = run.resolve(failOnChanges, true);
 					if (!run.isOk()) {
 						return;
 					}
@@ -223,11 +232,37 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 				} else {
 					File executableJar = new File(targetDir, bndrun + ".jar");
 					run.export(null, false, executableJar);
+					
+					Set<Path> existingModules = Files.list(emProjectModules).collect(Collectors.toSet());
+					
+					for (Container container : run.getRunbundles()) {
+						createSymlink(existingModules, container);
+					}
+					for (Container container : run.getRunFw()) {
+						createSymlink(existingModules, container);
+					}					
+					for (Path path : existingModules) {
+						Files.delete(path);
+					}
 				}
 			} finally {
 				report(run);
 			}
 		}
+	}
+
+	/**
+	 * @param existingModules
+	 * @param container
+	 * @throws IOException
+	 */
+	private void createSymlink(Set<Path> existingModules, Container container) throws IOException {
+		File file = container.getFile();
+		Path link = emProjectModules.resolve(file.getName());
+		if (!link.toFile().exists()) {
+			Files.createSymbolicLink(link, file.toPath());
+		}
+		existingModules.remove(link);
 	}
 
 	private String getNamePart(File runFile) {
@@ -245,8 +280,7 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 			errors++;
 		}
 	}
-	
-	
+
 	private Set<File> prepareDependencies(ProjectBuildingRequest projectBuildingRequest, MavenProject project) {
 
 		if (logger.isDebugEnabled()) {
@@ -254,16 +288,6 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 		} else if (Flag.verbose()) {
 			logger.info("Analysing project's BOMs!");
 		}
-
-		File tmpBundleFolder = new File(project.getBasedir(),
-				project.getProperties().getProperty(PROP_CONFIG_TMP_BUNDLES, DEFAULT_TMP_BUNDLES));
-		tmpBundleFolder.deleteOnExit();
-		try {
-			FileUtils.forceMkdir(tmpBundleFolder);
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to create temprary directory: " + tmpBundleFolder, e);
-		}
-		filesToCleanup.add(tmpBundleFolder);
 
 		Set<File> bundleSet = new HashSet<File>();
 
@@ -283,12 +307,12 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 		 * For each artifact : - convert to bundle if it's not - add it to the bundle
 		 * set
 		 */
-		artifacts.stream().forEach(a -> addToBundleSet(a, tmpBundleFolder, bundleSet, generateIndex));
+		artifacts.stream().forEach(a -> addToBundleSet(a, emProjectGeneratedModules.toFile(), bundleSet, generateIndex));
 
 		return bundleSet;
 
 	}
-	
+
 	public void processModules(ProjectBuildingRequest projectBuildingRequest, MavenProject project) {
 		String modulesText = project.getProperties().getProperty(PROP_CONTRACTORS);
 		if (modulesText == null || modulesText.trim().isEmpty()) {
@@ -347,7 +371,6 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 
 	}
 
-	
 	/**
 	 * @param artifact
 	 * @param bundlesDirectory
@@ -381,7 +404,7 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 			logger.info("Made '{}' module available to the resolver", artifact);
 		}
 	}
-	
+
 	private boolean makeBundle(Artifact artifact, File targetFile) {
 		Properties properties = new Properties();
 		properties.put("Bundle-SymbolicName", artifact.getArtifactId());
