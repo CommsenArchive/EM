@@ -33,6 +33,7 @@ import com.commsen.em.maven.plugins.BndIndexerPlugin;
 import com.commsen.em.maven.plugins.BndPlugin;
 import com.commsen.em.maven.plugins.DistroPlugin;
 import com.commsen.em.maven.plugins.EmRegisterContractPlugin;
+import com.commsen.em.maven.plugins.LinkPlugin;
 
 @Component(role = ExecutionListener.class, hint = "em")
 public class EccentricModularityExecutionListener extends AbstractExecutionListener {
@@ -51,6 +52,9 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 
 	@Requirement
 	private EmRegisterContractPlugin contractExporterPlugin;
+
+	@Requirement
+	private LinkPlugin linkPlugin;
 
 	@Requirement(role = ArtifactRepositoryLayout.class, hint = "default")
 	private ArtifactRepositoryLayout defaultLayout;
@@ -104,6 +108,12 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 		 */
 		logger.info("Adding plugins and adapting project configuration based on provided '" + PROP_PREFIX
 				+ "*' properties!");
+
+		try {
+			linkPlugin.addToBuild(project);
+		} catch (MavenExecutionException e) {
+			throw new RuntimeException("Failed to add em-maven-plugin!", e);
+		}
 
 		if (project.getProperties().containsKey(PROP_ACTION_MODULE)) {
 			actionFound = true;
