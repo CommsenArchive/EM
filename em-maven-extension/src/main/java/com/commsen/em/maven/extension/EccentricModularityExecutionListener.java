@@ -158,7 +158,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 				 * reverse order since they are added to the beginning of the list
 				 */
 				contractExporterPlugin.addToPom(project);
-				bndExportPlugin.addToPomForExport(projectBuildingRequest, project);
+				bndExportPlugin.addToPomForExport(project);
 				if (generateIndex)
 					bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
 				bndPlugin.addToBuild(project);
@@ -175,7 +175,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 				 * reverse order since they are added to the beginning of the list
 				 */
 				contractExporterPlugin.addToPom(project);
-				bndExportPlugin.addToPomForExecutable(projectBuildingRequest, project);
+				bndExportPlugin.addToPomForExecutable(project);
 				if (generateIndex)
 					bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
 				bndPlugin.addToBuild(project);

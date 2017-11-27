@@ -1,7 +1,6 @@
 package com.commsen.em.maven.plugins;
 
 import static com.commsen.em.maven.util.Constants.INTERNAL_DISTRO_FILE;
-import static com.commsen.em.maven.util.Constants.PROP_ACTION_RESOLVE;
 import static com.commsen.em.maven.util.Constants.PROP_CONTRACTS;
 import static com.commsen.em.maven.util.Constants.PROP_EXECUTABLE_RUN_PROPERTIES;
 import static com.commsen.em.maven.util.Constants.PROP_RESOLVE_OUTPUT;
@@ -22,12 +21,12 @@ import java.util.Set;
 import org.apache.maven.MavenExecutionException;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.ProjectBuildingRequest;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.commsen.em.maven.util.Constants;
 import com.commsen.em.maven.util.Dependencies;
 import com.commsen.em.maven.util.Templates;
 
@@ -46,18 +45,22 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 
 	private Path emProjectHome;
 	
-	public void addToPomForExport(ProjectBuildingRequest projectBuildingRequest, MavenProject project) throws MavenExecutionException {
-		addToPom(projectBuildingRequest, project, true);
-		project.getProperties().setProperty(PROP_RESOLVE_OUTPUT, "${project.build.directory}/modules");
+	public void addToPomForExport(MavenProject project) throws MavenExecutionException {
+		addToPom(project, true);
+		try {
+			project.getProperties().setProperty(PROP_RESOLVE_OUTPUT, Constants.getExportedModulesFolder(project).toString());
+		} catch (IOException e) {
+			throw new MavenExecutionException(e.getMessage(), e);
+		}
 		logger.info("Added `bnd-export-maven-plugin` to genrate list of modules needed at runtume!");
 	}
 
-	public void addToPomForExecutable(ProjectBuildingRequest projectBuildingRequest, MavenProject project) throws MavenExecutionException {
-		addToPom(projectBuildingRequest, project, false);
+	public void addToPomForExecutable(MavenProject project) throws MavenExecutionException {
+		addToPom(project, false);
 		logger.info("Added `bnd-export-maven-plugin` to genrate executable jar!");
 	}
 
-	public void addToPom(ProjectBuildingRequest projectBuildingRequest, MavenProject project, boolean bundlesOnly) throws MavenExecutionException {
+	public void addToPom(MavenProject project, boolean bundlesOnly) throws MavenExecutionException {
 
 		try {
 			emProjectHome = com.commsen.em.maven.util.Constants.getHome(project);
@@ -87,7 +90,7 @@ public class BndExportPlugin extends DynamicMavenPlugin {
 	}
 
 	private String getBndrunPath(MavenProject project) throws MavenExecutionException {
-		String bndrunName = project.getProperties().getProperty(PROP_ACTION_RESOLVE + ".bndrun", "");
+		String bndrunName = project.getProperties().getProperty(Constants.PROP_CONFIG_BNDRUN, "");
 		if (bndrunName.trim().isEmpty()) {
 			bndrunName = project.getName() + ".bndrun";
 		}

@@ -226,9 +226,7 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 			}
 			try {
 				if (bundlesOnly) {
-					File runbundlesDir = new File(targetDir, "export/" + bndrun);
-					IO.mkdirs(runbundlesDir);
-					run.exportRunbundles(null, runbundlesDir);
+					run.exportRunbundles(null, com.commsen.em.maven.util.Constants.getExportedModulesFolder(project).toFile());
 				} else {
 					File executableJar = new File(targetDir, bndrun + ".jar");
 					run.export(null, false, executableJar);

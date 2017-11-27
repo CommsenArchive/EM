@@ -76,12 +76,14 @@ public class Constants {
 	public static final String CONFIG_PREFIX = PROP_PREFIX + "config.";
 	// should an index be generated
 	public static final String PROP_CONFIG_INDEX = CONFIG_PREFIX + "createIndex";
+	// bndrun file name
+	public static final String PROP_CONFIG_BNDRUN = CONFIG_PREFIX + "bndrunFile";
 
 	/*
 	 * properties for internal cross-plugin communication
 	 */
 
-	// prefix for all properties
+	// prefix for all internal properties
 	public static final String INTERNAL_PREFIX = PROP_PREFIX + "internal.";
 	public static final String INTERNAL_DISTRO_FILE = INTERNAL_PREFIX + "distro";
 
@@ -111,6 +113,12 @@ public class Constants {
 
 	public static Path getDistroFolder (MavenProject project) throws IOException {
 		Path path = getHome(project).resolve("distros");
+		createDirectoryIfDoesNotExists(path);
+		return path;
+	}
+
+	public static Path getExportedModulesFolder (MavenProject project) throws IOException {
+		Path path = Paths.get(project.getBuild().getDirectory()).resolve("modules");
 		createDirectoryIfDoesNotExists(path);
 		return path;
 	}
