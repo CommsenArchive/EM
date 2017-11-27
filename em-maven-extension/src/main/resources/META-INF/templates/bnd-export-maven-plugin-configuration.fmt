@@ -4,7 +4,7 @@
 	<resolve>true</resolve>
 	<bundlesOnly>${bundlesOnly?c}</bundlesOnly>
 	<bndruns>
-		<bndrun>${bndrun}.bndrun</bndrun>
+		<bndrun>${bndrun}</bndrun>
 	</bndruns>
 	<useMavenDependencies>false</useMavenDependencies>
 	<bundles>

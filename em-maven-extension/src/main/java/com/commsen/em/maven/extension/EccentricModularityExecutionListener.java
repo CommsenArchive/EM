@@ -240,14 +240,12 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 	public void projectSucceeded(ExecutionEvent event) {
 
 		delegate.projectSucceeded(event);
-		bndExportPlugin.cleanup();
 	}
 
 	@Override
 	public void projectFailed(ExecutionEvent event) {
 
 		delegate.projectFailed(event);
-		bndExportPlugin.cleanup();
 	}
 
 	@Override
