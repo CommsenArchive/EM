@@ -11,6 +11,8 @@ import static com.commsen.em.maven.util.Constants.PROP_PREFIX_OLD;
 import static com.commsen.em.maven.util.Constants.VAL_BND_VERSION;
 import static com.commsen.em.maven.util.Constants.VAL_INDEX_TYPE;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -74,7 +76,7 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 	}
 
 	public void projectStarted(ProjectBuildingRequest projectBuildingRequest, MavenProject project) {
-
+		
 		boolean hasOld = project.getProperties().keySet().stream() //
 				.filter(p -> p.toString().startsWith(PROP_PREFIX_OLD)) //
 				.peek(p -> logger.error("Property '{}' uses old prefix! Use '{}' instead!", p,

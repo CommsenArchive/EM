@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -109,9 +110,6 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 	@Component
 	private Dependencies dependencies;
 
-	private List<File> filesToCleanup = new LinkedList<>();
-
-	
 	private Path emProjectHome;
 	private Path emProjectModules;
 	private Path emProjectGeneratedModules;
@@ -135,51 +133,48 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 				Files.copy(runFile.toPath(), runFileCopy, StandardCopyOption.REPLACE_EXISTING);
 				export(runFileCopy.toFile(), fileSetRepository);
 			}
-		} catch (IOException e) {
-			
-			throw new MojoExecutionException(e.getMessage(), e);
-			
 		} catch (Exception e) {
 
 			Throwable t = e;
-
+			ResolutionException rex = null;
 			do {
 				System.out.println("exception: " + t.getClass());
-				if (t.getClass().isAssignableFrom(ResolutionException.class))
+				if (t.getClass().isAssignableFrom(ResolutionException.class)) {
+					rex = (ResolutionException)t;
 					break;
+				}
 				t = t.getCause();
-			} while (t.getCause() != null);
+			} while (t != null);
 
-			ResolutionException rex = (ResolutionException) t;
-			System.out.println("ResolutionException:" + rex);
-
-			UnsatisfiedRequirementsException.Builder exBuilder = new UnsatisfiedRequirementsException.Builder();
-			try (ContractStorage contractStorage = ContractStorage.instance()) {
-				for (Requirement requirement : rex.getUnresolvedRequirements()) {
-					if (rex.getMessage().contains(requirement.toString())) {
-						Set<String> found = contractStorage.getContractors(requirement);
-						if (found != null && !found.isEmpty()) {
-							found.forEach(contractor -> exBuilder.add(requirement.toString(), contractor));
-						} else {
+			if (rex != null) {
+				System.out.println("ResolutionException:" + rex);
+	
+				UnsatisfiedRequirementsException.Builder exBuilder = new UnsatisfiedRequirementsException.Builder();
+				try (ContractStorage contractStorage = ContractStorage.instance()) {
+					for (Requirement requirement : rex.getUnresolvedRequirements()) {
+						if (rex.getMessage().contains(requirement.toString())) {
+							Set<String> found = contractStorage.getContractors(requirement);
+							if (found != null && !found.isEmpty()) {
+								found.forEach(contractor -> exBuilder.add(requirement.toString(), contractor));
+							} else {
+								exBuilder.add(requirement.toString());
+							}
+						}
+					}
+				} catch (IOException ioex) {
+					logger.warn("Can not find hits in local storage!", e);
+					for (Requirement requirement : rex.getUnresolvedRequirements()) {
+						if (rex.getMessage().contains(requirement.toString())) {
 							exBuilder.add(requirement.toString());
 						}
 					}
 				}
-			} catch (IOException ioex) {
-				logger.warn("Can not find hits in local storage!", e);
-				for (Requirement requirement : rex.getUnresolvedRequirements()) {
-					if (rex.getMessage().contains(requirement.toString())) {
-						exBuilder.add(requirement.toString());
-					}
-				}
+				UnsatisfiedRequirementsException ure = exBuilder.build();
+				throw new MojoExecutionException(ure.getMessage(), ure);
+			} else {
+				throw new MojoExecutionException(e.getMessage(), e);
 			}
-			UnsatisfiedRequirementsException ure = exBuilder.build();
-			throw new MojoExecutionException(ure.getMessage(), ure);
 
-		} finally {
-			for (File file : filesToCleanup) {
-				FileUtils.deleteQuietly(file);
-			}
 		}
 
 		if (errors > 0)
@@ -257,7 +252,7 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 	private void createSymlink(Set<Path> existingModules, Container container) throws IOException {
 		File file = container.getFile();
 		Path link = emProjectModules.resolve(file.getName());
-		if (!link.toFile().exists()) {
+		if (!link.toFile().exists() && !Files.isSymbolicLink(link)) {
 			Files.createSymbolicLink(link, file.toPath());
 		}
 		existingModules.remove(link);

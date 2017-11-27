@@ -49,7 +49,7 @@ public class LinkMojo extends AbstractMojo {
 				emProjectHome = com.commsen.em.maven.util.Constants.getHome(project);
 				File f = project.getExecutionProject().getArtifact().getFile();
 				Path link = emProjectHome.resolve(f.getName());
-				if (!link.toFile().exists()) {
+				if (!link.toFile().exists() && !Files.isSymbolicLink(link)) {
 					Files.createSymbolicLink(link, f.toPath());
 				}
 				logger.info("Created link to project's artifact in " + emProjectHome);
