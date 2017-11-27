@@ -2,7 +2,6 @@ package org.em.maven.plugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 import org.apache.maven.execution.MavenSession;
@@ -90,8 +89,7 @@ public class RunMojo extends AbstractMojo {
 				}
 
 				try {
-					String runBundles = new String(IO.read(new File(targetDir, "tmp/.runBundles")),
-							StandardCharsets.UTF_8);
+					String runBundles = run.getRunbundles().toString();
 					run.setProperty(Constants.RUNBUNDLES, runBundles);
 				} finally {
 					report(run);
