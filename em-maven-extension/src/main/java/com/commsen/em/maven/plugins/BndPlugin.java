@@ -19,6 +19,7 @@ import org.codehaus.plexus.component.annotations.Requirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.commsen.em.maven.util.Constants;
 import com.commsen.em.maven.util.Templates;
 
 import freemarker.template.TemplateException;
@@ -110,9 +111,18 @@ public class BndPlugin extends DynamicMavenPlugin {
 
 		if (jarPlugin != null) {
 			StringBuilder jarConfig = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n") //
-					.append("<configuration><archive>\n") //
-					.append("	<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>\n") //
-					.append("</archive></configuration>");
+					.append("<configuration>") //
+					.append("	<archive>\n") //
+					.append("		<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>\n") //
+					.append("	</archive>") //
+					.append("	<annotationProcessorPaths>") //
+					.append("		<annotationProcessorPath>") //
+					.append("			<groupId>com.commsen.em</groupId>") //
+					.append("			<artifactId>em.annotation.processors</artifactId>") //
+					.append("			<version>").append(Constants.VAL_EXTENSION_VERSION).append("</version>") //
+					.append("		</annotationProcessorPath>") //
+					.append("	</annotationProcessorPaths>") //
+					.append("</configuration>");
 
 			configurePlugin(jarPlugin, "default-jar", jarConfig.toString());
 		}

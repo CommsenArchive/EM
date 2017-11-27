@@ -21,7 +21,6 @@ import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.execution.AbstractExecutionListener;
 import org.apache.maven.execution.ExecutionEvent;
 import org.apache.maven.execution.ExecutionListener;
-import org.apache.maven.model.Dependency;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingRequest;
 import org.codehaus.plexus.component.annotations.Component;
@@ -98,8 +97,6 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 
 		boolean generateIndex = project.getProperties().containsKey(PROP_CONFIG_INDEX);
 		boolean actionFound = false;
-
-		addAnnotationProcessorsAsDependency(project);
 
 		/*
 		 * TODO: figure out what to do if more than one action is provided! For now all
@@ -183,30 +180,6 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 				throw new RuntimeException("Failed to add one of the required bnd plugins!", e);
 			}
 		}
-
-		// if (project.getProperties().containsKey(PROP_ACTION_DEPLOY)) {
-		// actionFound = true;
-		// String runtime = project.getProperties().getProperty(PROP_ACTION_DEPLOY, "");
-		// try {
-		// distroPlugin.createDistroJar(project, runtime);
-		// } catch (MavenExecutionException e) {
-		// throw new RuntimeException("Failed to extract metadata from the target
-		// runtime!", e);
-		// }
-		// try {
-		// /*
-		// * TODO: Need a better way to add multiple plugins! For now add
-		// * plugins in reverse order since they are added to the
-		// * beginning of the list
-		// */
-		// bndExportPlugin.addToPomForExport(project);
-		// if (generateIndex) bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
-		// bndPlugin.addToBuild(project);
-		// } catch (MavenExecutionException e) {
-		// throw new RuntimeException("Failed to add one of the required bnd plugins!",
-		// e);
-		// }
-		// }
 
 		if (!actionFound) {
 			logger.info("No '" + PROP_PREFIX + "*' action found! Project will be executed AS IS!");
@@ -306,14 +279,6 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 	public void forkedProjectFailed(ExecutionEvent event) {
 
 		delegate.forkedProjectFailed(event);
-	}
-
-	private void addAnnotationProcessorsAsDependency(MavenProject project) {
-		Dependency dep = new Dependency();
-		dep.setGroupId("com.commsen.em");
-		dep.setArtifactId("em.annotation.processors");
-		dep.setVersion("(0.1.0,)");
-		project.getModel().getDependencies().add(dep);
 	}
 
 	private void addBndSnapshotRepo(MavenProject project) {
