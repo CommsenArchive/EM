@@ -131,7 +131,7 @@
 		<module>em.annotation.processors</module>
 		<module>em.augment</module>
 		<module>em-maven-plugin</module>
-		<module>em.contract.storage</module>
+		<module>em.storage.nitrite</module>
 		<module>em.common</module>
 	</modules>
 </project>
