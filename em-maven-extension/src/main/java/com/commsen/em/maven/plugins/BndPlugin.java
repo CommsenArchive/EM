@@ -67,6 +67,7 @@ public class BndPlugin extends DynamicMavenPlugin {
 		
 		project.getBuild().getPlugins().add(0, preparePlugin(configuration.toString()));
 
+		configureCompilerPlugin(project);
 		configureJarPlugin(project);
 		
 		logger.info("Added `bnd-maven-plugin` to generate metadata");
@@ -106,6 +107,26 @@ public class BndPlugin extends DynamicMavenPlugin {
 	}
 	
 	
+	private void configureCompilerPlugin(MavenProject project) throws MavenExecutionException {
+		Plugin compilerPlugin = getPlugin(project, "org.apache.maven.plugins:maven-compiler-plugin");
+
+		if (compilerPlugin != null) {
+			compilerPlugin.setVersion("3.7.0");
+			StringBuilder compilerConfig = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n") //
+					.append("<configuration>") //
+					.append("	<annotationProcessorPaths>") //
+					.append("		<path>") //
+					.append("			<groupId>com.commsen.em</groupId>") //
+					.append("			<artifactId>em.annotation.processors</artifactId>") //
+					.append("			<version>").append(Constants.VAL_EXTENSION_VERSION).append("</version>") //
+					.append("		</path>") //
+					.append("	</annotationProcessorPaths>") //
+					.append("</configuration>");
+
+			configurePlugin(compilerPlugin, "default-compile", compilerConfig.toString());
+		}
+	}
+	
 	private void configureJarPlugin(MavenProject project) throws MavenExecutionException {
 		Plugin jarPlugin = getPlugin(project, "org.apache.maven.plugins:maven-jar-plugin");
 
@@ -115,13 +136,6 @@ public class BndPlugin extends DynamicMavenPlugin {
 					.append("	<archive>\n") //
 					.append("		<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>\n") //
 					.append("	</archive>") //
-					.append("	<annotationProcessorPaths>") //
-					.append("		<annotationProcessorPath>") //
-					.append("			<groupId>com.commsen.em</groupId>") //
-					.append("			<artifactId>em.annotation.processors</artifactId>") //
-					.append("			<version>").append(Constants.VAL_EXTENSION_VERSION).append("</version>") //
-					.append("		</annotationProcessorPath>") //
-					.append("	</annotationProcessorPaths>") //
 					.append("</configuration>");
 
 			configurePlugin(jarPlugin, "default-jar", jarConfig.toString());
