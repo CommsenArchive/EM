@@ -12,11 +12,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -51,6 +49,7 @@ import com.commsen.em.maven.util.Dependencies;
 import com.commsen.em.maven.util.Flag;
 import com.commsen.em.maven.util.Version;
 import com.commsen.em.storage.ContractStorage;
+import com.commsen.em.storage.PathsStorage;
 
 import aQute.bnd.build.Container;
 import aQute.bnd.build.Workspace;
@@ -113,6 +112,9 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 	@Component
 	private ContractStorage contractStorage;
 
+	@Component
+	private PathsStorage pathsStorage;
+	
 	private Path emProjectHome;
 	private Path emProjectModules;
 	private Path emProjectGeneratedModules;
@@ -168,6 +170,12 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 				throw new MojoExecutionException(e.getMessage(), e);
 			}
 
+		} finally {
+			try {
+				pathsStorage.close();
+			} catch (IOException e) {
+				throw new MojoExecutionException(e.getMessage(), e);
+			}
 		}
 
 		if (errors > 0)
@@ -243,11 +251,12 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 	 * @throws IOException
 	 */
 	private void createSymlink(Set<Path> existingModules, Container container) throws IOException {
-		File file = container.getFile();
-		Path link = emProjectModules.resolve(file.getName());
-		if (!link.toFile().exists() && !Files.isSymbolicLink(link)) {
-			Files.createSymbolicLink(link, file.toPath());
+		Path file = pathsStorage.getProjectPath(container.getFile().toPath());
+		Path link = emProjectModules.resolve(file.getFileName());
+		if (Files.isSymbolicLink(link) || Files.exists(link)) {
+			Files.delete(link);
 		}
+		Files.createSymbolicLink(link, file);
 		existingModules.remove(link);
 	}
 
@@ -367,13 +376,13 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 			boolean indexGeneration) {
 		File f;
 		if (dependencies.isOSGiBundle(artifact)) {
-			f = artifact.getFile();
+			f = pathsStorage.getProjectPath(artifact.getFile().toPath()).toFile();
 			/*
 			 * If index is to be created copy the bundles to the temporary folder
 			 */
 			if (indexGeneration) {
 				try {
-					FileUtils.copyFile(artifact.getFile(), new File(bundlesDirectory, f.getName()));
+					FileUtils.copyFile(f, new File(bundlesDirectory, f.getName()));
 				} catch (IOException e) {
 					throw new RuntimeException("Failed to copy file to temporary folder", e);
 				}
