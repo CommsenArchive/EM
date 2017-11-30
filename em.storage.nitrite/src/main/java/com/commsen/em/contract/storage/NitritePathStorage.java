@@ -3,6 +3,7 @@ package com.commsen.em.contract.storage;
 import static com.commsen.em.maven.util.Constants.VAL_EM_HOME;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -37,7 +38,10 @@ class NitritePathStorage implements PathsStorage {
 		String p = path.toString();
 		NitriteCollection collection = getDb().getCollection("paths");
 		Document result = collection.find(or(eq("m2path", p), eq("projectPath", p))).firstOrDefault();
-		return result == null ? path : Paths.get(result.get("emPath", String.class));
+		if (result == null) return path;
+		Path returnPath = Paths.get(result.get("emPath", String.class));
+		if (Files.exists(returnPath) || Files.isSymbolicLink(returnPath)) return returnPath;
+		return path;
 	}
 
 	@Override
@@ -45,7 +49,10 @@ class NitritePathStorage implements PathsStorage {
 		String p = path.toString();
 		NitriteCollection collection = getDb().getCollection("paths");
 		Document result = collection.find(or(eq("emPath", p), eq("projectPath", p))).firstOrDefault();
-		return result == null ? path : Paths.get(result.get("m2path", String.class));
+		if (result == null) return path;
+		Path returnPath = Paths.get(result.get("m2path", String.class));
+		if (Files.exists(returnPath) || Files.isSymbolicLink(returnPath)) return returnPath;
+		return path;
 	}
 
 	@Override
@@ -53,7 +60,10 @@ class NitritePathStorage implements PathsStorage {
 		String p = path.toString();
 		NitriteCollection collection = getDb().getCollection("paths");
 		Document result = collection.find(or(eq("emPath", p), eq("m2path", p))).firstOrDefault();
-		return result == null ? path : Paths.get(result.get("projectPath", String.class));
+		if (result == null) return path;
+		Path returnPath = Paths.get(result.get("projectPath", String.class));
+		if (Files.exists(returnPath) || Files.isSymbolicLink(returnPath)) return returnPath;
+		return path;
 	}
 
 	@Override

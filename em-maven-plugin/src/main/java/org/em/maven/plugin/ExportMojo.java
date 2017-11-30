@@ -251,7 +251,7 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 	 * @throws IOException
 	 */
 	private void createSymlink(Set<Path> existingModules, Container container) throws IOException {
-		Path file = pathsStorage.getProjectPath(container.getFile().toPath());
+		Path file = pathsStorage.getEmPath(container.getFile().toPath());
 		Path link = emProjectModules.resolve(file.getFileName());
 		if (Files.isSymbolicLink(link) || Files.exists(link)) {
 			Files.delete(link);
@@ -376,7 +376,7 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 			boolean indexGeneration) {
 		File f;
 		if (dependencies.isOSGiBundle(artifact)) {
-			f = pathsStorage.getProjectPath(artifact.getFile().toPath()).toFile();
+			f = pathsStorage.getEmPath(artifact.getFile().toPath()).toFile();
 			/*
 			 * If index is to be created copy the bundles to the temporary folder
 			 */
@@ -394,9 +394,9 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 
 		bundlesSet.add(f);
 		if (logger.isDebugEnabled()) {
-			logger.debug("Made '{}' module available to the resolver", artifact);
+			logger.debug("Resolver input enty: module '{}' from {}", artifact, f);
 		} else if (Flag.verbose()) {
-			logger.info("Made '{}' module available to the resolver", artifact);
+			logger.info("Resolver input enty: module '{}' from {}", artifact, f);
 		}
 	}
 

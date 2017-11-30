@@ -60,7 +60,7 @@ public class LinkMojo extends AbstractMojo {
 				Path emProjectPath = emProjectHome.resolve(f.getName());
 				
 				if (!emProjectPath.toFile().exists() && !Files.isSymbolicLink(emProjectPath)) {
-					Files.createSymbolicLink(emProjectPath, f.toPath());
+					Files.copy(f.toPath(), emProjectPath);
 				}
 				
 				try {
