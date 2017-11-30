@@ -47,10 +47,10 @@ import org.osgi.service.resolver.ResolutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.commsen.em.contract.storage.ContractStorage;
 import com.commsen.em.maven.util.Dependencies;
 import com.commsen.em.maven.util.Flag;
 import com.commsen.em.maven.util.Version;
+import com.commsen.em.storage.ContractStorage;
 
 import aQute.bnd.build.Container;
 import aQute.bnd.build.Workspace;
@@ -109,6 +109,9 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 
 	@Component
 	private Dependencies dependencies;
+	
+	@Component
+	private ContractStorage contractStorage;
 
 	private Path emProjectHome;
 	private Path emProjectModules;
@@ -141,7 +144,6 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 				System.out.println("exception: " + t.getClass());
 				if (t.getClass().isAssignableFrom(ResolutionException.class)) {
 					rex = (ResolutionException)t;
-					break;
 				}
 				t = t.getCause();
 			} while (t != null);
@@ -150,21 +152,12 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 				System.out.println("ResolutionException:" + rex);
 	
 				UnsatisfiedRequirementsException.Builder exBuilder = new UnsatisfiedRequirementsException.Builder();
-				try (ContractStorage contractStorage = ContractStorage.instance()) {
-					for (Requirement requirement : rex.getUnresolvedRequirements()) {
-						if (rex.getMessage().contains(requirement.toString())) {
-							Set<String> found = contractStorage.getContractors(requirement);
-							if (found != null && !found.isEmpty()) {
-								found.forEach(contractor -> exBuilder.add(requirement.toString(), contractor));
-							} else {
-								exBuilder.add(requirement.toString());
-							}
-						}
-					}
-				} catch (IOException ioex) {
-					logger.warn("Can not find hits in local storage!", e);
-					for (Requirement requirement : rex.getUnresolvedRequirements()) {
-						if (rex.getMessage().contains(requirement.toString())) {
+				for (Requirement requirement : rex.getUnresolvedRequirements()) {
+					if (rex.getMessage().contains(requirement.toString())) {
+						Set<String> found = contractStorage.getContractors(requirement);
+						if (found != null && !found.isEmpty()) {
+							found.forEach(contractor -> exBuilder.add(requirement.toString(), contractor));
+						} else {
 							exBuilder.add(requirement.toString());
 						}
 					}

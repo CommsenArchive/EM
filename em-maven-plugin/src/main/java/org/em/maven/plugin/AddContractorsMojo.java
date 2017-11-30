@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
@@ -27,7 +28,7 @@ import org.codehaus.plexus.component.annotations.Requirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.commsen.em.contract.storage.ContractStorage;
+import com.commsen.em.storage.ContractStorage;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -53,6 +54,9 @@ public class AddContractorsMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
 	MavenProject project;
 
+	@Component
+	ContractStorage contractStorage;
+	
 	public void execute() throws MojoExecutionException {
 
 		String gav = textIO.newStringInputReader().withDefaultValue("com.commsen.em.contractors")
@@ -115,24 +119,21 @@ public class AddContractorsMojo extends AbstractMojo {
 				artifacts.add(toPair(gav, vals[0], vals[1], vals[2]));
 			}
 
-			try (ContractStorage contractStorage = ContractStorage.instance()) {
-				File f = new File("/tmp/.em");
-				f.mkdirs();
-				f = new File(f, "tmp.jar");
-				f.deleteOnExit();
+			File f = new File("/tmp/.em");
+			f.mkdirs();
+			f = new File(f, "tmp.jar");
+			f.deleteOnExit();
 
-				for (Pair<String, URL> pair : artifacts) {
-					logger.debug("Downloading " + pair.getSecond());
-					try (FileOutputStream fos = new FileOutputStream(f)) {
-						ReadableByteChannel rbc = Channels.newChannel(pair.getSecond().openStream());
-						fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-						boolean added = contractStorage.saveContractor(f, pair.getFirst());
-						logger.info((added ? "[√] " : "[X] ") + pair.getFirst());
-					} catch (IOException e) {
-						logger.warn("Error while processing " + pair.getFirst() + "!", e);
-					}
+			for (Pair<String, URL> pair : artifacts) {
+				logger.debug("Downloading " + pair.getSecond());
+				try (FileOutputStream fos = new FileOutputStream(f)) {
+					ReadableByteChannel rbc = Channels.newChannel(pair.getSecond().openStream());
+					fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+					boolean added = contractStorage.saveContractor(f, pair.getFirst());
+					logger.info((added ? "[√] " : "[X] ") + pair.getFirst());
+				} catch (IOException e) {
+					logger.warn("Error while processing " + pair.getFirst() + "!", e);
 				}
-				
 			}
 
 		} catch (IOException e) {

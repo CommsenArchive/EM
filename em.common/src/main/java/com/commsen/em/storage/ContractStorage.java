@@ -1,13 +1,12 @@
-package com.commsen.em.contract.storage;
+package com.commsen.em.storage;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
 import org.osgi.resource.Requirement;
 
-public interface ContractStorage extends Closeable {
+public interface ContractStorage {
 
 	boolean saveContractor (File contractor, String coordinates) throws IOException;
 
@@ -15,7 +14,4 @@ public interface ContractStorage extends Closeable {
 
 	Set<String> getAllContracts ();
 
-	static ContractStorage instance() throws IOException {
-		return new NitriteContractStorage();
-	}
 }

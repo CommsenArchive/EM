@@ -4,8 +4,6 @@ import static com.commsen.em.maven.util.Constants.VAL_EM_HOME;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -13,6 +11,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.codehaus.plexus.component.annotations.Component;
 import org.dizitart.no2.Cursor;
 import org.dizitart.no2.Document;
 import org.dizitart.no2.Filter;
@@ -21,6 +20,8 @@ import org.dizitart.no2.NitriteCollection;
 import org.dizitart.no2.filters.Filters;
 import org.osgi.resource.Namespace;
 import org.osgi.resource.Requirement;
+
+import com.commsen.em.storage.ContractStorage;
 
 import aQute.bnd.header.Attrs;
 import aQute.bnd.header.Parameters;
@@ -34,23 +35,14 @@ import aQute.bnd.osgi.resource.FilterParser.Op;
 import aQute.bnd.osgi.resource.FilterParser.Or;
 import aQute.bnd.osgi.resource.FilterParser.SimpleExpression;
 
+@Component(role=ContractStorage.class)
 class NitriteContractStorage implements ContractStorage {
 
 	Set<String> supportedNamespaces = new HashSet<>();
-	String storage = VAL_EM_HOME + "/contracts.db";
-	Nitrite db;
+	static String storage = VAL_EM_HOME + "/contracts.db";
 
 	public NitriteContractStorage() throws IOException {
-		Files.createDirectories(Paths.get(storage).getParent());
 		supportedNamespaces.add("em.contract");
-		db = Nitrite.builder().compressed().filePath(storage).openOrCreate("user", "password");
-	}
-
-	public NitriteContractStorage(String storage) throws IOException {
-		Files.createDirectories(Paths.get(storage).getParent());
-		supportedNamespaces.add("em.contract");
-		this.storage = storage;
-		db = Nitrite.builder().compressed().filePath(storage).openOrCreate("user", "password");
 	}
 
 	@Override
@@ -59,38 +51,42 @@ class NitriteContractStorage implements ContractStorage {
 		Domain domain = Domain.domain(contractor);
 		Parameters parameters = domain.getProvideCapability();
 
-		NitriteCollection collection = db.getCollection("contracts");
-		collection.remove(Filters.eq("contractor", coordinates));
-		List<Document> docs = new LinkedList<>();
-		for (Entry<String, Attrs> entry : parameters.entrySet()) {
-			String namespace = entry.getKey();
-			if (supportedNamespaces.contains(namespace)) {
-				Document doc = Document.createDocument("ns", entry.getKey()).put("contractor", coordinates);
-				for (Entry<String, String> field : entry.getValue().entrySet()) {
-					if (field.getKey().equals(namespace)) {
-						doc.put(field.getKey().replace('.', '|'), field.getValue());
+		try (Nitrite db = Nitrite.builder().compressed().filePath(storage).openOrCreate("user", "password")) {;
+			NitriteCollection collection = db.getCollection("contracts");
+			collection.remove(Filters.eq("contractor", coordinates));
+			List<Document> docs = new LinkedList<>();
+			for (Entry<String, Attrs> entry : parameters.entrySet()) {
+				String namespace = entry.getKey();
+				if (supportedNamespaces.contains(namespace)) {
+					Document doc = Document.createDocument("ns", entry.getKey()).put("contractor", coordinates);
+					for (Entry<String, String> field : entry.getValue().entrySet()) {
+						if (field.getKey().equals(namespace)) {
+							doc.put(field.getKey().replace('.', '|'), field.getValue());
+						}
 					}
+					docs.add(doc);
 				}
-				docs.add(doc);
 			}
+			if (docs.isEmpty()) {
+				return false;
+			} 
+			
+			collection.insert(docs.toArray(new Document[docs.size()]));
 		}
-		if (docs.isEmpty()) {
-			return false;
-		} 
-		
-		collection.insert(docs.toArray(new Document[docs.size()]));
 		return true;
 	}
 
 	@Override
 	public Set<String> getAllContracts() {
-		NitriteCollection collection = db.getCollection("contracts");
-		Cursor cursor = collection.find();
-		Set<String> result = new HashSet<>();
-		for (Document document : cursor) {
-			result.add(document.toString());
+		try (Nitrite db = Nitrite.builder().compressed().filePath(storage).openOrCreate("user", "password")) {;
+			NitriteCollection collection = db.getCollection("contracts");
+			Cursor cursor = collection.find();
+			Set<String> result = new HashSet<>();
+			for (Document document : cursor) {
+				result.add(document.toString());
+			}
+			return result;
 		}
-		return result;
 	}
 
 	@Override
@@ -118,22 +114,19 @@ class NitriteContractStorage implements ContractStorage {
 				return Collections.emptySet();
 			}
 
-			NitriteCollection collection = db.getCollection("contracts");
-			Cursor cursor = collection.find(f);
-			Set<String> result = new HashSet<>();
-			for (Document document : cursor) {
-				result.add(document.get("contractor", String.class));
+			try (Nitrite db = Nitrite.builder().compressed().filePath(storage).openOrCreate("user", "password")) {;
+				NitriteCollection collection = db.getCollection("contracts");
+				Cursor cursor = collection.find(f);
+				Set<String> result = new HashSet<>();
+				for (Document document : cursor) {
+					result.add(document.get("contractor", String.class));
+				}
+				return result;
 			}
-			return result;
 		}
 		return Collections.emptySet();
 	}
 
-
-	@Override
-	public void close() {
-		db.close();
-	}
 
 	class NitriteVistor extends ExpressionVisitor<Filter> {
 
