@@ -167,9 +167,9 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 				 * reverse order since they are added to the beginning of the list
 				 */
 				contractExporterPlugin.addToPom(project);
-				bndExportPlugin.addToPomForExport(project);
 				if (generateIndex)
 					bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
+				bndExportPlugin.addToPomForExport(project);
 				bndPlugin.addToBuild(project);
 			} catch (MavenExecutionException e) {
 				throw new RuntimeException("Failed to add one of the required bnd plugins!", e);
@@ -184,9 +184,9 @@ public class EccentricModularityExecutionListener extends AbstractExecutionListe
 				 * reverse order since they are added to the beginning of the list
 				 */
 				contractExporterPlugin.addToPom(project);
-				bndExportPlugin.addToPomForExecutable(project);
 				if (generateIndex)
 					bndIndexerPlugin.addToPomForIndexingTmpBundles(project);
+				bndExportPlugin.addToPomForExecutable(project);
 				bndPlugin.addToBuild(project);
 			} catch (MavenExecutionException e) {
 				throw new RuntimeException("Failed to add one of the required bnd plugins!", e);
