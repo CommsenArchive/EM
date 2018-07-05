@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
@@ -28,13 +29,13 @@ import org.apache.maven.shared.artifact.resolve.ArtifactResolverException;
 import org.apache.maven.shared.artifact.resolve.ArtifactResult;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
-import org.slf4j.Logger;
+import org.fusesource.jansi.Ansi;
 import org.slf4j.LoggerFactory;
 
 @Component(role = Dependencies.class)
 public class Dependencies {
 		
-	private Logger logger = LoggerFactory.getLogger(Dependencies.class);
+	private IndentingLogger logger = IndentingLogger.wrap(LoggerFactory.getLogger(Dependencies.class));
 
 	@Requirement
 	private ArtifactResolver artifactResolver;
@@ -43,17 +44,34 @@ public class Dependencies {
 	private RepositorySystem mavenRepoSystem;
 	
 	public Set<Artifact> asArtifacts(ProjectBuildingRequest projectBuildingRequest, MavenProject project) throws MavenExecutionException {
-		return asArtifacts(projectBuildingRequest, project.getDependencies());
-	}
-
-	public Set<Artifact> managedAsArtifacts(ProjectBuildingRequest projectBuildingRequest, MavenProject project) throws MavenExecutionException {
-		if (project.getDependencyManagement() != null) {
-			return asArtifacts(projectBuildingRequest, project.getDependencyManagement().getDependencies());
+		if (project.getDependencies() != null) {
+			logger.info("Analysing direct dependencies tree of `{}` ...", toBold(project.getId()));
+			logger.indent();
+			Set<Artifact> result = asArtifacts(projectBuildingRequest, project.getId(), project.getDependencies());
+			logger.unindent();
+			logger.info("Done analysing direct dependencies tree of `{}`! Found {} artifacts!", toBold(project.getId()), result.size());
+			return result;
 		} else {
+			logger.info("No direct dependencies found in `{}`", toBold(project.getId()));
 			return Collections.emptySet();
 		}
 	}
 
+	public Set<Artifact> managedAsArtifacts(ProjectBuildingRequest projectBuildingRequest, MavenProject project) throws MavenExecutionException {
+		if (project.getDependencyManagement() != null) {
+			logger.info("Analysing managed dependencies tree of `{}` ...", toBold(project.getId()));
+			logger.indent();
+			Set<Artifact> result = asArtifacts(projectBuildingRequest, project.getId(), project.getDependencyManagement().getDependencies());
+			logger.unindent();
+			logger.info("Done analysing managed dependencies tree of `{}`! Found {} artifacts!", toBold(project.getId()), result.size());
+			return result;
+		} else {
+			logger.info("No managed dependencies found in `{}`", toBold(project.getId()));
+			return Collections.emptySet();
+		}
+	}
+
+	@SuppressWarnings("deprecation")
 	public Set<Artifact> resolve(MavenProject project, Artifact artifact) throws MavenExecutionException {
 		Set<Artifact> artifacts = new HashSet<>();
 		ArtifactResolutionRequest artifactResolutionRequest = new ArtifactResolutionRequest();
@@ -69,9 +87,8 @@ public class Dependencies {
 			.forEach(d -> artifacts.add(d));
 		return artifacts;
 	}
-	
-	@SuppressWarnings("deprecation")
-	public Set<Artifact> asArtifacts(ProjectBuildingRequest projectBuildingRequest, Collection<Dependency> initial) throws MavenExecutionException {
+
+	public Set<Artifact> asArtifacts(ProjectBuildingRequest projectBuildingRequest, String projectId, Collection<Dependency> initial) throws MavenExecutionException {
 
 		ArtifactResolutionRequest artifactResolutionRequest = new ArtifactResolutionRequest();
 		artifactResolutionRequest.setResolveTransitively(true);
@@ -81,22 +98,13 @@ public class Dependencies {
 		Set<Artifact> artifacts = new HashSet<>();
 		
 		List<Dependency> jarDependencies = initial.stream()
-				.filter(d -> "jar".equals(d.getType()))
-				.filter(d -> "compile".equals(d.getScope()) || "provided".equals(d.getScope()) || "runtime".equals(d.getScope()))
+				.filter(isDependencyRuntimeDependencyOf(projectId))
 				.collect(Collectors.toList()
 		);
 		
 		for (Dependency dependency : jarDependencies) {
-
-			if (Flag.verbose()) {
-				logger.info("Processing: " + dependency);
-			} else if (logger.isDebugEnabled()) {
-				logger.debug("Processing: " + dependency);
-			}
-			
 			Set<Artifact> tmpArtifacts = new HashSet<>();
-			
-			
+
 			// make sure to not process excluded dependencies
 			Set<String> excludes = new HashSet<>();
 			for (Exclusion exclusion : dependency.getExclusions()) {
@@ -104,6 +112,11 @@ public class Dependencies {
 					excludes.add(exclusion.getGroupId() + ":" + exclusion.getArtifactId());
 				} else {
 					excludes.add(exclusion.getArtifactId());
+				}
+				if (Flag.verbose()) {
+					logger.info("🚫  `{}` is excluded dependency of `{}`", toBold(exclusion.getArtifactId()), toBold(toId(dependency))); 
+				} else if (logger.isDebugEnabled()) {
+					logger.debug("🚫  `{}` is excluded dependency of `{}`", toBold(exclusion.getArtifactId()), toBold(toId(dependency))); 
 				}
 			} 
 			ArtifactFilter filter = new ExclusionSetFilter(excludes);
@@ -113,19 +126,9 @@ public class Dependencies {
 			artifactResolutionRequest.setArtifact(artifact);
 			artifactResolutionRequest.setCollectionFilter(filter);
 			ArtifactResolutionResult artifactResolutionResult = mavenRepoSystem.resolve(artifactResolutionRequest);
-
 			artifactResolutionResult.getArtifacts().stream()
-				.peek(d -> { if (Flag.verbose()) logger.info("Processing '{}' from '{}'", d,  toId(dependency)); })
-				.filter(d -> "jar".equals(d.getType()))
-				.filter(d -> "compile".equals(d.getScope()) || "provided".equals(d.getScope()) || "runtime".equals(d.getScope()))
+				.filter(isArtifactRuntimeDependencyOf(toId(dependency)))
 				.forEach(d -> tmpArtifacts.add(d));
-			
-			if (Flag.verbose()) {
-				tmpArtifacts.stream().sorted().forEach( a -> logger.info("   Found: " + a));
-			} else if (logger.isDebugEnabled()) {
-				tmpArtifacts.stream().sorted().forEach( a -> logger.debug("   Found: " + a));
-			}
-			
 			artifacts.addAll(tmpArtifacts);
 		}
 		return artifacts;
@@ -133,7 +136,6 @@ public class Dependencies {
 
 
 
-	@SuppressWarnings("deprecation")
 	public Artifact asArtifact (ProjectBuildingRequest projectBuildingRequest, Dependency dependency) throws MavenExecutionException {
 		DefaultArtifactCoordinate coordinate = new DefaultArtifactCoordinate();
 		coordinate.setGroupId(dependency.getGroupId());
@@ -164,11 +166,17 @@ public class Dependencies {
 	}
 	
 
-	public void addToDependencyManagement(MavenProject project, Dependency dependency) {
+	public void addToDependencyManagement(MavenProject project, Dependency dependency, String from) {
 		if (project.getModel().getDependencyManagement() == null) {
 			project.getModel().setDependencyManagement(new DependencyManagement());
 		}
 		project.getModel().getDependencyManagement().addDependency(dependency);;
+
+		if (Flag.verbose()) {
+			logger.info("💉  `{}`  was added as managed dependency of `{}` because of `{}` contractor", toBold(toId(dependency)), toBold(project.getId()), toBold(from)); 
+		} else if (logger.isDebugEnabled()) {
+			logger.debug("💉  `{}`  was added as managed dependency of `{}` because of `{}` contractor", toBold(toId(dependency)), toBold(project.getId()), toBold(from)); 
+		}
 	}
 
 	
@@ -176,5 +184,45 @@ public class Dependencies {
 		return dependency.getGroupId() + ":" + dependency.getArtifactId() + ":" + dependency.getVersion();
 	}
 	
+	private Predicate<Dependency> isDependencyRuntimeDependencyOf (String parentId) {
+		return d -> {
+			boolean match = 
+					"jar".equals(d.getType()) && 
+					(	
+						"compile".equals(d.getScope()) || 
+						"provided".equals(d.getScope()) || 
+						"runtime".equals(d.getScope())
+					);
+			if (Flag.verbose()) {
+				logger.info("{}  `{}` is a dependency of `{}` {}", match ? "✅" : "⛔", toBold(toId(d)), toBold(parentId), match ? "" : ", but it's not a JAR needed at runtime"); 
+			} else if (logger.isDebugEnabled()) {
+				logger.debug("{}  `{}` is a dependency of `{}` {}", match ? "✅" : "⛔", toBold(toId(d)), toBold(parentId), match ? "" : ", but it's not a JAR needed at runtime"); 
+			}
+			return match;
+		};
+	}
+
+	private Predicate<Artifact> isArtifactRuntimeDependencyOf (String parentId) {
+		return a -> {
+			boolean match = 
+					"jar".equals(a.getType()) && 
+					(	
+						"compile".equals(a.getScope()) || 
+						"provided".equals(a.getScope()) || 
+						"runtime".equals(a.getScope())
+					);
+			if (Flag.verbose()) {
+				logger.info("{}  `{}` is a dependency of `{}` {}", match ? "✅" : "⛔", toBold(a.getId()), toBold(parentId), match ? "" : ", but it's not a JAR needed at runtime"); 
+			} else if (logger.isDebugEnabled()) {
+				logger.debug("{}  `{}` is a dependency of `{}` {}", match ? "✅" : "⛔", toBold(a.getId()), toBold(parentId), match ? "" : ", but it's not a JAR needed at runtime"); 
+			}
+			return match;
+		};
+	}	
+	
+	private String toBold(String text) {
+		Ansi ansi = Ansi.ansi();
+		return ansi.bold().a(text).boldOff().toString();
+	}
 	
 }

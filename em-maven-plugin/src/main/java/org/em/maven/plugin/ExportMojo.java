@@ -42,11 +42,11 @@ import org.ops4j.pax.swissbox.bnd.BndUtils;
 import org.ops4j.pax.swissbox.bnd.OverwriteMode;
 import org.osgi.resource.Requirement;
 import org.osgi.service.resolver.ResolutionException;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.commsen.em.maven.util.Dependencies;
 import com.commsen.em.maven.util.Flag;
+import com.commsen.em.maven.util.IndentingLogger;
 import com.commsen.em.maven.util.Version;
 import com.commsen.em.storage.ContractStorage;
 import com.commsen.em.storage.PathsStorage;
@@ -54,6 +54,7 @@ import com.commsen.em.storage.PathsStorage;
 import aQute.bnd.build.Container;
 import aQute.bnd.build.Workspace;
 import aQute.bnd.osgi.Constants;
+import aQute.bnd.osgi.repository.BridgeRepository;
 import aQute.bnd.repository.fileset.FileSetRepository;
 import aQute.bnd.service.RepositoryPlugin;
 import aQute.lib.io.IO;
@@ -66,7 +67,7 @@ import biz.aQute.resolve.ResolveProcess;
 @Mojo(name = "export", defaultPhase = LifecyclePhase.PACKAGE)
 public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 
-	private static final Logger logger = LoggerFactory.getLogger(ExportMojo.class);
+	private static final IndentingLogger logger = IndentingLogger.wrap(LoggerFactory.getLogger(ExportMojo.class));
 
 	@Parameter(defaultValue = "${project}", readonly = true, required = true)
 	MavenProject project;
@@ -107,7 +108,7 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 	private ProjectDependenciesResolver resolver;
 
 	@Component
-	private Dependencies dependencies;
+	private Dependencies dependenciesToolbox;
 	
 	@Component
 	private ContractStorage contractStorage;
@@ -121,22 +122,38 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 
 	public void execute() throws MojoExecutionException {
 		try {
-
+			
+			logger.info("Adding project's remote repositories to building request's repositories ...");
+			logger.indent();
+			ProjectBuildingRequest projectBuildingRequest = session.getProjectBuildingRequest();
+			project.getRemoteArtifactRepositories()
+				.forEach(r -> {
+					if (Flag.verbose()) {
+						logger.info("Adding repository {}", r.getUrl());
+					} else if (logger.isDebugEnabled()) {
+						logger.debug("Adding repository {}", r.getUrl());
+					}
+					projectBuildingRequest.getRemoteRepositories().add(r);					
+				});
+			logger.unindent();
+			logger.info("Done adding project's remote repositories to building request's repositories!");
+			
 			emProjectHome = com.commsen.em.maven.util.Constants.getHome(project);
 			emProjectModules = com.commsen.em.maven.util.Constants.getModulesFolder(project);
 			emProjectGeneratedModules = com.commsen.em.maven.util.Constants.getGeneratedModulesFolder(project);
 			
-			Set<File> myBundles = prepareDependencies(session.getProjectBuildingRequest(), project);
-			File thisArtifact = new File(project.getBuild().getDirectory(),
-					project.getBuild().getFinalName() + "." + project.getPackaging());
-			myBundles.add(thisArtifact);
-			
-			FileSetRepository fileSetRepository = new FileSetRepository(project.getName(), myBundles);
+			addManagedDependenciesFromContractors(projectBuildingRequest, project);
+
+			FileSetRepository fileSetRepository = createBundleRepository();
 
 			for (File runFile : bndruns) {
 				Path runFileCopy = emProjectHome.resolve(runFile.getName());
 				Files.copy(runFile.toPath(), runFileCopy, StandardCopyOption.REPLACE_EXISTING);
+				logger.info("Runnig the resolver for `{}` file ...", runFileCopy);
+				logger.indent();
 				export(runFileCopy.toFile(), fileSetRepository);
+				logger.unindent();
+				logger.info("Done runnig the resolver for `{}` file ...", runFileCopy);
 			}
 		} catch (Exception e) {
 
@@ -180,6 +197,38 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 
 		if (errors > 0)
 			throw new MojoExecutionException(errors + " errors found");
+	}
+
+	/**
+	 * @return
+	 * @throws Exception
+	 */
+	private FileSetRepository createBundleRepository() throws Exception {
+		logger.info("Generating the list of OSGi bundles ...");
+		logger.indent();
+		Set<File> bundlesFromTransiteveDependencies = prepareBundlesList(session.getProjectBuildingRequest(), project);
+		File thisArtifact = new File(project.getBuild().getDirectory(), project.getBuild().getFinalName() + "." + project.getPackaging());
+		bundlesFromTransiteveDependencies.add(thisArtifact);
+		logger.unindent();
+		logger.info("Done generating the list of OSGi bundles. It contains {} bundles", bundlesFromTransiteveDependencies.size());
+		
+		logger.info("Creating bundle repository ...");
+		logger.indent();
+		FileSetRepository fileSetRepository = new FileSetRepository(project.getName(), bundlesFromTransiteveDependencies);
+		List<String> bundles = fileSetRepository.list(null);
+		if (Flag.verbose() || logger.isDebugEnabled()) {
+			BridgeRepository bridgeRepository = new BridgeRepository(fileSetRepository);
+			bundles.forEach(b -> {
+				if (Flag.verbose()) {
+					logger.info("📝  Bundle repository has {} version(s) of {} ", versions(b, bridgeRepository), b);
+				} else if (logger.isDebugEnabled()) {
+					logger.debug("📝  Bundle repository has {} version(s) of {} ", versions(b, bridgeRepository), b);
+				}
+			});	
+		}
+		logger.unindent();
+		logger.info("Done creating bundle repository. It contains {} symbolic names (possibly in multiple versions).", bundles.size());
+		return fileSetRepository;
 	}
 
 	private void export(File runFile, FileSetRepository fileSetRepository) throws Exception {
@@ -276,55 +325,65 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 		}
 	}
 
-	private Set<File> prepareDependencies(ProjectBuildingRequest projectBuildingRequest, MavenProject project) {
+	private Set<File> prepareBundlesList(ProjectBuildingRequest projectBuildingRequest, MavenProject project) {
 
-		if (logger.isDebugEnabled()) {
-			logger.debug("Analysing project's BOMs!");
-		} else if (Flag.verbose()) {
-			logger.info("Analysing project's BOMs!");
-		}
-
-		Set<File> bundleSet = new HashSet<File>();
-
-		boolean generateIndex = project.getProperties().containsKey(PROP_CONFIG_INDEX);
-
-		processModules(projectBuildingRequest, project);
-
+		logger.info("Looking for artifacts to pass to resolver ... ");
+		logger.indent();
+		
 		Set<Artifact> artifacts = new HashSet<>();
 		try {
-			artifacts.addAll(dependencies.asArtifacts(projectBuildingRequest, project));
-			artifacts.addAll(dependencies.managedAsArtifacts(projectBuildingRequest, project));
+			artifacts.addAll(dependenciesToolbox.asArtifacts(projectBuildingRequest, project));
+			artifacts.addAll(dependenciesToolbox.managedAsArtifacts(projectBuildingRequest, project));
 		} catch (MavenExecutionException e) {
 			throw new RuntimeException("Failed to analyze dependencies", e);
 		}
 
+		logger.unindent();
+		logger.info("Done looking for artifacts to pass to resolver! Found {} artifacts.", artifacts.size());
+
+		logger.info("Preparing list of bundles for the resover ... ");
+		logger.indent();
 		/*
-		 * For each artifact : - convert to bundle if it's not - add it to the bundle
-		 * set
+		 * For each artifact : 
+		 * - convert to bundle if it's not 
+		 * - add it to the bundle set
 		 */
+		Set<File> bundleSet = new HashSet<File>();
+		boolean generateIndex = project.getProperties().containsKey(PROP_CONFIG_INDEX);
 		artifacts.stream().forEach(a -> addToBundleSet(a, emProjectGeneratedModules.toFile(), bundleSet, generateIndex));
+
+		logger.unindent();
+		logger.info("Done preparing list of bundles for the resover! It contains {} bundles.", bundleSet.size());
 
 		return bundleSet;
 
 	}
 
-	public void processModules(ProjectBuildingRequest projectBuildingRequest, MavenProject project) {
+	public void addManagedDependenciesFromContractors(ProjectBuildingRequest projectBuildingRequest, MavenProject project) {
+		logger.info("Adding managed dependencies from contractors in {} ...", project.getId());
+		logger.indent();
+
 		String modulesText = project.getProperties().getProperty(PROP_CONTRACTORS);
+
+		Set<String> modulesSet;
 		if (modulesText == null || modulesText.trim().isEmpty()) {
 			if (Flag.verbose()) {
-				logger.info("No available modules in '{}'", PROP_CONTRACTORS);
+				logger.info("No contractors provided in '{}' property", PROP_CONTRACTORS);
 			} else if (logger.isDebugEnabled()) {
-				logger.debug("No available modules in '{}'", PROP_CONTRACTORS);
+				logger.debug("No contractors provided in '{}' property", PROP_CONTRACTORS);
 			}
-			return;
+			modulesSet = new HashSet<>();
+		} else {
+			String[] modulesArray = modulesText.split("[\\s]*[,\\n][\\s]*");
+			modulesSet = Arrays.stream(modulesArray).collect(Collectors.toSet());
 		}
-		String[] modulesArray = modulesText.split("[\\s]*[,\\n][\\s]*");
-		Set<String> modulesSet = Arrays.stream(modulesArray).collect(Collectors.toSet());
+		
 		modulesSet.add("com.commsen.em.contractors:em.contractors.runtime:" + VAL_EXTENSION_VERSION);
+		
 		for (String moduleText : modulesSet) {
 			String[] coordinates = moduleText.split(":");
 			if (coordinates.length != 3) {
-				logger.warn("Invalid maven coordinates for module '{}'! It will be ignored!", moduleText);
+				logger.warn("Invalid maven coordinates for module `{}`! It will be ignored!", moduleText);
 				continue;
 			}
 
@@ -336,14 +395,14 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 			dependency.setType("pom");
 
 			try {
-				Artifact pomArtifact = dependencies.asArtifact(projectBuildingRequest, dependency);
+				Artifact pomArtifact = dependenciesToolbox.asArtifact(projectBuildingRequest, dependency);
 				dependency.setType("jar");
 				MavenXpp3Reader reader = new MavenXpp3Reader();
 				Model model = reader.read(new FileInputStream(pomArtifact.getFile()));
 				DependencyManagement dm = model.getDependencyManagement();
 
 				if (dm == null) {
-					dependencies.addToDependencyManagement(project, dependency);
+					dependenciesToolbox.addToDependencyManagement(project, dependency, moduleText);
 				} else {
 					for (Dependency d : dm.getDependencies()) {
 						/*
@@ -351,19 +410,19 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 						 * contract's artifact itself (that's what EM contractors do).
 						 */
 						if (d.getArtifactId().startsWith("${")) {
-							dependencies.addToDependencyManagement(project, dependency);
+							dependenciesToolbox.addToDependencyManagement(project, dependency, moduleText);
 						} else {
-							dependencies.addToDependencyManagement(project, d);
+							dependenciesToolbox.addToDependencyManagement(project, d, moduleText);
 						}
 					}
 				}
 
 			} catch (Exception e) {
-				logger.warn("Could not process modules from " + coordinates[0] + ":" + coordinates[1] + ":"
-						+ coordinates[2], e);
+				logger.warn("Could not extract dependencies from " + coordinates[0] + ":" + coordinates[1] + ":" + coordinates[2], e);
 			}
 		}
-
+		logger.unindent();
+		logger.info("Done adding managed dependencies from contractors in {}!. Added managed dependencies from {} contractors", project.getId(), modulesSet.size());
 	}
 
 	/**
@@ -375,8 +434,15 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 	private void addToBundleSet(Artifact artifact, File bundlesDirectory, Set<File> bundlesSet,
 			boolean indexGeneration) {
 		File f;
-		if (dependencies.isOSGiBundle(artifact)) {
+		if (dependenciesToolbox.isOSGiBundle(artifact)) {
 			f = pathsStorage.getEmPath(artifact.getFile().toPath()).toFile();
+
+			if (Flag.verbose()) {
+				logger.info("📦  `{}` from `{}` is OSGi bundle already", artifact.getId(), f);
+			} else if (logger.isDebugEnabled()) {
+				logger.debug("📦  `{}` from `{}` is OSGi bundle already", artifact.getId(), f);
+			}
+			
 			/*
 			 * If index is to be created copy the bundles to the temporary folder
 			 */
@@ -393,11 +459,7 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 		}
 
 		bundlesSet.add(f);
-		if (logger.isDebugEnabled()) {
-			logger.debug("Resolver input enty: module '{}' from {}", artifact, f);
-		} else if (Flag.verbose()) {
-			logger.info("Resolver input enty: module '{}' from {}", artifact, f);
-		}
+
 	}
 
 	private boolean makeBundle(Artifact artifact, File targetFile) {
@@ -417,16 +479,24 @@ public class ExportMojo extends aQute.bnd.maven.export.plugin.ExportMojo {
 				outStream.write(buffer, 0, bytesRead);
 			}
 
-			if (logger.isDebugEnabled()) {
-				logger.debug("'{}' wrapped in module '{}'", artifact.getFile(), targetFile);
-			} else if (Flag.verbose()) {
-				logger.info("'{}' wrapped in module '{}'", artifact.getFile(), targetFile);
+			if (Flag.verbose()) {
+				logger.info("🎁  `{}` from `{}` is NOT an OSGi bundle. It was wrapped into one and saved in `{}`", artifact.getId(), artifact.getFile().getAbsolutePath(), targetFile.getAbsolutePath());
+			} else if (logger.isDebugEnabled()) {
+				logger.debug("🎁  `{}` from `{}` is NOT an OSGi bundle. It was wrapped into one and saved in `{}`", artifact.getId(), artifact.getFile().getAbsolutePath(), targetFile.getAbsolutePath());
 			}
 			return true;
 
 		} catch (IOException e) {
-			logger.warn("Failed to convert '{}' to module ", artifact, e);
+			logger.warn("Failed to wrap '{}' into OSGi bundle ", artifact, e);
 			return false;
+		}
+	}
+	
+	private int versions(String bsn, BridgeRepository repo) {
+		try {
+			return repo.versions(bsn).size();
+		} catch (Exception e) {
+			return 0;
 		}
 	}
 }
