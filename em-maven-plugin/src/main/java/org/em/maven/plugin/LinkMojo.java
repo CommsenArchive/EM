@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.execution.MavenSession;
@@ -59,9 +60,9 @@ public class LinkMojo extends AbstractMojo {
 				File f = project.getExecutionProject().getArtifact().getFile();
 				Path emProjectPath = emProjectHome.resolve(f.getName());
 				
-				if (!emProjectPath.toFile().exists() && !Files.isSymbolicLink(emProjectPath)) {
-					Files.copy(f.toPath(), emProjectPath);
-				}
+//				if (!emProjectPath.toFile().exists() && !Files.isSymbolicLink(emProjectPath)) {
+					Files.copy(f.toPath(), emProjectPath, StandardCopyOption.REPLACE_EXISTING);
+//				}
 				
 				try {
 					pathsStorage.savePaths(m2Path, projectPath, emProjectPath);
