@@ -31,69 +31,97 @@
 				<artifactId>org.apache.felix.webconsole.plugins.ds</artifactId>
 				<version>2.0.6</version>
 				<scope>runtime</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.felix</groupId>
+						<artifactId>org.apache.felix.webconsole</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>org.apache.felix.webconsole.plugins.obr</artifactId>
 				<version>1.0.4</version>
 				<scope>runtime</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.felix</groupId>
+						<artifactId>org.apache.felix.webconsole</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>org.apache.felix.webconsole.plugins.event</artifactId>
 				<version>1.1.6</version>
 				<scope>runtime</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.felix</groupId>
+						<artifactId>org.apache.felix.webconsole</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>org.apache.felix.webconsole.plugins.packageadmin</artifactId>
 				<version>1.0.4</version>
 				<scope>runtime</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.felix</groupId>
+						<artifactId>org.apache.felix.webconsole</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>org.apache.felix.webconsole.plugins.memoryusage</artifactId>
 				<version>1.0.6</version>
 				<scope>runtime</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.felix</groupId>
+						<artifactId>org.apache.felix.webconsole</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>org.apache.felix.webconsole.plugins.scriptconsole</artifactId>
 				<version>1.0.2</version>
 				<scope>runtime</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>org.apache.felix.webconsole.plugins.subsystems</artifactId>
-				<version>0.1.0</version>
-				<scope>runtime</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>org.apache.felix.webconsole.plugins.upnp</artifactId>
-				<version>1.0.6</version>
-				<scope>runtime</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.felix</groupId>
+						<artifactId>org.apache.felix.webconsole</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.karaf.webconsole</groupId>
 				<artifactId>org.apache.karaf.webconsole.http</artifactId>
 				<version>4.1.2</version>
 				<scope>runtime</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.osgi</groupId>
-				<artifactId>osgi.enroute.webconsole.xray.provider</artifactId>
-				<version>2.0.0</version>
-				<scope>runtime</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.felix</groupId>
+						<artifactId>org.apache.felix.webconsole</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.everit.osgi</groupId>
 				<artifactId>org.everit.osgi.webconsole.threadviewer</artifactId>
 				<version>1.1.0</version>
 				<scope>runtime</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.felix</groupId>
+						<artifactId>org.apache.felix.webconsole</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
-
-
 		</dependencies>
 	</dependencyManagement>
 </project>
