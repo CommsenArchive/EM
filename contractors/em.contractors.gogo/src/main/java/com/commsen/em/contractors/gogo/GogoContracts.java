@@ -9,7 +9,6 @@ import com.commsen.em.annotations.Requires;
 				"provider=gogo" //
 		} //
 )
-@Requires(raw = "osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.shell)'")
 @Requires(raw = "osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.jline)'")
 @Requires(raw = "osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.command)'")
 public class GogoContracts {}
