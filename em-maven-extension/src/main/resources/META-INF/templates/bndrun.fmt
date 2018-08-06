@@ -60,6 +60,16 @@ requirements.webconsole = \
 #
 -runsystempackages: sun.*,com.sun.*
 
+
+#
+# Always ignore the following bundles
+#
+-runblacklist: \
+	osgi.identity;filter:="(osgi.identity=osgi.core)",\
+	osgi.identity;filter:="(osgi.identity=osgi.cmpn)",\
+	osgi.identity;filter:="(osgi.identity=osgi.enterprise)"
+	
+
 #
 # What are the initial requirements
 #
