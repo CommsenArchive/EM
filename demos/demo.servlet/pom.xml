@@ -3,7 +3,7 @@
 	xmlns:em="EM">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.commsen.em.demos</groupId>
+	<groupId>com.commsen.em.demo</groupId>
 	<artifactId>demo.servlet</artifactId>
 	<version>0.3.0-SNAPSHOT</version>
 
